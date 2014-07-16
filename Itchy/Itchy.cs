@@ -18,86 +18,85 @@ namespace Itchy
         public Itchy()
         {
             InitializeComponent();
+
+            UpdateGames();
+
+            if (!WinApi.SetDebugPrivileges())
+            {
+                MessageBox.Show("Failed to set debug privileges. Run as Administrator.");
+                return;
+            }
+
+            clientsComboBox.DataSource = games;
         }
 
-        ProcessDebugger pd = null;
-        Thread th = null;
-
-        private void button1_Click(object sender, EventArgs e)
+        private void attachButton_Click(object sender, EventArgs e)
         {
-            if (pd == null)
+            D2Game g = SelectedGame;
+            if (g == null)
+                return;
+
+            if (g.Installed)
+                return;
+
+            if (!g.Install())
+                MessageBox.Show("Failed to install hack");
+            else
             {
-                if (!WinApi.SetDebugPrivileges())
-                {
-                    MessageBox.Show("Failed to set debug privileges");
-                    return;
-                }
-
-                Process[] list = Process.GetProcessesByName("d2loader-1.12");
-                if (list.Length == 0)
-                    return;
-
-                var process = list[0];
-                pd = new ProcessDebugger(process.Id);
-                th = ProcessDebugger.Run(ref pd);
-
-                MessageBox.Show("Attached");
+                statusLabel.Text = "Attached to " + g.ToString();
+                games.ResetBindings();
             }
         }
 
         private void Itchy_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (pd != null)
+            foreach (var g in Games)
             {
-                pd.StopDebugging();
-                th.Join();
-            }
-        }
+                if (!g.Installed)
+                    continue;
 
-        class LightBreakPoint : HardwareBreakPoint
-        {
-            public LightBreakPoint(int address, uint len, Condition condition) : base(address, len, condition) { }
-
-            public override bool HandleException(ref CONTEXT ctx, ProcessDebugger pd)
-            {
-                ctx.Eax = 0xFF;     // light density
-                ctx.Eip += 0xEB;    // skip code
-
-                return true;
-            }
-        }
-
-        class RainBreakPoint : HardwareBreakPoint
-        {
-            public RainBreakPoint(int address, uint len, Condition condition) : base(address, len, condition) { }
-
-            public override bool HandleException(ref CONTEXT ctx, ProcessDebugger pd)
-            {
-                ctx.Eax &= 0xFFFFFF00;
-                ctx.Eip += 4;
-
-                return true;
+                g.Detach();
             }
         }
 
         private void installButton_Click(object sender, EventArgs e)
         {
-            if (pd == null)
-                return;
+            //if (pd == null)
+                //return;
 
-            var bp = new LightBreakPoint(0x5F907, 1, HardwareBreakPoint.Condition.Code);
-            pd.AddBreakPoint("D2Client.dll", bp);
+            //var bp = new LightBreakPoint(0x5F907, 1, HardwareBreakPoint.Condition.Code);
+            //pd.AddBreakPoint("D2Client.dll", bp);
 
-            var bp2 = new RainBreakPoint(0x73A02, 1, HardwareBreakPoint.Condition.Code);
-            pd.AddBreakPoint("d2common.dll", bp2);
+            //var bp2 = new RainBreakPoint(0x73A02, 1, HardwareBreakPoint.Condition.Code);
+            //pd.AddBreakPoint("d2common.dll", bp2);
         }
 
         private void removeButton_Click(object sender, EventArgs e)
         {
-            if (pd == null)
+            //if (pd == null || !pd.IsDebugging)
+                //return;
+
+            //pd.RemoveBreakPoints();
+        }
+
+        private void detachButton_Click(object sender, EventArgs e)
+        {
+            var g = SelectedGame;
+            if (g == null)
                 return;
 
-            pd.RemoveBreakPoints();
+            if (g.Installed)
+                if (g.Detach())
+                    statusLabel.Text = "Detached from " + g.ToString();
+                else
+                    MessageBox.Show("Failed to detach");
+
+            games.ResetBindings();
+        }
+
+        private void clientsComboBox_DropDown(object sender, EventArgs e)
+        {
+            UpdateGames();
         }
     }
 }
