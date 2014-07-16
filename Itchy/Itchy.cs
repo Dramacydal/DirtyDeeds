@@ -32,7 +32,7 @@ namespace Itchy
 
         private void attachButton_Click(object sender, EventArgs e)
         {
-            D2Game g = SelectedGame;
+            var g = SelectedGame;
             if (g == null)
                 return;
 
@@ -59,26 +59,6 @@ namespace Itchy
             }
         }
 
-        private void installButton_Click(object sender, EventArgs e)
-        {
-            //if (pd == null)
-                //return;
-
-            //var bp = new LightBreakPoint(0x5F907, 1, HardwareBreakPoint.Condition.Code);
-            //pd.AddBreakPoint("D2Client.dll", bp);
-
-            //var bp2 = new RainBreakPoint(0x73A02, 1, HardwareBreakPoint.Condition.Code);
-            //pd.AddBreakPoint("d2common.dll", bp2);
-        }
-
-        private void removeButton_Click(object sender, EventArgs e)
-        {
-            //if (pd == null || !pd.IsDebugging)
-                //return;
-
-            //pd.RemoveBreakPoints();
-        }
-
         private void detachButton_Click(object sender, EventArgs e)
         {
             var g = SelectedGame;
@@ -97,6 +77,15 @@ namespace Itchy
         private void clientsComboBox_DropDown(object sender, EventArgs e)
         {
             UpdateGames();
+        }
+
+        private void testButton_Click(object sender, EventArgs e)
+        {
+            var g = SelectedGame;
+            if (g == null)
+                return;
+
+            g.Test();
         }
     }
 }

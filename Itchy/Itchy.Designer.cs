@@ -30,12 +30,11 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Itchy));
             this.attachButton = new System.Windows.Forms.Button();
-            this.installButton = new System.Windows.Forms.Button();
-            this.removeButton = new System.Windows.Forms.Button();
             this.detachButton = new System.Windows.Forms.Button();
             this.clientsComboBox = new System.Windows.Forms.ComboBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.testButton = new System.Windows.Forms.Button();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -49,29 +48,9 @@
             this.attachButton.UseVisualStyleBackColor = true;
             this.attachButton.Click += new System.EventHandler(this.attachButton_Click);
             // 
-            // installButton
-            // 
-            this.installButton.Location = new System.Drawing.Point(12, 55);
-            this.installButton.Name = "installButton";
-            this.installButton.Size = new System.Drawing.Size(75, 23);
-            this.installButton.TabIndex = 1;
-            this.installButton.Text = "Install";
-            this.installButton.UseVisualStyleBackColor = true;
-            this.installButton.Click += new System.EventHandler(this.installButton_Click);
-            // 
-            // removeButton
-            // 
-            this.removeButton.Location = new System.Drawing.Point(12, 99);
-            this.removeButton.Name = "removeButton";
-            this.removeButton.Size = new System.Drawing.Size(75, 23);
-            this.removeButton.TabIndex = 2;
-            this.removeButton.Text = "Remove";
-            this.removeButton.UseVisualStyleBackColor = true;
-            this.removeButton.Click += new System.EventHandler(this.removeButton_Click);
-            // 
             // detachButton
             // 
-            this.detachButton.Location = new System.Drawing.Point(12, 129);
+            this.detachButton.Location = new System.Drawing.Point(93, 12);
             this.detachButton.Name = "detachButton";
             this.detachButton.Size = new System.Drawing.Size(75, 23);
             this.detachButton.TabIndex = 3;
@@ -104,16 +83,25 @@
             this.statusLabel.Name = "statusLabel";
             this.statusLabel.Size = new System.Drawing.Size(0, 17);
             // 
+            // testButton
+            // 
+            this.testButton.Location = new System.Drawing.Point(12, 58);
+            this.testButton.Name = "testButton";
+            this.testButton.Size = new System.Drawing.Size(75, 23);
+            this.testButton.TabIndex = 6;
+            this.testButton.Text = "Test";
+            this.testButton.UseVisualStyleBackColor = true;
+            this.testButton.Click += new System.EventHandler(this.testButton_Click);
+            // 
             // Itchy
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(391, 262);
+            this.Controls.Add(this.testButton);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.clientsComboBox);
             this.Controls.Add(this.detachButton);
-            this.Controls.Add(this.removeButton);
-            this.Controls.Add(this.installButton);
             this.Controls.Add(this.attachButton);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Itchy";
@@ -129,12 +117,11 @@
         #endregion
 
         private System.Windows.Forms.Button attachButton;
-        private System.Windows.Forms.Button installButton;
-        private System.Windows.Forms.Button removeButton;
         private System.Windows.Forms.Button detachButton;
         private System.Windows.Forms.ComboBox clientsComboBox;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel statusLabel;
+        private System.Windows.Forms.Button testButton;
     }
 }
 

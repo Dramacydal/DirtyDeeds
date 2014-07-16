@@ -11,32 +11,6 @@ using Win32HWBP;
 
 namespace Itchy
 {
-    class LightBreakPoint : HardwareBreakPoint
-    {
-        public LightBreakPoint(int address, uint len, Condition condition) : base(address, len, condition) { }
-
-        public override bool HandleException(ref CONTEXT ctx, ProcessDebugger pd)
-        {
-            ctx.Eax = 0xFF;     // light density
-            ctx.Eip += 0xEB;    // skip code
-
-            return true;
-        }
-    }
-
-    class RainBreakPoint : HardwareBreakPoint
-    {
-        public RainBreakPoint(int address, uint len, Condition condition) : base(address, len, condition) { }
-
-        public override bool HandleException(ref CONTEXT ctx, ProcessDebugger pd)
-        {
-            ctx.Eax &= 0xFFFFFF00;
-            ctx.Eip += 4;
-
-            return true;
-        }
-    }
-
     public partial class Itchy : Form
     {
         //[DllImport("kernel32.dll", SetLastError = true, CallingConvention = CallingConvention.Winapi)]
@@ -91,10 +65,10 @@ namespace Itchy
                             games.Add(new D2Game(process));
                     }
                 }
-                catch (System.NullReferenceException)
+                catch (NullReferenceException)
                 {
                 }
-                catch (System.ComponentModel.Win32Exception)
+                catch (Win32Exception)
                 {
                 }
             }

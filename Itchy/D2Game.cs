@@ -5,9 +5,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Windows.Forms;
 using Win32HWBP;
 
-namespace Win32HWBP
+namespace Itchy
 {
     public class D2Game
     {
@@ -42,6 +43,10 @@ namespace Win32HWBP
 
         public bool Install()
         {
+            process.Refresh();
+            if (process.HasExited)
+                return false;
+
             try
             {
                 pd = new ProcessDebugger(process.Id);
@@ -49,6 +54,14 @@ namespace Win32HWBP
 
                 if (!pd.WaitForComeUp(500))
                     return false;
+
+                // 0x6FD80C92 0x30C92
+                var bp2 = new RainBreakPoint(0x30C92, 1, HardwareBreakPoint.Condition.Code);
+                pd.AddBreakPoint("d2common.dll", bp2);
+
+                // 0x6FAD33A7 0x233A7
+                var bp = new LightBreakPoint(0x233A7, 1, HardwareBreakPoint.Condition.Code);
+                pd.AddBreakPoint("d2client.dll", bp);
             }
             catch (Exception)
             {
@@ -61,6 +74,10 @@ namespace Win32HWBP
 
         public bool Detach()
         {
+            process.Refresh();
+            if (process.HasExited)
+                return true;
+
             try
             {
                 pd.StopDebugging();
@@ -73,6 +90,40 @@ namespace Win32HWBP
             }
 
             return true;
+        }
+
+        public bool GetPlayerUnit(out UnitAny unit)
+        {
+            var addr = pd.BlackMagic.AllocateMemory(1024);
+
+            pd.BlackMagic.Asm.Clear();
+            pd.BlackMagic.Asm.AddLine("call {0}", pd.GetModuleAddress("d2client.dll") + 0x613C0);
+            pd.BlackMagic.Asm.AddLine("retn");
+            var playerAddr = pd.BlackMagic.Asm.InjectAndExecute(addr);
+            pd.BlackMagic.FreeMemory(addr);
+            if (playerAddr == 0)
+            {
+                unit = new UnitAny();
+                return false;
+            }
+
+            unit = (UnitAny)pd.BlackMagic.ReadObject(playerAddr, typeof(UnitAny));
+            return true;
+        }
+
+        public void Test()
+        {
+            var addr = pd.BlackMagic.AllocateMemory(1024);
+
+            pd.BlackMagic.Asm.Clear();
+            pd.BlackMagic.Asm.AddLine("call {0}", pd.GetModuleAddress("d2client.dll") + 0x613C0);
+            pd.BlackMagic.Asm.AddLine("retn");
+            var playerAddr = pd.BlackMagic.Asm.InjectAndExecute(addr);
+            pd.BlackMagic.FreeMemory(addr);
+
+            UnitAny unit;
+            if (GetPlayerUnit(out unit))
+                MessageBox.Show(unit.dwAct.ToString());
         }
     }
 }
