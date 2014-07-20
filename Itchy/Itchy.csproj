@@ -48,8 +48,8 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="Win32HWBP">
-      <HintPath>..\..\Win32HWBP\Win32HWBP\bin\Debug\Win32HWBP.dll</HintPath>
+    <Reference Include="WhiteMagic">
+      <HintPath>..\..\WhiteMagic\WhiteMagic\bin\Debug\WhiteMagic.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -64,6 +64,7 @@
     <Compile Include="Itchy.Designer.cs">
       <DependentUpon>Itchy.cs</DependentUpon>
     </Compile>
+    <Compile Include="Pointers.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Structs.cs" />

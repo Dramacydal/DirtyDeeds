@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
-using Win32HWBP;
+using WhiteMagic;
 
 namespace Itchy
 {
@@ -19,8 +19,6 @@ namespace Itchy
         {
             InitializeComponent();
 
-            UpdateGames();
-
             if (!WinApi.SetDebugPrivileges())
             {
                 MessageBox.Show("Failed to set debug privileges. Run as Administrator.");
@@ -28,6 +26,7 @@ namespace Itchy
             }
 
             clientsComboBox.DataSource = games;
+            UpdateGames();
         }
 
         private void attachButton_Click(object sender, EventArgs e)

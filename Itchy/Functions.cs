@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using Win32HWBP;
+using WhiteMagic;
 
 namespace Itchy
 {
