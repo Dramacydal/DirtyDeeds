@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,8 +14,19 @@ using WhiteMagic;
 
 namespace Itchy
 {
+    enum VKeyCodes : uint
+    {
+        VK_CONTROL = 0x11,
+    }
+
     public partial class Itchy : Form
     {
+        protected IntPtr hookId;
+        protected HookProc _proc;
+
+        [DllImport("user32.dll")]
+        static extern IntPtr GetForegroundWindow();
+
         public Itchy()
         {
             InitializeComponent();
@@ -27,6 +39,9 @@ namespace Itchy
 
             clientsComboBox.DataSource = games;
             UpdateGames();
+
+            _proc = new HookProc(HookCallback);
+            hookId = SetHook(_proc);
         }
 
         private void attachButton_Click(object sender, EventArgs e)
@@ -49,6 +64,8 @@ namespace Itchy
 
         private void Itchy_FormClosing(object sender, FormClosingEventArgs e)
         {
+            Hook.UnhookWindowsHookEx(hookId);
+
             foreach (var g in Games)
             {
                 if (!g.Installed)
@@ -85,6 +102,39 @@ namespace Itchy
                 return;
 
             g.Test();
+        }
+
+        public bool HandleMessage(ref Message m)
+        {
+            return true;
+        }
+
+        protected IntPtr SetHook(HookProc proc)
+        {
+            using (var curProc = Process.GetCurrentProcess())
+            using (var curModule = curProc.MainModule)
+            {
+                return Hook.SetWindowsHookEx(HookType.WH_KEYBOARD_LL, proc, Hook.GetModuleHandle(curModule.ModuleName), 0);
+            }
+        }
+
+        private int HookCallback(int code, IntPtr wParam, IntPtr lParam)
+        {
+            if (code >= 0)
+            {
+                foreach (D2Game g in games)
+                {
+                    if (g.Overlay == null)
+                        continue;
+
+                    if (!g.Overlay.TopMost && GetForegroundWindow() != g.Process.MainWindowHandle)
+                        continue;
+
+                    if (!g.Overlay.HandleMessage(code, wParam, lParam))
+                        return 1;   // block
+                }
+            }
+            return Hook.CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
         }
     }
 }

@@ -49,6 +49,9 @@ namespace Itchy
                     //if (!process.ProcessName.Contains("d2"))
                     //     continue;
 
+                    if (process.HasExited)
+                        continue;
+
                     if (process.MainModule.FileVersionInfo.InternalName.ToLower().Contains("diablo ii"))
                     {
                         bool found = false;
@@ -65,10 +68,7 @@ namespace Itchy
                             games.Add(new D2Game(process));
                     }
                 }
-                catch (NullReferenceException)
-                {
-                }
-                catch (Win32Exception)
+                catch (Exception)
                 {
                 }
             }

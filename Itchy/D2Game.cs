@@ -17,10 +17,14 @@ namespace Itchy
         public ProcessDebugger Debugger { get { return pd; } }
         public Thread Thread { get { return th; } }
         public bool Installed { get { return pd != null; } }
+        public OverlayWindow Overlay { get { return overlay; } }
 
-        protected Process process;
-        protected ProcessDebugger pd;
-        protected Thread th;
+        protected Process process = null;
+        protected ProcessDebugger pd = null;
+        protected Thread th = null;
+        protected volatile OverlayWindow overlay = null;
+
+        protected List<uint> revealedLevels = new List<uint>();
 
         public D2Game(Process process)
         {
@@ -63,12 +67,20 @@ namespace Itchy
                 // 0x6FAD33A7 0x233A7
                 //var bp = new LightBreakPoint(0x233A7, 1, HardwareBreakPoint.Condition.Code);
                 //pd.AddBreakPoint("d2client.dll", bp);
+
+                // 6FB332FF
+                var bp = new ReceivePacketBreakPoint(0x832FF, 1, HardwareBreakPoint.Condition.Code);
+                pd.AddBreakPoint("d2client.dll", bp);
             }
             catch (Exception)
             {
 
                 return false;
             }
+
+            overlay = new OverlayWindow();
+            overlay.game = this;
+            overlay.Show();
 
             return true;
         }
@@ -90,14 +102,21 @@ namespace Itchy
                 return false;
             }
 
+            overlay.Dispose();
+            overlay = null;
+
             return true;
+        }
+
+        public uint GetPlayerUnit()
+        {
+            return pd.MemoryHandler.Call(pd.GetModuleAddress("d2client.dll") + D2Client.GetPlayerUnit,
+                CallingConventionEx.StdCall);
         }
 
         public bool GetPlayerUnit(out UnitAny unit)
         {
-            var pUnit = pd.MemoryHandler.Call(pd.GetModuleAddress("d2client.dll") + D2Client.GetPlayerUnit,
-                CallingConventionEx.StdCall);
-
+            var pUnit = GetPlayerUnit();
             if (pUnit == 0)
             {
                 unit = new UnitAny();
@@ -106,6 +125,26 @@ namespace Itchy
 
             unit = pd.MemoryHandler.Read<UnitAny>(pUnit);
             return true;
+        }
+
+
+        public void PrintGameString(string str, D2Color color = D2Color.Default)
+        {
+            //SuspendProcess();
+            try
+            {
+                var addr = pd.MemoryHandler.AllocateUTF16String(str);
+                pd.MemoryHandler.Call(pd.GetModuleAddress("d2client.dll") + D2Client.PrintGameString,
+                    CallingConventionEx.StdCall,
+                    addr, (uint)color);
+
+                pd.MemoryHandler.FreeMemory(addr);
+            }
+            catch (Exception e)
+            {
+            }
+
+            //ResumeProcess();
         }
 
         public void Test()
@@ -121,159 +160,190 @@ namespace Itchy
             ResumeProcess();
 
             MessageBox.Show(((DateTime.Now.Ticks - dt) / TimeSpan.TicksPerMillisecond).ToString());*/
+            //WinApi.BlockInput(true);
             RevealAct();
+            //WinApi.BlockInput(false);
+            //RevealLevel();
+            //OpenStash();
+            //OpenCube();
+            //SpeedTest();
         }
 
-        public int[] m_ActLevels = new int[]
+        protected int[] m_ActLevels = new int[]
         {
-            1, 10, 75, 103, 109, 137
+            1, 40, 75, 103, 109, 137
         };
-
-        private uint GetLevelPointer(uint pActMisc, int nLevel)
-        {
-            if (pActMisc == 0 || nLevel < 0)
-                return 0;
-
-            var actMist = pd.MemoryHandler.Read<ActMisc>(pActMisc);
-            Level level;
-            for (uint pLevel = actMist.pLevelFirst; pLevel != 0; pLevel = level.pNextLevel)
-            {
-                level = pd.MemoryHandler.Read<Level>(pLevel);
-                if (level.dwLevelNo == nLevel && level.dwSizeX > 0)
-                    return pLevel;
-            }
-
-            return pd.MemoryHandler.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetLevel,
-                CallingConventionEx.FastCall,
-                pActMisc, (uint)nLevel);
-        }
-
-        private void InitLevel(uint pLevel)
-        {
-            pd.MemoryHandler.Call(pd.GetModuleAddress("d2common.dll") + D2Common.InitLevel,
-                CallingConventionEx.StdCall,
-                pLevel);
-        }
-
-        private uint InitAutomapLayer(uint levelno)
-        {
-            var ret = pd.MemoryHandler.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetLayer,
-                CallingConventionEx.FastCall,
-                levelno);
-            if (ret == 0)
-                return 0;
-
-            var layer = pd.MemoryHandler.Read<AutomapLayer2>(ret);
-            ret = pd.MemoryHandler.Call(pd.GetModuleAddress("d2client.dll") + D2Client.InitAutomapLayer_I,
-                CallingConventionEx.Register,
-                layer.nLayerNo);
-
-            return ret;
-        }
-
-        private void RevealLevel(Level lvl)
-        {
-            if (InitAutomapLayer(lvl.dwLevelNo) == 0)
-                return;
-
-            UnitAny unit;
-            if (!GetPlayerUnit(out unit))
-                return;
-
-            var misc = pd.MemoryHandler.Read<ActMisc>(lvl.pMisc);
-            var path = pd.MemoryHandler.Read<Path>(unit.pPath);
-            var pLayer = pd.MemoryHandler.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pAutoMapLayer);
-
-            var pRoom2 = lvl.pRoom2First;
-            var roomCount = 0;
-            for (; ; )
-            {
-                if (pRoom2 == 0)
-                    break;
-
-                ++roomCount;
-
-                var room2 = pd.MemoryHandler.Read<Room2>(pRoom2);
-                var added = false;
-                
-                if (room2.pRoom1 == 0)
-                {
-                    pRoom2 = room2.pRoom2Next;
-                    continue;
-                    pd.MemoryHandler.Call(pd.GetModuleAddress("d2common.dll") + D2Common.AddRoomData,
-                        CallingConventionEx.StdCall,
-                        misc.pAct, lvl.dwLevelNo, room2.dwPosX, room2.dwPosY, path.pRoom1);
-
-                    added = true;
-                    room2 = pd.MemoryHandler.Read<Room2>(pRoom2);
-                }
-
-                if (room2.pRoom1 == 0)
-                {
-                    pRoom2 = room2.pRoom2Next;
-                    continue;
-                }
-
-                pd.MemoryHandler.Call(pd.GetModuleAddress("d2client.dll") + D2Client.RevealAutomapRoom,
-                    CallingConventionEx.StdCall,
-                    room2.pRoom1, 1, pLayer);
-
-                //Drawpresets(...)
-
-                if (added)
-                {
-                    pd.MemoryHandler.Call(pd.GetModuleAddress("d2common.dll") + D2Common.RemoveRoomData,
-                        CallingConventionEx.StdCall,
-                        misc.pAct, lvl.dwLevelNo, room2.dwPosX, room2.dwPosY, path.pRoom1);
-                }
-
-                pRoom2 = room2.pRoom2Next;
-            }
-
-            var path2 = pd.MemoryHandler.Read<Path>(unit.pPath);
-            var room1 = pd.MemoryHandler.Read<Room1>(path2.pRoom1);
-            var room22 = pd.MemoryHandler.Read<Room2>(room1.pRoom2);
-            var lvl2 = pd.MemoryHandler.Read<Level>(room22.pLevel);
-
-            InitAutomapLayer(lvl2.dwLevelNo);
-        }
 
         public void RevealAct()
         {
-            SuspendProcess();
-
-            //string str ="";
             UnitAny unit;
             if (!GetPlayerUnit(out unit))
             {
-                MessageBox.Show("Failed to get player unit");
-                ResumeProcess();
+                //MessageBox.Show("Failed to get player unit");
                 return;
             }
 
-            //var lvl = pd.MemoryHandler.Read<Level>(unit
+            if (unit.pAct == 0)
+            {
+                //MessageBox.Show("Failed to get act");
+                return;
+            }
 
             var act = pd.MemoryHandler.Read<Act>(unit.pAct);
-            for (var i = m_ActLevels[act.dwAct] + 1; i < m_ActLevels[act.dwAct + 1]; ++i)
+            var expCharFlag = pd.MemoryHandler.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pExpCharFlag);
+            var diff = pd.MemoryHandler.Call(pd.GetModuleAddress("d2client.dll") + D2Client.GetDifficulty,
+                CallingConventionEx.StdCall);
+
+            var pAct = pd.MemoryHandler.Call(pd.GetModuleAddress("d2common.dll") + D2Common.LoadAct,
+                CallingConventionEx.StdCall,
+                unit.dwAct,
+                act.dwMapSeed,
+                expCharFlag,
+                0,
+                diff,
+                0,
+                (uint)m_ActLevels[unit.dwAct],
+                pd.GetModuleAddress("d2client.dll") + D2Client.LoadAct_1,
+                pd.GetModuleAddress("d2client.dll") + D2Client.LoadAct_2);
+
+            if (pAct == 0)
             {
-                var pLevel = GetLevelPointer(act.pMisc, i);
+                //MessageBox.Show("Failed to load act");
+                return;
+            }
+
+            act = pd.MemoryHandler.Read<Act>(pAct);
+            if (act.pMisc == 0)
+            {
+                //MessageBox.Show("Failed to get act misc");
+                return;
+            }
+
+            var actMisc = pd.MemoryHandler.Read<ActMisc>(act.pMisc);
+            if (actMisc.pLevelFirst == 0)
+            {
+                //MessageBox.Show("Failed to get act misc level first");
+                return;
+            }
+
+            for (var i = m_ActLevels[unit.dwAct]; i < m_ActLevels[unit.dwAct + 1]; ++i)
+            {
+                Level lvl = pd.MemoryHandler.Read<Level>(actMisc.pLevelFirst);
+                uint pLevel = 0;
+                for (pLevel = actMisc.pLevelFirst; pLevel != 0; pLevel = lvl.pNextLevel)
+                {
+                    if (pLevel != actMisc.pLevelFirst)
+                        lvl = pd.MemoryHandler.Read<Level>(pLevel);
+
+                    if (lvl.dwLevelNo == (uint)i && lvl.dwPosX > 0)
+                        break;
+                }
+
+                if (pLevel == 0)
+                    pLevel = pd.MemoryHandler.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetLevel,
+                        CallingConventionEx.FastCall,
+                        act.pMisc, (uint)i);
                 if (pLevel == 0)
                     continue;
 
-                var lvl = pd.MemoryHandler.Read<Level>(pLevel);
-                if (lvl.pRoom2First == 0)
-                    InitLevel(pLevel);
                 lvl = pd.MemoryHandler.Read<Level>(pLevel);
                 if (lvl.pRoom2First == 0)
+                    pd.MemoryHandler.Call(pd.GetModuleAddress("d2common.dll") + D2Common.InitLevel,
+                        CallingConventionEx.StdCall,
+                        pLevel);
+
+                if (lvl.dwLevelNo > 255)
                     continue;
 
-                RevealLevel(lvl);
+                InitLayer(lvl.dwLevelNo);
+                lvl = pd.MemoryHandler.Read<Level>(pLevel);
 
-                //MessageBox.Show("Revealing " + i.ToString());
+                for (var pRoom = lvl.pRoom2First; pRoom != 0; )
+                {
+                    var room = pd.MemoryHandler.Read<Room2>(pRoom);
+
+                    var actMisc2 = pd.MemoryHandler.Read<ActMisc>(lvl.pMisc);
+                    var roomData = false;
+                    if (room.pRoom1 == 0)
+                    {
+                        roomData = true;
+                        pd.MemoryHandler.Call(pd.GetModuleAddress("d2common.dll") + D2Common.AddRoomData,
+                            CallingConventionEx.ThisCall,
+                            0, actMisc2.pAct, lvl.dwLevelNo, room.dwPosX, room.dwPosY, room.pRoom1);
+                    }
+
+                    room = pd.MemoryHandler.Read<Room2>(pRoom);
+                    if (room.pRoom1 == 0)
+                        continue;
+
+                    var pAutomapLayer = pd.MemoryHandler.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pAutoMapLayer);
+
+                    pd.MemoryHandler.Call(pd.GetModuleAddress("d2client.dll") + D2Client.RevealAutomapRoom,
+                        CallingConventionEx.StdCall,
+                        room.pRoom1,
+                        1,
+                        pAutomapLayer);
+
+                    if (roomData)
+                        pd.MemoryHandler.Call(pd.GetModuleAddress("d2common.dll") + D2Common.RemoveRoomData,
+                            CallingConventionEx.StdCall,
+                            actMisc2.pAct, lvl.dwLevelNo, room.dwPosX, room.dwPosY, room.pRoom1);
+
+                    pRoom = room.pRoom2Next;
+                }
             }
 
-            //MessageBox.Show(str);
+            var path = pd.MemoryHandler.Read<Path>(unit.pPath);
+            var room1 = pd.MemoryHandler.Read<Room1>(path.pRoom1);
+            var room2 = pd.MemoryHandler.Read<Room2>(room1.pRoom2);
+            var lev = pd.MemoryHandler.Read<Level>(room2.pLevel);
+            InitLayer(lev.dwLevelNo);
+            pd.MemoryHandler.Call(pd.GetModuleAddress("d2common.dll") + D2Common.UnloadAct,
+                CallingConventionEx.StdCall,
+                pAct);
 
+            PrintGameString("Revealed act", D2Color.Red);
+
+
+            //ResumeProcess();
+        }
+
+        public void InitLayer(uint levelNo)
+        {
+            var pLayer = pd.MemoryHandler.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetLayer,
+                CallingConventionEx.FastCall,
+                levelNo);
+            if (pLayer == 0)
+                return;
+
+            var layer = pd.MemoryHandler.Read<AutomapLayer2>(pLayer);
+
+            pd.MemoryHandler.Call(pd.GetModuleAddress("d2client.dll") + D2Client.InitAutomapLayer_I,
+                CallingConventionEx.Register,
+                layer.nLayerNo);
+        }
+
+        public void OpenStash()
+        {
+            SuspendProcess();
+
+            var packet = new byte[] { 0x77, 0x10 };
+            var addr = pd.MemoryHandler.AllocateBytes(packet);
+            pd.MemoryHandler.Call(pd.GetModuleAddress("d2net.dll") + D2Net.ReceivePacket,
+                CallingConventionEx.StdCall,
+                addr, (uint)packet.Length);
+            ResumeProcess();
+        }
+
+        public void OpenCube()
+        {
+            SuspendProcess();
+
+            var packet = new byte[] { 0x77, 0x15 };
+            var addr = pd.MemoryHandler.AllocateBytes(packet);
+            pd.MemoryHandler.Call(pd.GetModuleAddress("d2net.dll") + D2Net.ReceivePacket,
+                CallingConventionEx.StdCall,
+                addr, (uint)packet.Length);
             ResumeProcess();
         }
 
