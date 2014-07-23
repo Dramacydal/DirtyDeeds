@@ -14,11 +14,6 @@ using WhiteMagic;
 
 namespace Itchy
 {
-    enum VKeyCodes : uint
-    {
-        VK_CONTROL = 0x11,
-    }
-
     public partial class Itchy : Form
     {
         protected IntPtr hookId;
@@ -102,11 +97,6 @@ namespace Itchy
                 return;
 
             g.Test();
-        }
-
-        public bool HandleMessage(ref Message m)
-        {
-            return true;
         }
 
         protected IntPtr SetHook(HookProc proc)

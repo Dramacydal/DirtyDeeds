@@ -140,7 +140,7 @@ namespace Itchy
 
                 pd.MemoryHandler.FreeMemory(addr);
             }
-            catch (Exception e)
+            catch (Exception)
             {
             }
 

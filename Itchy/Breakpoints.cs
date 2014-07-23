@@ -62,14 +62,14 @@ namespace Itchy
                 }
                 case 0x15:
                 {
-                    var pPlayer = pd.MemoryHandler.Call(pd.GetModuleAddress("d2client.dll") + D2Client.GetPlayerUnit,
+                    /*var pPlayer = pd.MemoryHandler.Call(pd.GetModuleAddress("d2client.dll") + D2Client.GetPlayerUnit,
                         CallingConventionEx.StdCall);
-                    var unit = pd.MemoryHandler.Read<UnitAny>(pPlayer);
+                    var unit = pd.MemoryHandler.Read<UnitAny>(pPlayer);*/
                     
-                    /*var pPlayer = pd.MemoryHandler.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pPlayerUnit);
+                    var pPlayer = pd.MemoryHandler.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pPlayerUnit);
                     if (pPlayer == 0)
                         break;
-                    var unit = pd.MemoryHandler.Read<UnitAny>(pPlayer);*/
+                    var unit = pd.MemoryHandler.Read<UnitAny>(pPlayer);
                     if (BitConverter.ToUInt32(packet, 2) == unit.dwUnitId)
                     {
                         // no flash
