@@ -21,7 +21,7 @@ namespace Itchy
         public D2Game SelectedGame { get { return (D2Game)clientsComboBox.SelectedItem; } }
         public D2Game[] Games { get { return clientsComboBox.Items.Cast<D2Game>().ToArray(); } }
 
-        BindingList<D2Game> games = new BindingList<D2Game>();
+        public BindingList<D2Game> games = new BindingList<D2Game>();
 
         protected void UpdateGames()
         {
@@ -65,7 +65,7 @@ namespace Itchy
                         }
 
                         if (!found)
-                            games.Add(new D2Game(process));
+                            games.Add(new D2Game(process, this));
                     }
                 }
                 catch (Exception)

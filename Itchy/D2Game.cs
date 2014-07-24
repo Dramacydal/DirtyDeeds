@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -18,22 +19,25 @@ namespace Itchy
         public Thread Thread { get { return th; } }
         public bool Installed { get { return pd != null; } }
         public OverlayWindow Overlay { get { return overlay; } }
+        public Itchy Itchy { get { return itchy; } }
 
         protected Process process = null;
         protected ProcessDebugger pd = null;
         protected Thread th = null;
         protected volatile OverlayWindow overlay = null;
+        protected Itchy itchy;
 
         protected List<uint> revealedLevels = new List<uint>();
 
-        public D2Game(Process process)
+        public D2Game(Process process, Itchy itchy)
         {
             this.process = process;
+            this.itchy = itchy;
         }
 
         public override string ToString()
         {
-            return process.MainModule.FileVersionInfo.InternalName + " - " + process.Id + (Installed ? " (*)" : "");
+            return process.MainModule.FileVersionInfo.InternalName + " - " + process.Id + (Installed ? " (*) " + PlayerName : "");
         }
 
         public bool Exists()
@@ -127,10 +131,30 @@ namespace Itchy
             return true;
         }
 
+        public string PlayerName { get; set; }
 
-        public void PrintGameString(string str, D2Color color = D2Color.Default)
+        public string GetPlayerName()
         {
-            //SuspendProcess();
+            try
+            {
+                UnitAny unit;
+                if (!GetPlayerUnit(out unit))
+                    return "";
+
+                var data = pd.MemoryHandler.Read<PlayerData>(unit.pPlayerData);
+                return Encoding.ASCII.GetString(data.szName);
+            }
+            catch (Exception)
+            {
+            }
+
+            return "";
+        }
+
+        public void PrintGameString(string str, D2Color color = D2Color.Default, bool suspend = false)
+        {
+            if (suspend)
+                SuspendProcess();
             try
             {
                 var addr = pd.MemoryHandler.AllocateUTF16String(str);
@@ -144,7 +168,8 @@ namespace Itchy
             {
             }
 
-            //ResumeProcess();
+            if (suspend)
+                ResumeProcess();
         }
 
         public void Test()
@@ -304,6 +329,7 @@ namespace Itchy
 
             PrintGameString("Revealed act", D2Color.Red);
 
+            Log("Revealed act");
 
             //ResumeProcess();
         }
@@ -355,6 +381,13 @@ namespace Itchy
         private void ResumeProcess()
         {
             pd.MemoryHandler.ResumeAllThreads();
+        }
+
+        private void Log(string message)
+        {
+            var time = DateTime.Now;
+            var str = string.Format("[{0:D2}:{1:D2}:{2:D2}] ", time.Hour, time.Minute, time.Second);
+            this.overlay.logTextBox.AppendLine(str + message, Color.Empty);
         }
     }
 }

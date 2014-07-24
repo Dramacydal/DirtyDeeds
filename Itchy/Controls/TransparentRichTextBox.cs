@@ -5,11 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Itchy
+namespace ItchyControls
 {
     public class TransparentRichTextBox : RichTextBox
     {
-        public TransparentRichTextBox()
+        public TransparentRichTextBox() : base()
         {
         }
 

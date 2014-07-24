@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Text;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -32,11 +33,36 @@ namespace Itchy
                 return;
             }
 
+            InstallFont();
+
             clientsComboBox.DataSource = games;
             UpdateGames();
 
             _proc = new HookProc(HookCallback);
             hookId = SetHook(_proc);
+
+            var panel1 = new Form1();
+            panel1.Show();
+        }
+
+        [DllImport("gdi32.dll", ExactSpelling = true)]
+        private static extern IntPtr AddFontMemResourceEx(byte[] pbFont, int cbFont, IntPtr pdv, out uint pcFonts);
+
+        public static Font d2font = null;
+
+        private void InstallFont()
+        {
+            var data = Properties.Resources.diablo_h;
+
+            uint cFonts;
+            AddFontMemResourceEx(data, data.Length, IntPtr.Zero, out cFonts);
+
+            var ptr = Marshal.AllocCoTaskMem(data.Length);
+            Marshal.Copy(data, 0, ptr, data.Length);
+            var pfc = new PrivateFontCollection();
+            pfc.AddMemoryFont(ptr, data.Length);
+            var ff = pfc.Families[0];
+            d2font = new Font(ff, 15f, FontStyle.Bold);
         }
 
         private void attachButton_Click(object sender, EventArgs e)

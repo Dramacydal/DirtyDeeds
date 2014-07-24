@@ -119,6 +119,26 @@ namespace Itchy
     }
 
     [StructLayout(LayoutKind.Explicit)]
+    struct PlayerData
+    {
+        [FieldOffset(0x0)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x10, ArraySubType = UnmanagedType.U1)]
+        public byte[] szName;
+        [FieldOffset(0x10)]
+        uint pNormalQuest;              // QuestInfo*
+        [FieldOffset(0x14)]
+        public uint pNightmareQuest;    // QuestInfo*
+        [FieldOffset(0x18)]
+        public uint pHellQuest;         // QuestInfo*
+        [FieldOffset(0x1C)]
+        public uint pNormalWaypoint;    // Waypoint*
+        [FieldOffset(0x20)]
+        public uint pNightmareWaypoint; // Waypoint*
+        [FieldOffset(0x24)]
+        public uint pHellWaypoint;      // Waypoint*
+    }
+
+    [StructLayout(LayoutKind.Explicit)]
     public struct Act
     {
         [FieldOffset(0x0)]

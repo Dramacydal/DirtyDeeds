@@ -62,9 +62,9 @@
             // 
             this.clientsComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.clientsComboBox.FormattingEnabled = true;
-            this.clientsComboBox.Location = new System.Drawing.Point(258, 12);
+            this.clientsComboBox.Location = new System.Drawing.Point(207, 12);
             this.clientsComboBox.Name = "clientsComboBox";
-            this.clientsComboBox.Size = new System.Drawing.Size(121, 21);
+            this.clientsComboBox.Size = new System.Drawing.Size(172, 21);
             this.clientsComboBox.TabIndex = 4;
             this.clientsComboBox.DropDown += new System.EventHandler(this.clientsComboBox_DropDown);
             // 
