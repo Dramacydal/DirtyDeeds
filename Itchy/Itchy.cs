@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Text;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -11,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.Xml.Serialization;
 using WhiteMagic;
 
 namespace Itchy
@@ -22,6 +24,10 @@ namespace Itchy
 
         [DllImport("user32.dll")]
         static extern IntPtr GetForegroundWindow();
+
+        public volatile GameSettings Settings = null;
+
+        public static string ConfigFileName = "Settings.xml";
 
         public Itchy()
         {
@@ -41,8 +47,46 @@ namespace Itchy
             _proc = new HookProc(HookCallback);
             hookId = SetHook(_proc);
 
-            var panel1 = new Form1();
-            panel1.Show();
+            LoadSettings();
+        }
+
+        protected void LoadSettings()
+        {
+            StreamReader s = null;
+            try
+            {
+                s = new StreamReader(ConfigFileName);
+                var x = new XmlSerializer(typeof(GameSettings));
+                Settings = (GameSettings)x.Deserialize(s);
+                s.Close();
+            }
+            catch (Exception)
+            {
+                if (s != null)
+                    s.Close();
+                Settings = new GameSettings();
+                SaveSettings();
+            }
+        }
+
+        public void SaveSettings()
+        {
+            if (Settings == null)
+                return;
+
+            StreamWriter s = null;
+            try
+            {
+                s = new StreamWriter(ConfigFileName);
+                var x = new XmlSerializer(typeof(GameSettings));
+                x.Serialize(s, Settings);
+                s.Close();
+            }
+            catch (Exception)
+            {
+                if (s != null)
+                    s.Close();
+            }
         }
 
         [DllImport("gdi32.dll", ExactSpelling = true)]
@@ -50,7 +94,7 @@ namespace Itchy
 
         public static Font d2font = null;
 
-        private void InstallFont()
+        protected void InstallFont()
         {
             var data = Properties.Resources.diablo_h;
 
@@ -85,6 +129,7 @@ namespace Itchy
 
         private void Itchy_FormClosing(object sender, FormClosingEventArgs e)
         {
+            SaveSettings();
             Hook.UnhookWindowsHookEx(hookId);
 
             foreach (var g in Games)

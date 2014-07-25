@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -10,9 +11,11 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using WhiteMagic;
 
+using System.Xml.Serialization;
+
 namespace Itchy
 {
-    public class D2Game
+    public partial class D2Game
     {
         public Process Process { get { return process; } }
         public ProcessDebugger Debugger { get { return pd; } }
@@ -21,14 +24,17 @@ namespace Itchy
         public OverlayWindow Overlay { get { return overlay; } }
         public Itchy Itchy { get { return itchy; } }
 
+        public GameSettings Settings { get { return Itchy.Settings; } }
+
         protected Process process = null;
         protected ProcessDebugger pd = null;
         protected Thread th = null;
         protected volatile OverlayWindow overlay = null;
         protected Itchy itchy;
 
-        protected List<uint> revealedLevels = new List<uint>();
+        protected List<uint> revealedActs = new List<uint>();
 
+        public D2Game() { }
         public D2Game(Process process, Itchy itchy)
         {
             this.process = process;
@@ -69,12 +75,12 @@ namespace Itchy
                 //pd.AddBreakPoint("d2common.dll", bp2);
 
                 // 0x6FAD33A7 0x233A7
-                //var bp = new LightBreakPoint(0x233A7, 1, HardwareBreakPoint.Condition.Code);
-                //pd.AddBreakPoint("d2client.dll", bp);
+                var bp = new LightBreakPoint(this, 0x233A7, 1, HardwareBreakPoint.Condition.Code);
+                pd.AddBreakPoint("d2client.dll", bp);
 
                 // 6FB332FF
-                var bp = new ReceivePacketBreakPoint(0x832FF, 1, HardwareBreakPoint.Condition.Code);
-                pd.AddBreakPoint("d2client.dll", bp);
+                var bp2 = new ReceivePacketBreakPoint(this, 0x832FF, 1, HardwareBreakPoint.Condition.Code);
+                pd.AddBreakPoint("d2client.dll", bp2);
             }
             catch (Exception)
             {
@@ -118,6 +124,14 @@ namespace Itchy
                 CallingConventionEx.StdCall);
         }
 
+        public uint GetUIVar(UIVars uiVar)
+        {
+            if (uiVar > UIVars.Max)
+                return 0;
+
+            return pd.MemoryHandler.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pUiVars + (uint)uiVar * 4);
+        }
+
         public bool GetPlayerUnit(out UnitAny unit)
         {
             var pUnit = GetPlayerUnit();
@@ -154,7 +168,7 @@ namespace Itchy
         public void PrintGameString(string str, D2Color color = D2Color.Default, bool suspend = false)
         {
             if (suspend)
-                SuspendProcess();
+                SuspendThreads();
             try
             {
                 var addr = pd.MemoryHandler.AllocateUTF16String(str);
@@ -169,225 +183,137 @@ namespace Itchy
             }
 
             if (suspend)
-                ResumeProcess();
+                ResumeThreads();
         }
 
         public void Test()
         {
-            /*var dt = DateTime.Now.Ticks;
-
-            SuspendProcess();
-            for (var i = 0; i < 500; ++i)
-            {
-                UnitAny u;
-                GetPlayerUnit(out u);
-            }
-            ResumeProcess();
-
-            MessageBox.Show(((DateTime.Now.Ticks - dt) / TimeSpan.TicksPerMillisecond).ToString());*/
-            //WinApi.BlockInput(true);
             RevealAct();
-            //WinApi.BlockInput(false);
-            //RevealLevel();
-            //OpenStash();
-            //OpenCube();
-            //SpeedTest();
         }
 
-        protected int[] m_ActLevels = new int[]
+        public void ResumeStormThread()
         {
-            1, 40, 75, 103, 109, 137
-        };
+            var hModule = WinApi.GetModuleHandle("kernel32.dll");
+            if (hModule == 0)
+                hModule = WinApi.LoadLibraryA("kernel32.dll");
+            if (hModule == 0)
+                throw new DebuggerException("Failed to get kernel32.dll module");
 
-        public void RevealAct()
-        {
-            UnitAny unit;
-            if (!GetPlayerUnit(out unit))
-            {
-                //MessageBox.Show("Failed to get player unit");
-                return;
-            }
+            var funcAddress = WinApi.GetProcAddress(hModule, "ResumeThread");
 
-            if (unit.pAct == 0)
-            {
-                //MessageBox.Show("Failed to get act");
-                return;
-            }
+            var handle = pd.MemoryHandler.ReadUInt(pd.GetModuleAddress("storm.dll") + Storm.pHandle);
 
-            var act = pd.MemoryHandler.Read<Act>(unit.pAct);
-            var expCharFlag = pd.MemoryHandler.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pExpCharFlag);
-            var diff = pd.MemoryHandler.Call(pd.GetModuleAddress("d2client.dll") + D2Client.GetDifficulty,
-                CallingConventionEx.StdCall);
-
-            var pAct = pd.MemoryHandler.Call(pd.GetModuleAddress("d2common.dll") + D2Common.LoadAct,
-                CallingConventionEx.StdCall,
-                unit.dwAct,
-                act.dwMapSeed,
-                expCharFlag,
-                0,
-                diff,
-                0,
-                (uint)m_ActLevels[unit.dwAct],
-                pd.GetModuleAddress("d2client.dll") + D2Client.LoadAct_1,
-                pd.GetModuleAddress("d2client.dll") + D2Client.LoadAct_2);
-
-            if (pAct == 0)
-            {
-                //MessageBox.Show("Failed to load act");
-                return;
-            }
-
-            act = pd.MemoryHandler.Read<Act>(pAct);
-            if (act.pMisc == 0)
-            {
-                //MessageBox.Show("Failed to get act misc");
-                return;
-            }
-
-            var actMisc = pd.MemoryHandler.Read<ActMisc>(act.pMisc);
-            if (actMisc.pLevelFirst == 0)
-            {
-                //MessageBox.Show("Failed to get act misc level first");
-                return;
-            }
-
-            for (var i = m_ActLevels[unit.dwAct]; i < m_ActLevels[unit.dwAct + 1]; ++i)
-            {
-                Level lvl = pd.MemoryHandler.Read<Level>(actMisc.pLevelFirst);
-                uint pLevel = 0;
-                for (pLevel = actMisc.pLevelFirst; pLevel != 0; pLevel = lvl.pNextLevel)
-                {
-                    if (pLevel != actMisc.pLevelFirst)
-                        lvl = pd.MemoryHandler.Read<Level>(pLevel);
-
-                    if (lvl.dwLevelNo == (uint)i && lvl.dwPosX > 0)
-                        break;
-                }
-
-                if (pLevel == 0)
-                    pLevel = pd.MemoryHandler.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetLevel,
-                        CallingConventionEx.FastCall,
-                        act.pMisc, (uint)i);
-                if (pLevel == 0)
-                    continue;
-
-                lvl = pd.MemoryHandler.Read<Level>(pLevel);
-                if (lvl.pRoom2First == 0)
-                    pd.MemoryHandler.Call(pd.GetModuleAddress("d2common.dll") + D2Common.InitLevel,
-                        CallingConventionEx.StdCall,
-                        pLevel);
-
-                if (lvl.dwLevelNo > 255)
-                    continue;
-
-                InitLayer(lvl.dwLevelNo);
-                lvl = pd.MemoryHandler.Read<Level>(pLevel);
-
-                for (var pRoom = lvl.pRoom2First; pRoom != 0; )
-                {
-                    var room = pd.MemoryHandler.Read<Room2>(pRoom);
-
-                    var actMisc2 = pd.MemoryHandler.Read<ActMisc>(lvl.pMisc);
-                    var roomData = false;
-                    if (room.pRoom1 == 0)
-                    {
-                        roomData = true;
-                        pd.MemoryHandler.Call(pd.GetModuleAddress("d2common.dll") + D2Common.AddRoomData,
-                            CallingConventionEx.ThisCall,
-                            0, actMisc2.pAct, lvl.dwLevelNo, room.dwPosX, room.dwPosY, room.pRoom1);
-                    }
-
-                    room = pd.MemoryHandler.Read<Room2>(pRoom);
-                    if (room.pRoom1 == 0)
-                        continue;
-
-                    var pAutomapLayer = pd.MemoryHandler.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pAutoMapLayer);
-
-                    pd.MemoryHandler.Call(pd.GetModuleAddress("d2client.dll") + D2Client.RevealAutomapRoom,
-                        CallingConventionEx.StdCall,
-                        room.pRoom1,
-                        1,
-                        pAutomapLayer);
-
-                    if (roomData)
-                        pd.MemoryHandler.Call(pd.GetModuleAddress("d2common.dll") + D2Common.RemoveRoomData,
-                            CallingConventionEx.StdCall,
-                            actMisc2.pAct, lvl.dwLevelNo, room.dwPosX, room.dwPosY, room.pRoom1);
-
-                    pRoom = room.pRoom2Next;
-                }
-            }
-
-            var path = pd.MemoryHandler.Read<Path>(unit.pPath);
-            var room1 = pd.MemoryHandler.Read<Room1>(path.pRoom1);
-            var room2 = pd.MemoryHandler.Read<Room2>(room1.pRoom2);
-            var lev = pd.MemoryHandler.Read<Level>(room2.pLevel);
-            InitLayer(lev.dwLevelNo);
-            pd.MemoryHandler.Call(pd.GetModuleAddress("d2common.dll") + D2Common.UnloadAct,
-                CallingConventionEx.StdCall,
-                pAct);
-
-            PrintGameString("Revealed act", D2Color.Red);
-
-            Log("Revealed act");
-
-            //ResumeProcess();
-        }
-
-        public void InitLayer(uint levelNo)
-        {
-            var pLayer = pd.MemoryHandler.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetLayer,
-                CallingConventionEx.FastCall,
-                levelNo);
-            if (pLayer == 0)
-                return;
-
-            var layer = pd.MemoryHandler.Read<AutomapLayer2>(pLayer);
-
-            pd.MemoryHandler.Call(pd.GetModuleAddress("d2client.dll") + D2Client.InitAutomapLayer_I,
-                CallingConventionEx.Register,
-                layer.nLayerNo);
+            pd.MemoryHandler.Call(pd.GetModuleAddress("kernel32.dll") + funcAddress - hModule, CallingConventionEx.StdCall, handle);
         }
 
         public void OpenStash()
         {
-            SuspendProcess();
+            SuspendThreads();
 
             var packet = new byte[] { 0x77, 0x10 };
             var addr = pd.MemoryHandler.AllocateBytes(packet);
             pd.MemoryHandler.Call(pd.GetModuleAddress("d2net.dll") + D2Net.ReceivePacket,
                 CallingConventionEx.StdCall,
                 addr, (uint)packet.Length);
-            ResumeProcess();
+            ResumeThreads();
         }
 
         public void OpenCube()
         {
-            SuspendProcess();
+            SuspendThreads();
 
             var packet = new byte[] { 0x77, 0x15 };
             var addr = pd.MemoryHandler.AllocateBytes(packet);
             pd.MemoryHandler.Call(pd.GetModuleAddress("d2net.dll") + D2Net.ReceivePacket,
                 CallingConventionEx.StdCall,
                 addr, (uint)packet.Length);
-            ResumeProcess();
+            ResumeThreads();
         }
 
-        private void SuspendProcess()
+        public void ExitGame()
         {
-            pd.MemoryHandler.SuspendAllThreads();
+            if (GetPlayerUnit() == 0)
+                return;
+
+            pd.MemoryHandler.Call(pd.GetModuleAddress("d2client.dll") + D2Client.ExitGame,
+                CallingConventionEx.FastCall);
         }
 
-        private void ResumeProcess()
+        private void SuspendThreads(params int[] except)
+        {
+            pd.MemoryHandler.SuspendAllThreads(except);
+        }
+
+        private void ResumeThreads()
         {
             pd.MemoryHandler.ResumeAllThreads();
         }
 
-        private void Log(string message)
+        public void Log(string message, params object[] args)
         {
+            message = string.Format(message, args);
+
             var time = DateTime.Now;
             var str = string.Format("[{0:D2}:{1:D2}:{2:D2}] ", time.Hour, time.Minute, time.Second);
             this.overlay.logTextBox.AppendLine(str + message, Color.Empty);
+        }
+
+        public void ExitedGame()
+        {
+        }
+
+        public void EnteredGame()
+        {
+            revealedActs.Clear();
+        }
+
+
+        enum MessageEvent : int
+        {
+            WM_KEYDOWN = 0x100,
+            WM_KEYUP = 0x101,
+            WM_HOTKEY = 0x312,
+        }
+
+        public bool HandleMessage(int code, IntPtr wParam, IntPtr lParam)
+        {
+            var mEvent = (MessageEvent)wParam.ToInt32();
+            var vkCode = (Keys)Marshal.ReadInt32(lParam);
+
+            //Console.WriteLine(mEvent.ToString() + " " + vkCode.ToString());
+            Log(mEvent.ToString() + " " + vkCode.ToString());
+
+            if (vkCode == Keys.LControlKey || vkCode == Keys.RControlKey)
+            {
+                if (mEvent == MessageEvent.WM_KEYUP && !overlay.ClickThrough)
+                        overlay.MakeNonInteractive(true);
+                    else if (mEvent == MessageEvent.WM_KEYDOWN && overlay.ClickThrough)
+                        overlay.MakeNonInteractive(false);
+            }
+
+            if (mEvent == MessageEvent.WM_KEYUP && GetUIVar(UIVars.ChatInput) == 0)
+            {
+                if (vkCode == Settings.FastExitKey)
+                {
+                    SuspendThreads();
+                    ExitGame();
+                    ResumeThreads();
+                }
+                if (vkCode == Settings.OpenCubeKey)
+                {
+                    OpenCube();
+                }
+                if (vkCode == Settings.OpenStashKey)
+                {
+                    OpenStash();
+                }
+                if (vkCode == Settings.RevealActKey)
+                {
+                    RevealAct();
+                }
+            }
+
+            return true;
         }
     }
 }

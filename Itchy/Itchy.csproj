@@ -69,6 +69,7 @@
     <Compile Include="Functions.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="GameSettings.cs" />
     <Compile Include="Hook.cs" />
     <Compile Include="Itchy.cs">
       <SubType>Form</SubType>
@@ -77,6 +78,7 @@
       <DependentUpon>Itchy.cs</DependentUpon>
     </Compile>
     <Compile Include="D2Pointers.cs" />
+    <Compile Include="Maphack.cs" />
     <Compile Include="Misc.cs" />
     <Compile Include="OverlayWindow.cs">
       <SubType>Form</SubType>

@@ -60,7 +60,7 @@ namespace Itchy
                 SetWindowLong(this.Handle, -20, initialStyle ^ 0x80000);*/
         }
 
-        private void MakeNonInteractive(bool on)
+        public void MakeNonInteractive(bool on)
         {
             if (ClickThrough == on)
                 return;
@@ -130,6 +130,8 @@ namespace Itchy
                 logTranslucentPanel.Show();
                 itchyLabel.Show();
                 logExpandButton.Show();
+
+                game.EnteredGame();
             }
             else
             {
@@ -137,17 +139,31 @@ namespace Itchy
                 logTranslucentPanel.Hide();
                 itchyLabel.Hide();
                 logExpandButton.Hide();
+
+                game.ExitedGame();
             }
+        }
+
+        private bool IsApplicationChildForm(IntPtr handle)
+        {
+            if (handle == game.Itchy.Handle)
+                return false;
+
+            foreach (Form form in Application.OpenForms)
+                if (form.Handle == handle)
+                    return true;
+
+            return false;
         }
 
         private void RelocateWindow()
         {
             var foreGroundWindow = GetForegroundWindow();
-            var newState = foreGroundWindow == this.game.Process.MainWindowHandle || foreGroundWindow == this.Handle;
+            var newState = foreGroundWindow == this.game.Process.MainWindowHandle;
             if (newState != this.TopMost)
                 this.TopMost = newState;
 
-            if (!this.TopMost)
+            if (!IsApplicationChildForm(foreGroundWindow) && !newState)
             {
                 if (this.Visible)
                     this.Hide();
@@ -200,31 +216,12 @@ namespace Itchy
 
             //translucentPanel1.Size = new Size(400, 40);
             //translucentPanel1.Location = new Point(115, rect.Height - translucentPanel1.Size.Height - 55);
-            itchyLabel.Font = Itchy.d2font;        }
-
-        enum MessageEvent : int
-        {
-            WM_KEYDOWN = 0x100,
-            WM_KEYUP = 0x101,
-            WM_HOTKEY = 0x312,
+            itchyLabel.Font = Itchy.d2font;
         }
 
         public bool HandleMessage(int code, IntPtr wParam, IntPtr lParam)
         {
-            var mEvent = (MessageEvent)wParam.ToInt32();
-            var vkCode = Marshal.ReadInt32(lParam);
-
-            Console.WriteLine(mEvent.ToString() + " " + vkCode.ToString());
-
-            if (vkCode == 162)  // Control
-            {
-                if (mEvent == MessageEvent.WM_KEYUP && !ClickThrough)
-                    MakeNonInteractive(true);
-                else if (mEvent == MessageEvent.WM_KEYDOWN && ClickThrough)
-                    MakeNonInteractive(false);
-            }
-
-            return true;
+            return game.HandleMessage(code, wParam, lParam);
         }
 
         private void OverlayWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -236,6 +233,12 @@ namespace Itchy
         {
             //var hb = new HatchBrush(HatchStyle.Percent90, this.TransparencyKey);
             //e.Graphics.FillRectangle(hb, this.DisplayRectangle);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            var form1 = new Form1();
+            form1.Show();
         }
     }
 }

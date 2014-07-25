@@ -9,9 +9,20 @@ using WhiteMagic;
 
 namespace Itchy
 {
-    class LightBreakPoint : HardwareBreakPoint
+    public class D2BreakPoint : HardwareBreakPoint
     {
-        public LightBreakPoint(int address, uint len, Condition condition) : base(address, len, condition) { }
+        public D2Game Game { get; set; }
+
+        public D2BreakPoint(D2Game game, int address, uint len, Condition condition)
+            : base(address, len, condition)
+        {
+            this.Game = game;
+        }
+    }
+
+    public class LightBreakPoint : D2BreakPoint
+    {
+        public LightBreakPoint(D2Game game, int address, uint len, Condition condition) : base(game, address, len, condition) { }
 
         public override bool HandleException(ref CONTEXT ctx, ProcessDebugger pd)
         {
@@ -22,9 +33,9 @@ namespace Itchy
         }
     }
 
-    class RainBreakPoint : HardwareBreakPoint
+    public class RainBreakPoint : D2BreakPoint
     {
-        public RainBreakPoint(int address, uint len, Condition condition) : base(address, len, condition) { }
+        public RainBreakPoint(D2Game game, int address, uint len, Condition condition) : base(game, address, len, condition) { }
 
         public override bool HandleException(ref CONTEXT ctx, ProcessDebugger pd)
         {
@@ -36,9 +47,9 @@ namespace Itchy
     }
 
     // 6FB332FF
-    class ReceivePacketBreakPoint : HardwareBreakPoint
+    public class ReceivePacketBreakPoint : D2BreakPoint
     {
-        public ReceivePacketBreakPoint(int address, uint len, Condition condition) : base(address, len, condition) { }
+        public ReceivePacketBreakPoint(D2Game game, int address, uint len, Condition condition) : base(game, address, len, condition) { }
 
         private static PlayerMode[] allowableModes = new PlayerMode[] {PlayerMode.Death, PlayerMode.Stand_OutTown,PlayerMode.Walk_OutTown,PlayerMode.Run,PlayerMode.Stand_InTown,PlayerMode.Walk_InTown,
                             PlayerMode.Dead,PlayerMode.Sequence,PlayerMode.Being_Knockback};

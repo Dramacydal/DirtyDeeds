@@ -30,6 +30,9 @@ namespace Itchy
         public static uint LoadAct_1 = 0x737F0; // asm
         public static uint LoadAct_2 = 0x2B420; // asm
         public static uint pPlayerUnit = 0x11D050;
+        public static uint ExitGame = 0x43870; // fastcall
+        public static uint GetUiVar_I = 0x17C50; // register (DWORD dwVarNo)
+        public static uint pUiVars = 0x6FBCC890 - 0x6FAB0000;
     }
 
     public static class D2Net
@@ -38,4 +41,10 @@ namespace Itchy
         public static uint SendPacket = 0x6F20; // stdcall (size_t aLen, DWORD arg1, BYTE* aPacket)
 
     }
+
+    public static class Storm
+    {
+        public static uint pHandle = 0x6FC42A50 - 0x6FBF0000;
+    }
+    
 }

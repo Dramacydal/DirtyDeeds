@@ -12,14 +12,6 @@ namespace ItchyControls
 {
     public partial class TranslucentPanel : Panel
     {
-        /*public enum BorderStyle
-        {
-            None=0,
-            Line=1,
-        }
-
-        public BorderStyle BorderStyle { get; set; }*/
-
         public TranslucentPanel()
         {
             InitializeComponent();
