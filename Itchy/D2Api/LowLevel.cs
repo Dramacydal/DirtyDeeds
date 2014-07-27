@@ -212,5 +212,14 @@ namespace Itchy
                 }
             }
         }
+
+        public void Interact(uint dwUnitId, UnitType unitType)
+        {
+            var packet = new List<byte>();
+            packet.Add(0x13);
+            packet.AddRange(BitConverter.GetBytes((uint)unitType));
+            packet.AddRange(BitConverter.GetBytes(dwUnitId));
+            SendPacket(packet.ToArray());
+        }
     }
 }

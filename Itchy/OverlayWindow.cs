@@ -219,11 +219,6 @@ namespace Itchy
             itchyLabel.Font = Itchy.d2font;
         }
 
-        public bool HandleMessage(int code, IntPtr wParam, IntPtr lParam)
-        {
-            return game.HandleMessage(code, wParam, lParam);
-        }
-
         private void OverlayWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
 

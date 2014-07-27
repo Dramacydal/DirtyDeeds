@@ -17,11 +17,34 @@ namespace Itchy
     }
 
     [Serializable]
+    public class KeySettings
+    {
+        public Keys Key = Keys.None;
+
+        public KeySettings() { }
+    }
+
+    [Serializable]
     public class PacketReceivedHackSettings : HackSettings
     {
         public bool BlockFlash = false;
         public bool FastTele = false;
         public bool FastPortal = false;
+    }
+
+    [Serializable]
+    public class FastPortalSettings : KeySettings
+    {
+        public bool GoToTown = false;
+    }
+
+    [Serializable]
+    public class ChickenSettings : HackSettings
+    {
+        public bool ChickenToTown = false;
+        public bool ChickenOnHostile = false;
+        public double ChickenLifePercent = 0.0f;
+        public double ChickenManaPercent = 0.0f;
     }
 
     [Serializable]
@@ -33,10 +56,11 @@ namespace Itchy
         public HackSettings WeatherHack = new HackSettings();
         public PacketReceivedHackSettings ReceivePacketHack = new PacketReceivedHackSettings();
 
-        public Keys RevealActKey = Keys.None;
-        public Keys OpenStashKey = Keys.None;
-        public Keys OpenCubeKey = Keys.None;
-        public Keys FastExitKey = Keys.None;
-        public Keys FastPortalKey = Keys.None;
+        public KeySettings RevealAct = new KeySettings();
+        public KeySettings OpenStash = new KeySettings();
+        public KeySettings OpenCube = new KeySettings();
+        public KeySettings FastExit = new KeySettings();
+        public FastPortalSettings FastPortal = new FastPortalSettings();
+        public ChickenSettings Chicken = new ChickenSettings();
     }
 }

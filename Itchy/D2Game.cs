@@ -33,6 +33,7 @@ namespace Itchy
         protected Itchy itchy;
 
         protected List<uint> revealedActs = new List<uint>();
+        public volatile bool backToTown = false;
 
         public D2Game() { }
         public D2Game(Process process, Itchy itchy)
@@ -120,8 +121,9 @@ namespace Itchy
 
         public uint GetPlayerUnit()
         {
-            return pd.MemoryHandler.Call(pd.GetModuleAddress("d2client.dll") + D2Client.GetPlayerUnit,
-                CallingConventionEx.StdCall);
+            /*return pd.MemoryHandler.Call(pd.GetModuleAddress("d2client.dll") + D2Client.GetPlayerUnit,
+                CallingConventionEx.StdCall);*/
+            return pd.MemoryHandler.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pPlayerUnit);
         }
 
         public uint GetUIVar(UIVars uiVar)
@@ -253,15 +255,18 @@ namespace Itchy
 
         public void Log(string message, params object[] args)
         {
-            message = string.Format(message, args);
+            this.overlay.logTextBox.LogLine(message, Color.Empty, args);
+        }
 
-            var time = DateTime.Now;
-            var str = string.Format("[{0:D2}:{1:D2}:{2:D2}] ", time.Hour, time.Minute, time.Second);
-            this.overlay.logTextBox.AppendLine(str + message, Color.Empty);
+        public void LogWarning(string message, params object[] args)
+        {
+            this.overlay.logTextBox.LogLine(message, Color.OrangeRed, args);
         }
 
         public void ExitedGame()
         {
+            chickening = false;
+            backToTown = false;
         }
 
         public void EnteredGame()
@@ -295,28 +300,29 @@ namespace Itchy
 
             if (mEvent == MessageEvent.WM_KEYUP && GetUIVar(UIVars.ChatInput) == 0)
             {
-                if (vkCode == Settings.FastExitKey)
+                if (vkCode == Settings.FastExit.Key)
                 {
                     SuspendThreads();
                     ExitGame();
                     ResumeThreads();
                 }
-                if (vkCode == Settings.OpenCubeKey)
+                if (vkCode == Settings.OpenCube.Key)
                 {
                     OpenCube();
                 }
-                if (vkCode == Settings.OpenStashKey)
+                if (vkCode == Settings.OpenStash.Key)
                 {
                     OpenStash();
                 }
-                if (vkCode == Settings.RevealActKey)
+                if (vkCode == Settings.RevealAct.Key)
                 {
                     RevealAct();
                 }
-                if (vkCode == Settings.FastPortalKey)
+                if (vkCode == Settings.FastPortal.Key)
                 {
                     SuspendThreads();
-                    OpenPortal();
+                    if (OpenPortal())
+                        backToTown = true;
                     ResumeThreads();
                 }
             }

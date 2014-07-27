@@ -110,7 +110,10 @@ namespace Itchy
             bool isBook = false;
             var pItem = FindItem("tbk", StorageType.Inventory);
             if (pItem == 0 || GetUnitStat(pItem, Stat.AmmoQuantity) == 0)
+            {
+                if (pItem != 0)
                 pItem = FindItem("tsc", StorageType.Inventory);
+            }
             else
                 isBook = true;
 
@@ -121,6 +124,15 @@ namespace Itchy
             {
                 Log("Failed to find any town portal scrolls or books");
                 return false;
+            }
+
+            if (isBook)
+            {
+                var cnt = GetUnitStat(pItem, Stat.AmmoQuantity);
+                if (cnt <= 5)
+                {
+                    LogWarning("Warning: {0} TP's left", cnt - 1);
+                }
             }
 
             UseItem(pItem);

@@ -109,11 +109,35 @@ namespace Itchy
                     }
                     break;
                 }
+                case 0x18:
+                case 0x95:
+                {
+                    var life = BitConverter.ToUInt16(packet, 1);
+                    var mana = BitConverter.ToUInt16(packet, 3);
+                    if (Game.Settings.Chicken.Enabled && !Game.chickening)
+                        Task.Factory.StartNew(() => Game.Chickener(false));
+                    break;
+                }
                 case 0x51:
                 {
-                    // no portal anim #2
-                    if (Game.Settings.ReceivePacketHack.FastPortal && (UnitType)packet[1] == UnitType.Object && BitConverter.ToUInt16(packet, 6) == 0x3B)
-                        pd.MemoryHandler.WriteByte(pPacket + 12, 2);
+                    if ((UnitType)packet[1] == UnitType.Object && BitConverter.ToUInt16(packet, 6) == 0x3B)
+                    {
+                        // no portal anim #2
+                        if (Game.Settings.ReceivePacketHack.FastPortal)
+                            pd.MemoryHandler.WriteByte(pPacket + 12, 2);
+
+                        UnitAny unit;
+                        if (Game.backToTown && Game.GetPlayerUnit(out unit))
+                        {
+                            if (!Game.IsInTown())
+                            {
+                                var path = pd.MemoryHandler.Read<Path>(unit.pPath);
+                                if (Misc.Distance(path.xPos, path.yPos, BitConverter.ToUInt16(packet, 8), BitConverter.ToUInt16(packet, 10)) < 10)
+                                    Task.Factory.StartNew(() => Game.Interact(BitConverter.ToUInt32(packet, 2), UnitType.Object));
+                            }
+                            Game.backToTown = false;
+                        }
+                    }
                     break;
                 }
                 case 0xA7:

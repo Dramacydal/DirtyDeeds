@@ -129,6 +129,8 @@ namespace Itchy
         Energy = 1, // = energy
         Dexterity = 2, // = dexterity
         Vitality = 3, // = vitality
+        Health = 6,
+        MaxHealth = 7,
         Mana = 8, // = mana
         MaxMana = 9, // = max = mana
         Stamina = 10, // = stamina

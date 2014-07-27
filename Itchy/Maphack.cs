@@ -29,14 +29,14 @@ namespace Itchy
             if (revealedActs.Contains(unit.dwAct))
             {
                 ResumeThreads();
-                Log("Act is already revealed");
+                Log("Act {0} is already revealed", unit.dwAct + 1);
                 return;
             }
 
             if (unit.pAct == 0)
             {
                 ResumeThreads();
-                Log("Failed to reveal act");
+                Log("Failed to reveal act {0}", unit.dwAct + 1);
                 return;
             }
 

@@ -188,10 +188,11 @@ namespace Itchy
                     if (g.Overlay == null)
                         continue;
 
-                    if (!g.Overlay.TopMost && GetForegroundWindow() != g.Process.MainWindowHandle)
+                    var foregroundWindow = GetForegroundWindow();
+                    if (foregroundWindow != g.Process.MainWindowHandle && foregroundWindow != g.Overlay.Handle)
                         continue;
 
-                    if (!g.Overlay.HandleMessage(code, wParam, lParam))
+                    if (!g.HandleMessage(code, wParam, lParam))
                         return 1;   // block
                 }
             }
