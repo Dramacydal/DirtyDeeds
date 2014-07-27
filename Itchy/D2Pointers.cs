@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Itchy
 {
-    public static class D2Common
+    public static class D2Common    // 0x6FD50000
     {
         public static uint GetLevel = 0x6D440;  // fastcall (ActMisc *pMisc, DWORD dwLevelNo)
         public static uint InitLevel = 0x6DDF0; // stdcall (Level *pLevel)
@@ -16,9 +16,13 @@ namespace Itchy
         public static uint RemoveRoomData = 0x24930;    // stdcall (Act* ptAct, int LevelId, int Xpos, int Ypos, Room1* pRoom)
         public static uint LoadAct = 0x24810;   // stdcall (DWORD ActNumber, DWORD MapId, DWORD Unk, DWORD Unk_2, DWORD Unk_3, DWORD Unk_4, DWORD TownLevelId, DWORD Func_1, DWORD Func_2)
         public static uint UnloadAct = 0x24590; // stdcall
+        public static uint GetItemText = 0x62C70; // ItemTxt *__stdcall, (DWORD dwItemNo)
+        public static uint pItemTextData = 0x6FDF4CB4 - 0x6FD50000;
+        public static uint pMaxItemText = 0x6FDF4CB0 - 0x6FD50000;
+        public static uint GetUnitStat = 0x584E0; // __stdcall, (UnitAny* pUnit, DWORD dwStat, DWORD dwStat2)
     }
 
-    public static class D2Client
+    public static class D2Client    // 0x6FAB0000
     {
         public static uint GetPlayerUnit = 0x613C0; // stdcall ()
         public static uint InitAutomapLayer_I = 0x733D0; // register (DWORD nLayerNo)
@@ -33,6 +37,8 @@ namespace Itchy
         public static uint ExitGame = 0x43870; // fastcall
         public static uint GetUiVar_I = 0x17C50; // register (DWORD dwVarNo)
         public static uint pUiVars = 0x6FBCC890 - 0x6FAB0000;
+        public static uint pServerUnitTable = 0x1047B8;
+        public static uint pClientUnitTable = 0x103BB8;
     }
 
     public static class D2Net

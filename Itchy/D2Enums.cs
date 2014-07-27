@@ -104,4 +104,54 @@ namespace Itchy
 
         Max = QuestScroll,
     }
+
+    public enum StorageType : uint
+    {
+        Inventory = 0,
+        Equip = 1,
+        Trade = 2,
+        Cube = 3,
+        Stash = 4,
+        Belt = 5,
+        Null = 255,
+    }
+
+    public enum Nodepage : uint
+    {
+        Storage = 1,
+        BeltSlots = 2,
+        Equip = 3
+    }
+
+    public enum Stat : uint
+    {
+        Strength = 0, // = str
+        Energy = 1, // = energy
+        Dexterity = 2, // = dexterity
+        Vitality = 3, // = vitality
+        Mana = 8, // = mana
+        MaxMana = 9, // = max = mana
+        Stamina = 10, // = stamina
+        MaxStamina = 11, // = max = stamina
+        Exp = 13, // = experience
+        GgoldBank= 15, // = stash = gold
+        ToBlock = 20, // = to = block
+        MaxMagicResist = 38, // = max = magic = resist
+        MaxFireResist = 40, // = max = fire = resist
+        MaxLightningResist = 42, // = max = lightning = resist
+        MaxColdResist = 44, // = max = cold = resist
+        MaxPoisonResist = 46, // = max = poison = resist
+        VelocityPercent = 67, // = effective = run/walk
+        AmmoQuantity = 70, // = ammo = quantity(arrow/bolt/throwing)
+        Durability = 72, // = item = durability
+        MaxDurability = 73, // = max = item = durability
+        PoisonLengthReduction = 110, // = Poison = length = reduction
+        OpenWounds = 135, // = Open = Wounds
+        DeadlyStrike = 141, // = deadly = strike
+        FireAbsorbPercent = 142, // = fire = absorb = %
+        LightningAbsorbPercent = 144, // = lightning = absorb = %
+        ColdAbsorbPercent = 148, // = cold = absorb = %
+        ColdAbsorb = 149, // = cold = absorb
+        Slow = 150, // = slow = %
+    }
 }

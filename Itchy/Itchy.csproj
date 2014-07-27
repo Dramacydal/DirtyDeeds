@@ -54,6 +54,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Breakpoints.cs" />
+    <Compile Include="D2Api\D2Api.cs" />
+    <Compile Include="D2Api\LowLevel.cs" />
     <Compile Include="D2Game.cs" />
     <Compile Include="D2Enums.cs" />
     <Compile Include="Controls\ExpandButton.cs">

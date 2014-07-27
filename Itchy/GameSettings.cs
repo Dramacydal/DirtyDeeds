@@ -37,5 +37,6 @@ namespace Itchy
         public Keys OpenStashKey = Keys.None;
         public Keys OpenCubeKey = Keys.None;
         public Keys FastExitKey = Keys.None;
+        public Keys FastPortalKey = Keys.None;
     }
 }

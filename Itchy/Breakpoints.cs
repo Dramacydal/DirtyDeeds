@@ -69,25 +69,39 @@ namespace Itchy
             {
                 case 0xE:
                 {
+                    if (!Game.Settings.ReceivePacketHack.FastPortal)
+                        break;
+
+                    // no portal anim #1
+                    var pUnit = Game.FindUnit(BitConverter.ToUInt32(packet, 2), (UnitType)packet[1]);
+                    if (pUnit != 0)
+                    {
+                        var unit = pd.MemoryHandler.Read<UnitAny>(pUnit);
+                        if (unit.dwTxtFileNo == 0x3B)
+                            skip = true;
+                    }
+
                     break;
                 }
                 case 0x15:
                 {
-                    /*var pPlayer = pd.MemoryHandler.Call(pd.GetModuleAddress("d2client.dll") + D2Client.GetPlayerUnit,
-                        CallingConventionEx.StdCall);
-                    var unit = pd.MemoryHandler.Read<UnitAny>(pPlayer);*/
+                    if (!Game.Settings.ReceivePacketHack.BlockFlash &&
+                        !Game.Settings.ReceivePacketHack.FastTele)
+                        break;
                     
                     var pPlayer = pd.MemoryHandler.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pPlayerUnit);
                     if (pPlayer == 0)
                         break;
+
                     var unit = pd.MemoryHandler.Read<UnitAny>(pPlayer);
                     if (BitConverter.ToUInt32(packet, 2) == unit.dwUnitId)
                     {
                         // no flash
-                        pd.MemoryHandler.WriteByte(pPacket + 10, 0);
+                        if (Game.Settings.ReceivePacketHack.BlockFlash)
+                            pd.MemoryHandler.WriteByte(pPacket + 10, 0);
 
-                        // fast tele
-                        if (!allowableModes.Contains((PlayerMode)unit.dwMode))
+                        // fast teleport
+                        if (Game.Settings.ReceivePacketHack.FastTele && !allowableModes.Contains((PlayerMode)unit.dwMode))
                         {
                             unit.dwFrameRemain = 0;
                             pd.MemoryHandler.Write<UnitAny>(pPlayer, unit);
@@ -97,15 +111,15 @@ namespace Itchy
                 }
                 case 0x51:
                 {
-                    // fast portal
-                    if ((UnitType)packet[1] == UnitType.Object && BitConverter.ToUInt16(packet, 6) == 0x3B)
+                    // no portal anim #2
+                    if (Game.Settings.ReceivePacketHack.FastPortal && (UnitType)packet[1] == UnitType.Object && BitConverter.ToUInt16(packet, 6) == 0x3B)
                         pd.MemoryHandler.WriteByte(pPacket + 12, 2);
                     break;
                 }
                 case 0xA7:
                 {
-                    // portal delay
-                    if (packet[6] == 102)
+                    // skip delay between entering portals
+                    if (Game.Settings.ReceivePacketHack.FastPortal && packet[6] == 102)
                         skip = true;
                     break;
                 }

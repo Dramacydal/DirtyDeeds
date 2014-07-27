@@ -37,12 +37,12 @@
             this.optionsTranslucentPanel = new ItchyControls.TranslucentPanel();
             this.optionsTabControl = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.propertiesExpandButton = new ItchyControls.ExpandButton();
             this.logExpandButton = new ItchyControls.ExpandButton();
             this.logTranslucentPanel = new ItchyControls.TranslucentPanel();
             this.logTextBox = new ItchyControls.TransparentRichTextBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.optionsTranslucentPanel.SuspendLayout();
             this.optionsTabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -101,6 +101,16 @@
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(20, 28);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(80, 17);
+            this.checkBox1.TabIndex = 0;
+            this.checkBox1.Text = "checkBox1";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
             // tabPage2
             // 
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
@@ -114,13 +124,13 @@
             // propertiesExpandButton
             // 
             this.propertiesExpandButton.ChildPanel = this.optionsTranslucentPanel;
-            this.propertiesExpandButton.Expanded = true;
+            this.propertiesExpandButton.Expanded = false;
             this.propertiesExpandButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.propertiesExpandButton.Location = new System.Drawing.Point(2, 24);
             this.propertiesExpandButton.Name = "propertiesExpandButton";
             this.propertiesExpandButton.Size = new System.Drawing.Size(18, 16);
             this.propertiesExpandButton.TabIndex = 5;
-            this.propertiesExpandButton.Text = " \\/";
+            this.propertiesExpandButton.Text = " /\\";
             this.propertiesExpandButton.UseVisualStyleBackColor = true;
             // 
             // logExpandButton
@@ -162,16 +172,6 @@
             this.logTextBox.TabIndex = 1;
             this.logTextBox.Text = "";
             this.logTextBox.WordWrap = false;
-            // 
-            // checkBox1
-            // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(20, 28);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(80, 17);
-            this.checkBox1.TabIndex = 0;
-            this.checkBox1.Text = "checkBox1";
-            this.checkBox1.UseVisualStyleBackColor = true;
             // 
             // OverlayWindow
             // 

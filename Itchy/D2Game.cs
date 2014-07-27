@@ -188,7 +188,13 @@ namespace Itchy
 
         public void Test()
         {
-            RevealAct();
+            //RevealAct();
+
+            UnitAny unit;
+            if (!GetPlayerUnit(out unit))
+                return;
+
+            OpenPortal();
         }
 
         public void ResumeStormThread()
@@ -211,10 +217,8 @@ namespace Itchy
             SuspendThreads();
 
             var packet = new byte[] { 0x77, 0x10 };
-            var addr = pd.MemoryHandler.AllocateBytes(packet);
-            pd.MemoryHandler.Call(pd.GetModuleAddress("d2net.dll") + D2Net.ReceivePacket,
-                CallingConventionEx.StdCall,
-                addr, (uint)packet.Length);
+            ReceivePacket(packet);
+
             ResumeThreads();
         }
 
@@ -223,10 +227,8 @@ namespace Itchy
             SuspendThreads();
 
             var packet = new byte[] { 0x77, 0x15 };
-            var addr = pd.MemoryHandler.AllocateBytes(packet);
-            pd.MemoryHandler.Call(pd.GetModuleAddress("d2net.dll") + D2Net.ReceivePacket,
-                CallingConventionEx.StdCall,
-                addr, (uint)packet.Length);
+            ReceivePacket(packet);
+
             ResumeThreads();
         }
 
@@ -310,6 +312,12 @@ namespace Itchy
                 if (vkCode == Settings.RevealActKey)
                 {
                     RevealAct();
+                }
+                if (vkCode == Settings.FastPortalKey)
+                {
+                    SuspendThreads();
+                    OpenPortal();
+                    ResumeThreads();
                 }
             }
 
