@@ -144,16 +144,16 @@ namespace Itchy
             return GetItemLocation(item);
         }
 
-        public uint GetItemText(uint dwItemNo)
+        public uint GetItemText(uint dwTxtFileNo)
         {
-            if (dwItemNo > pd.MemoryHandler.ReadUInt(pd.GetModuleAddress("d2common.dll") + D2Common.pMaxItemText))
+            if (dwTxtFileNo >= pd.MemoryHandler.ReadUInt(pd.GetModuleAddress("d2common.dll") + D2Common.pMaxItemText))
                 return 0;
 
             var pData = pd.MemoryHandler.ReadUInt(pd.GetModuleAddress("d2common.dll") + D2Common.pItemTextData);
             if (pData == 0)
                 return 0;
 
-            return pData + 424 * dwItemNo;
+            return pData + 424 * dwTxtFileNo;
         }
 
         public void ReceivePacket(byte[] packet)
@@ -221,5 +221,16 @@ namespace Itchy
             packet.AddRange(BitConverter.GetBytes(dwUnitId));
             SendPacket(packet.ToArray());
         }
+
+        /*public uint llGetUnitStat(uint pUnit, Stat stat)
+        {
+            if (pUnit == 0)
+                return 0;
+
+            if (pd.MemoryHandler.ReadUInt(pUnit + 92) != 0)
+            {
+                var pTables = pd.GetModuleAddress("d2common.dll") + D2Common.sgptDataTables;
+            }
+        }*/
     }
 }

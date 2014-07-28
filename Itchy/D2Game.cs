@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -34,6 +35,9 @@ namespace Itchy
 
         protected List<uint> revealedActs = new List<uint>();
         public volatile bool backToTown = false;
+
+        public volatile ConcurrentDictionary<uint, uint> socketsPerItem = new ConcurrentDictionary<uint, uint>();
+        public volatile ConcurrentDictionary<uint, uint> pricePerItem = new ConcurrentDictionary<uint, uint>();
 
         public D2Game() { }
         public D2Game(Process process, Itchy itchy)
@@ -82,6 +86,9 @@ namespace Itchy
                 // 6FB332FF
                 var bp2 = new ReceivePacketBreakPoint(this, 0x832FF, 1, HardwareBreakPoint.Condition.Code);
                 pd.AddBreakPoint("d2client.dll", bp2);
+
+                var bp3 = new ItemNameBreakPoint(this, 0x96736, 1, HardwareBreakPoint.Condition.Code);
+                pd.AddBreakPoint("d2client.dll", bp3);
             }
             catch (Exception)
             {
@@ -267,13 +274,14 @@ namespace Itchy
         {
             chickening = false;
             backToTown = false;
+            pricePerItem.Clear();
+            socketsPerItem.Clear();
         }
 
         public void EnteredGame()
         {
             revealedActs.Clear();
         }
-
 
         enum MessageEvent : int
         {

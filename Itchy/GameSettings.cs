@@ -48,6 +48,17 @@ namespace Itchy
     }
 
     [Serializable]
+    public class ItemNameSettings : HackSettings
+    {
+        public bool ShowEth = false;
+        public bool ShowItemLevel = false;
+        public bool ShowItemPrice = false;
+        public bool ShowRuneNumber = false;
+        public bool ShowSockets = false;
+        
+    }
+
+    [Serializable]
     public class GameSettings
     {
         public GameSettings() { }
@@ -62,5 +73,6 @@ namespace Itchy
         public KeySettings FastExit = new KeySettings();
         public FastPortalSettings FastPortal = new FastPortalSettings();
         public ChickenSettings Chicken = new ChickenSettings();
+        public ItemNameSettings ItemName = new ItemNameSettings();
     }
 }

@@ -155,5 +155,6 @@ namespace Itchy
         ColdAbsorbPercent = 148, // = cold = absorb = %
         ColdAbsorb = 149, // = cold = absorb
         Slow = 150, // = slow = %
+        Sockets = 194,
     }
 }

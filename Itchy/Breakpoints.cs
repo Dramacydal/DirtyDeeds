@@ -112,10 +112,12 @@ namespace Itchy
                 case 0x18:
                 case 0x95:
                 {
+                    if (!Game.Settings.Chicken.Enabled || Game.chickening)
+                        break;
+
                     var life = BitConverter.ToUInt16(packet, 1);
                     var mana = BitConverter.ToUInt16(packet, 3);
-                    if (Game.Settings.Chicken.Enabled && !Game.chickening)
-                        Task.Factory.StartNew(() => Game.Chickener(false));
+                    Task.Factory.StartNew(() => Game.ChickenTask(life, mana, false));
                     break;
                 }
                 case 0x51:
@@ -140,6 +142,29 @@ namespace Itchy
                     }
                     break;
                 }
+                case 0x5A:  // event message
+                {
+                    var mode = packet[1];
+                    if (mode == 0x7)    // player relation
+                    {
+                        if (!Game.Settings.Chicken.Enabled || Game.chickening)
+                            break;
+
+                        var dwUnitId = BitConverter.ToUInt32(packet, 3);
+                        var pRosterUnit = pd.MemoryHandler.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pPlayerUnitList);
+                        for (; pRosterUnit != 0; )
+                        {
+                            var rUnit = pd.MemoryHandler.Read<RosterUnit>(pRosterUnit);
+                            if (rUnit.dwUnitId == dwUnitId)
+                            {
+                                Task.Factory.StartNew(() => Game.ChickenTask(0, 0, true));
+                                break;
+                            }
+                            pRosterUnit = rUnit.pNext;
+                        }
+                    }
+                    break;
+                }
                 case 0xA7:
                 {
                     // skip delay between entering portals
@@ -160,6 +185,104 @@ namespace Itchy
                 ctx.Eip += 7;
                 ctx.Eax = 0;
             }
+
+            return true;
+        }
+    }
+
+    // 1.12 0xAC236 6FB5C236
+    // 1.13d 0x96736 6FB46736
+    public class ItemNameBreakPoint : D2BreakPoint
+    {
+        public ItemNameBreakPoint(D2Game game, int address, uint len, Condition condition) : base(game, address, len, condition) { }
+
+        public override bool HandleException(ref CONTEXT ctx, ProcessDebugger pd)
+        {
+            ctx.Eax = (ctx.Eax & 0xFFFFFF00) | pd.MemoryHandler.ReadByte(ctx.Ebp + 0x12A);
+            ctx.Eip += 6;
+
+            var pString = ctx.Edi;
+            var pItem = ctx.Ebx;
+            var str = pd.MemoryHandler.ReadUTF16String(pString);
+            //"ÿc";
+            //str = "ÿc1" + str;
+            
+
+            var item = pd.MemoryHandler.Read<UnitAny>(pItem);
+            var itemData = pd.MemoryHandler.Read<ItemData>(item.pItemData);
+
+            var pTxt = Game.GetItemText(item.dwTxtFileNo);
+            var txt = pd.MemoryHandler.Read<ItemTxt>(pTxt);
+            var dwCode = txt.GetDwCode();
+            var code = txt.GetCode();
+
+            bool changed = false;
+
+            if (Game.Settings.ItemName.ShowEth && (itemData.dwFlags & 0x400000) != 0)
+            {
+                if (!changed)
+                    str += " ";
+                str += "{E}";
+                changed = true;
+            }
+
+            var runeNumber = item.RuneNumber();
+            if (runeNumber > 0 && Game.Settings.ItemName.ShowRuneNumber)
+            {
+                if (!changed)
+                    str += " ";
+                str += "(" + runeNumber + ")";
+                changed = true;
+            }
+
+            if (Game.Settings.ItemName.ShowSockets)
+            {
+                uint cnt = uint.MaxValue;
+                {
+                    if (Game.socketsPerItem.ContainsKey(item.dwUnitId))
+                        cnt = Game.socketsPerItem[item.dwUnitId];
+                }
+
+                if (cnt > 0 && cnt != uint.MaxValue)
+                {
+                    if (!changed)
+                        str += " ";
+                    str += "(" + cnt + ")";
+                    changed = true;
+                }
+                else if (cnt != 0)
+                    Task.Factory.StartNew(() => Game.FillItemSockets(pItem));
+            }
+
+            if (Game.Settings.ItemName.ShowItemLevel && itemData.dwItemLevel > 1)
+            {
+                if (!changed)
+                    str += " ";
+                str += "(L" + itemData.dwItemLevel + ")";
+                changed = true;
+            }
+
+            if (Game.Settings.ItemName.ShowItemPrice)
+            {
+                uint price = uint.MaxValue;
+                {
+                    if (Game.pricePerItem.ContainsKey(item.dwUnitId))
+                        price = Game.pricePerItem[item.dwUnitId];
+                }
+
+                if (price > 0 && price != uint.MaxValue)
+                {
+                    if (!changed)
+                        str += " ";
+                    str += "($" + price + ")";
+                    changed = true;
+                }
+                else if (price != 0)
+                    Task.Factory.StartNew(() => Game.FillItemPrice(pItem));
+            }
+
+            if (changed)
+                pd.MemoryHandler.WriteUTF16String(pString, str);
 
             return true;
         }

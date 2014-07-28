@@ -44,8 +44,7 @@ namespace Itchy
 
             var act = pd.MemoryHandler.Read<Act>(unit.pAct);
             var expCharFlag = pd.MemoryHandler.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pExpCharFlag);
-            var diff = pd.MemoryHandler.Call(pd.GetModuleAddress("d2client.dll") + D2Client.GetDifficulty,
-                CallingConventionEx.StdCall);
+            var diff = pd.MemoryHandler.ReadByte(pd.GetModuleAddress("d2client.dll") + D2Client.pDifficulty);
 
             var pAct = pd.MemoryHandler.Call(pd.GetModuleAddress("d2common.dll") + D2Common.LoadAct,
                 CallingConventionEx.StdCall,

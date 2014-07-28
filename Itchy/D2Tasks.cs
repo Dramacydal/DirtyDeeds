@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using WhiteMagic;
 
 namespace Itchy
 {
@@ -11,7 +12,7 @@ namespace Itchy
     {
         public volatile bool chickening;
 
-        public void Chickener(bool hostile)
+        public void ChickenTask(ushort hp, ushort mana, bool hostile)
         {
             if (chickening)
                 return;
@@ -32,24 +33,36 @@ namespace Itchy
             }
             else
             {
-                var unit = GetPlayerUnit();
-                var life = GetUnitStat(unit, Stat.Health);
-                var maxLife = GetUnitStat(unit, Stat.MaxHealth);
-                life >>= 8;
-                maxLife >>= 8;
+                if ((hp & 0x8000) != 0)
+                    hp ^= 0x8000;
+                if ((mana & 0x8000) != 0)
+                    mana ^= 0x8000;
+                mana <<= 1;
 
-                var hppct = life * 100f / maxLife;
-                if (hppct > Settings.Chicken.ChickenLifePercent)
+                var unit = GetPlayerUnit();
+                var maxLife = GetUnitStat(unit, Stat.MaxHealth);
+                var maxMana = GetUnitStat(unit, Stat.MaxMana);
+                maxLife >>= 8;
+                maxMana >>= 8;
+
+                // dead case
+                if (hp == 0)
                     return;
 
-                try
+                var hpPct = hp * 100f / maxLife;
+                var manaPct = mana * 100f / maxMana;
+                if (hpPct < Settings.Chicken.ChickenLifePercent)
                 {
                     if (Settings.Chicken.ChickenToTown)
-                        LogWarning("Chickening to town at {0:0.00}% health", hppct);
+                        LogWarning("Chickening to town at {0:0.00}% health", hpPct);
                 }
-                catch (Exception e)
+                else if (manaPct < Settings.Chicken.ChickenManaPercent)
                 {
+                    if (Settings.Chicken.ChickenToTown)
+                        LogWarning("Chickening to town at {0:0.00}% mana", manaPct);
                 }
+                else
+                    return;
             }
 
             chickening = true;
@@ -81,6 +94,39 @@ namespace Itchy
             }
 
             chickening = false;
+        }
+
+        public void FillItemSockets(uint pItem)
+        {
+            //lock ("sockLock")
+            {
+                var item = pd.MemoryHandler.Read<UnitAny>(pItem);
+                socketsPerItem[item.dwUnitId] = GetUnitStat(pItem, Stat.Sockets);
+            }
+        }
+
+        public void FillItemPrice(uint pItem)
+        {
+            SuspendThreads();
+
+            try
+            {
+                var item = pd.MemoryHandler.Read<UnitAny>(pItem);
+                var pUnit = GetPlayerUnit();
+                var diff = pd.MemoryHandler.ReadByte(pd.GetModuleAddress("d2client.dll") + D2Client.pDifficulty);
+                var pItemPriceList = pd.MemoryHandler.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pItemPriceList);
+
+                var val = pd.MemoryHandler.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetItemPrice,
+                    CallingConventionEx.StdCall,
+                    pUnit, pItem, (uint)diff, pItemPriceList, 0x9A, 1);
+
+                pricePerItem[item.dwUnitId] = val;
+            }
+            catch (Exception)
+            {
+            }
+
+            ResumeThreads();
         }
     }
 }

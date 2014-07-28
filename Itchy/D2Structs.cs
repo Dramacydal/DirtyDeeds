@@ -116,6 +116,22 @@ namespace Itchy
         public uint pListNext;          // UnitAny* 0xE4 -> 0xD8
         [FieldOffset(0xE8)]
         public uint pRoomNext;          // UnitAny*
+
+        public bool IsRune()
+        {
+            if ((UnitType)dwType != UnitType.Item)
+                return false;
+
+            return dwTxtFileNo >= 610 && dwTxtFileNo <= 642;
+        }
+
+        public uint RuneNumber()
+        {
+            if (!IsRune())
+                return 0;
+
+            return dwTxtFileNo - 610 + 1;
+        }
     }
 
     [StructLayout(LayoutKind.Explicit)]
@@ -244,6 +260,8 @@ namespace Itchy
     [StructLayout(LayoutKind.Explicit)]
     public struct ItemData
     {
+        [FieldOffset(0x18)]
+        public uint dwFlags;
         [FieldOffset(0x2C)]
         public uint dwItemLevel;
         [FieldOffset(0x44)]
@@ -254,8 +272,8 @@ namespace Itchy
         public byte NodePage;
         [FieldOffset(0x70)]
         public uint pNextInvItem;
-        [FieldOffset(0x104)]
-        public uint pOwner;
+        //[FieldOffset(0x104)]
+        //public uint pOwner;
     }
 
 
@@ -307,6 +325,11 @@ namespace Itchy
         public string GetCode()
         {
             return Encoding.ASCII.GetString(szCode).Replace(" ", "");
+        }
+
+        public uint GetDwCode()
+        {
+            return BitConverter.ToUInt32(szCode, 0) & 0xFFF;
         }
     }
 
@@ -581,5 +604,32 @@ namespace Itchy
         public uint dwTargetId;
         [FieldOffset(0x64)]
         public byte bDirection;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct RosterUnit
+    {
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 0x10)]
+        string szName;                  // 0x00
+        public uint dwUnitId;           // 0x10
+        public uint dwPartyLife;        // 0x14
+        public uint _1;                 // 0x18
+        public uint dwClassId;          // 0x1C
+        public ushort wLevel;           // 0x20
+        public ushort wPartyId;         // 0x22
+        public uint dwLevelId;          // 0x24
+        public uint Xpos;               // 0x28
+        public uint Ypos;               // 0x2C
+        public uint dwPartyFlags;       // 0x30
+        public uint _5;                 // 0x34 BYTE*
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 11, ArraySubType = UnmanagedType.U4)]
+        public uint[] _6;               // 0x38
+        public ushort _7;               // 0x64
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 0x10)]
+        string szName2;                 // 0x66
+        public ushort _8;               // 0x76
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2, ArraySubType = UnmanagedType.U4)]
+        public uint[] _9;               // 0x78
+        public uint pNext;              // 0x80 RosterUnit*
     }
 }

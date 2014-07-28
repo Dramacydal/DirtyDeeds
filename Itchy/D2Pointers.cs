@@ -20,6 +20,8 @@ namespace Itchy
         public static uint pItemTextData = 0x6FDF4CB4 - 0x6FD50000;
         public static uint pMaxItemText = 0x6FDF4CB0 - 0x6FD50000;
         public static uint GetUnitStat = 0x584E0; // __stdcall, (UnitAny* pUnit, DWORD dwStat, DWORD dwStat2)
+        public static uint GetItemPrice = 0x48620; // __stdcall, (UnitAny * player, UnitAny * item, DWORD difficulty, void* questinfo, int value, DWORD flag)
+        public static uint sgptDataTables = 0x6FDF33F0 - 0x6FD50000;
     }
 
     public static class D2Client    // 0x6FAB0000
@@ -30,7 +32,8 @@ namespace Itchy
         public static uint RevealAutomapRoom = 0x73160; // stdcall (Room1 *pRoom1, DWORD dwClipFlag, AutomapLayer *aLayer)
         public static uint PrintGameString = 0x6FB25EB0 - 0x6FAB0000;
         public static uint pExpCharFlag = 0x1087B4;
-        public static uint GetDifficulty = 0x42980; // stdcall
+        public static uint GetDifficulty = 0x42980; // cdecl
+        public static uint pDifficulty = 0x6FBCD1D8 - 0x6FAB0000;
         public static uint LoadAct_1 = 0x737F0; // asm
         public static uint LoadAct_2 = 0x2B420; // asm
         public static uint pPlayerUnit = 0x11D050;
@@ -39,16 +42,18 @@ namespace Itchy
         public static uint pUiVars = 0x6FBCC890 - 0x6FAB0000;
         public static uint pServerUnitTable = 0x1047B8;
         public static uint pClientUnitTable = 0x103BB8;
+        public static uint pPlayerUnitList = 0x11CB04;  // RosterUnit*
+        public static uint pItemPriceList = 0x1018B3;  // __stdcall, (void)
     }
 
-    public static class D2Net
+    public static class D2Net       // 0x6FBF0000
     {
         public static uint ReceivePacket = 0x6FBF64A0 - 0x6FBF0000;  // stdcall (BYTE *aPacket, DWORD aLen)
         public static uint SendPacket = 0x6F20; // stdcall (size_t aLen, DWORD arg1, BYTE* aPacket)
 
     }
 
-    public static class Storm
+    public static class Storm       // 0x6FBF0000
     {
         public static uint pHandle = 0x6FC42A50 - 0x6FBF0000;
     }
