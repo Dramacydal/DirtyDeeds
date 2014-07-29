@@ -24,7 +24,7 @@ namespace Itchy
                 return false;
             }
 
-            unit = pd.MemoryHandler.Read<UnitAny>(result);
+            unit = pd.Read<UnitAny>(result);
             return true;
         }
 
@@ -34,17 +34,17 @@ namespace Itchy
 
             pHashTable += pd.GetModuleAddress("d2client.dll") + 128 * 4 * dwType;
 
-            var result = pd.MemoryHandler.ReadUInt(pHashTable + 4 * (dwId & 0x7F));
+            var result = pd.ReadUInt(pHashTable + 4 * (dwId & 0x7F));
             if (result != 0)
             {
-                while (pd.MemoryHandler.ReadUInt(result + 12) != dwId)
+                while (pd.ReadUInt(result + 12) != dwId)
                 {
-                    result = pd.MemoryHandler.ReadUInt(result + 228);
+                    result = pd.ReadUInt(result + 228);
                     if (result == 0)
                         return 0;
                 }
 
-                if (pd.MemoryHandler.ReadUInt(result) != dwType)
+                if (pd.ReadUInt(result) != dwType)
                     throw new Exception("FindServerSideUnit type != dwType");
             }
 
@@ -57,17 +57,17 @@ namespace Itchy
 
             pHashTable += pd.GetModuleAddress("d2client.dll") + 128 * 4 * dwType;
 
-            var result = pd.MemoryHandler.ReadUInt(pHashTable + 4 * (dwId & 0x7F));
+            var result = pd.ReadUInt(pHashTable + 4 * (dwId & 0x7F));
             if (result != 0)
             {
-                while (pd.MemoryHandler.ReadUInt(result + 12) != dwId)
+                while (pd.ReadUInt(result + 12) != dwId)
                 {
-                    result = pd.MemoryHandler.ReadUInt(result + 228);
+                    result = pd.ReadUInt(result + 228);
                     if (result == 0)
                         return 0;
                 }
 
-                if (pd.MemoryHandler.ReadUInt(result) != dwType)
+                if (pd.ReadUInt(result) != dwType)
                     throw new Exception("FindServersideUnit type != dwType");
             }
 
@@ -80,23 +80,23 @@ namespace Itchy
             if (!GetPlayerUnit(out unit))
                 return 0;
 
-            var inv = pd.MemoryHandler.Read<Inventory>(unit.pInventory);
+            var inv = pd.Read<Inventory>(unit.pInventory);
 
             uint pItem = 0u;
             for (pItem = inv.pFirstItem; pItem != 0; )
             {
-                var item = pd.MemoryHandler.Read<UnitAny>(pItem);
-                var itemData = pd.MemoryHandler.Read<ItemData>(item.pItemData);
+                var item = pd.Read<UnitAny>(pItem);
+                var itemData = pd.Read<ItemData>(item.pItemData);
                 if ((uint)storage != itemData.ItemLocation && storage != StorageType.Null)
                 {
                     pItem = itemData.pNextInvItem;
                     continue;
                 }
 
-                var pItemTxt = pd.MemoryHandler.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetItemText,
+                var pItemTxt = pd.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetItemText,
                     CallingConventionEx.StdCall,
                     item.dwTxtFileNo);
-                var txt = pd.MemoryHandler.Read<ItemTxt>(pItemTxt);
+                var txt = pd.Read<ItemTxt>(pItemTxt);
                 if (txt.GetCode() == code)
                     break;
 
@@ -111,7 +111,7 @@ namespace Itchy
             if (item.pItemData == 0)
                 return StorageType.Null;
 
-            var itemData = pd.MemoryHandler.Read<ItemData>(item.pItemData);
+            var itemData = pd.Read<ItemData>(item.pItemData);
             switch ((StorageType)itemData.ItemLocation)
             {
                 case StorageType.Inventory:
@@ -140,16 +140,16 @@ namespace Itchy
 
         public StorageType GetItemLocation(uint pItem)
         {
-            var item = pd.MemoryHandler.Read<UnitAny>(pItem);
+            var item = pd.Read<UnitAny>(pItem);
             return GetItemLocation(item);
         }
 
         public uint GetItemText(uint dwTxtFileNo)
         {
-            if (dwTxtFileNo >= pd.MemoryHandler.ReadUInt(pd.GetModuleAddress("d2common.dll") + D2Common.pMaxItemText))
+            if (dwTxtFileNo >= pd.ReadUInt(pd.GetModuleAddress("d2common.dll") + D2Common.pMaxItemText))
                 return 0;
 
-            var pData = pd.MemoryHandler.ReadUInt(pd.GetModuleAddress("d2common.dll") + D2Common.pItemTextData);
+            var pData = pd.ReadUInt(pd.GetModuleAddress("d2common.dll") + D2Common.pItemTextData);
             if (pData == 0)
                 return 0;
 
@@ -158,20 +158,20 @@ namespace Itchy
 
         public void ReceivePacket(byte[] packet)
         {
-            var addr = pd.MemoryHandler.AllocateBytes(packet);
-            pd.MemoryHandler.Call(pd.GetModuleAddress("d2net.dll") + D2Net.ReceivePacket,
+            var addr = pd.AllocateBytes(packet);
+            pd.Call(pd.GetModuleAddress("d2net.dll") + D2Net.ReceivePacket,
                 CallingConventionEx.StdCall,
                 addr, (uint)packet.Length);
-            pd.MemoryHandler.FreeMemory(addr);
+            pd.FreeMemory(addr);
         }
 
         public void SendPacket(byte[] packet)
         {
-            var addr = pd.MemoryHandler.AllocateBytes(packet);
-            pd.MemoryHandler.Call(pd.GetModuleAddress("d2net.dll") + D2Net.SendPacket,
+            var addr = pd.AllocateBytes(packet);
+            pd.Call(pd.GetModuleAddress("d2net.dll") + D2Net.SendPacket,
                 CallingConventionEx.StdCall,
                 (uint)packet.Length, 1, addr);
-            pd.MemoryHandler.FreeMemory(addr);
+            pd.FreeMemory(addr);
         }
 
         public void UseItem(uint pItem)
@@ -179,7 +179,7 @@ namespace Itchy
             if (pItem == 0)
                 return;
 
-            var item = pd.MemoryHandler.Read<UnitAny>(pItem);
+            var item = pd.Read<UnitAny>(pItem);
             UnitAny player;
             if (!GetPlayerUnit(out player))
                 return;
@@ -188,7 +188,7 @@ namespace Itchy
             {
                 case StorageType.Inventory:
                 {
-                    var path = pd.MemoryHandler.Read<Path>(player.pPath);
+                    var path = pd.Read<Path>(player.pPath);
                     var bytes = new List<byte>();
 
                     bytes.Add(0x20);
@@ -200,7 +200,7 @@ namespace Itchy
                 }
                 case StorageType.Belt:
                 {
-                    var path = pd.MemoryHandler.Read<Path>(player.pPath);
+                    var path = pd.Read<Path>(player.pPath);
                     var bytes = new List<byte>();
 
                     bytes.Add(0x26);
@@ -227,7 +227,7 @@ namespace Itchy
             if (pUnit == 0)
                 return 0;
 
-            if (pd.MemoryHandler.ReadUInt(pUnit + 92) != 0)
+            if (pd.ReadUInt(pUnit + 92) != 0)
             {
                 var pTables = pd.GetModuleAddress("d2common.dll") + D2Common.sgptDataTables;
             }

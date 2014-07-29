@@ -323,12 +323,12 @@ namespace Itchy
 
             game.SuspendThreads();
 
-            var maxItemTxt = game.Debugger.MemoryHandler.ReadUInt(
+            var maxItemTxt = game.Debugger.ReadUInt(
                 game.Debugger.GetModuleAddress("d2common.dll") + D2Common.pMaxItemText);
 
             for (uint i = 0; i <= maxItemTxt; ++i)
             {
-                var pText = game.Debugger.MemoryHandler.Call(
+                var pText = game.Debugger.Call(
                     game.Debugger.GetModuleAddress("d2common.dll") + D2Common.GetItemText,
                     WhiteMagic.CallingConventionEx.StdCall,
                     i);
@@ -336,7 +336,7 @@ namespace Itchy
                 if (pText == 0)
                     continue;
 
-                var txt = game.Debugger.MemoryHandler.Read<ItemTxt>(pText);
+                var txt = game.Debugger.Read<ItemTxt>(pText);
 
                 while (!itemCodes.TryAdd(txt.GetCode(), i)) { }
             }

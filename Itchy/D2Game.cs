@@ -132,9 +132,9 @@ namespace Itchy
 
         public uint GetPlayerUnit()
         {
-            /*return pd.MemoryHandler.Call(pd.GetModuleAddress("d2client.dll") + D2Client.GetPlayerUnit,
+            /*return pd.Call(pd.GetModuleAddress("d2client.dll") + D2Client.GetPlayerUnit,
                 CallingConventionEx.StdCall);*/
-            return pd.MemoryHandler.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pPlayerUnit);
+            return pd.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pPlayerUnit);
         }
 
         public uint GetUIVar(UIVars uiVar)
@@ -142,7 +142,7 @@ namespace Itchy
             if (uiVar > UIVars.Max)
                 return 0;
 
-            return pd.MemoryHandler.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pUiVars + (uint)uiVar * 4);
+            return pd.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pUiVars + (uint)uiVar * 4);
         }
 
         public bool GetPlayerUnit(out UnitAny unit)
@@ -154,7 +154,7 @@ namespace Itchy
                 return false;
             }
 
-            unit = pd.MemoryHandler.Read<UnitAny>(pUnit);
+            unit = pd.Read<UnitAny>(pUnit);
             return true;
         }
 
@@ -168,7 +168,7 @@ namespace Itchy
                 if (!GetPlayerUnit(out unit))
                     return "";
 
-                var data = pd.MemoryHandler.Read<PlayerData>(unit.pPlayerData);
+                var data = pd.Read<PlayerData>(unit.pPlayerData);
                 return Encoding.ASCII.GetString(data.szName);
             }
             catch (Exception)
@@ -184,12 +184,12 @@ namespace Itchy
                 SuspendThreads();
             try
             {
-                var addr = pd.MemoryHandler.AllocateUTF16String(str);
-                pd.MemoryHandler.Call(pd.GetModuleAddress("d2client.dll") + D2Client.PrintGameString,
+                var addr = pd.AllocateUTF16String(str);
+                pd.Call(pd.GetModuleAddress("d2client.dll") + D2Client.PrintGameString,
                     CallingConventionEx.StdCall,
                     addr, (uint)color);
 
-                pd.MemoryHandler.FreeMemory(addr);
+                pd.FreeMemory(addr);
             }
             catch (Exception)
             {
@@ -207,13 +207,13 @@ namespace Itchy
             if (!GetPlayerUnit(out unit))
                 return;
 
-            var inv = pd.MemoryHandler.Read<Inventory>(unit.pInventory);
+            var inv = pd.Read<Inventory>(unit.pInventory);
             if (inv.pCursorItem == 0)
                 return;
 
-            var item = pd.MemoryHandler.Read<UnitAny>(inv.pCursorItem);
+            var item = pd.Read<UnitAny>(inv.pCursorItem);
             var pTxt = GetItemText(item.dwTxtFileNo);
-            var txt = pd.MemoryHandler.Read<ItemTxt>(pTxt);
+            var txt = pd.Read<ItemTxt>(pTxt);
 
             //OpenPortal();
         }
@@ -228,9 +228,9 @@ namespace Itchy
 
             var funcAddress = WinApi.GetProcAddress(hModule, "ResumeThread");
 
-            var handle = pd.MemoryHandler.ReadUInt(pd.GetModuleAddress("storm.dll") + Storm.pHandle);
+            var handle = pd.ReadUInt(pd.GetModuleAddress("storm.dll") + Storm.pHandle);
 
-            pd.MemoryHandler.Call(pd.GetModuleAddress("kernel32.dll") + funcAddress - hModule, CallingConventionEx.StdCall, handle);
+            pd.Call(pd.GetModuleAddress("kernel32.dll") + funcAddress - hModule, CallingConventionEx.StdCall, handle);
         }
 
         public void OpenStash()
@@ -258,18 +258,18 @@ namespace Itchy
             if (GetPlayerUnit() == 0)
                 return;
 
-            pd.MemoryHandler.Call(pd.GetModuleAddress("d2client.dll") + D2Client.ExitGame,
+            pd.Call(pd.GetModuleAddress("d2client.dll") + D2Client.ExitGame,
                 CallingConventionEx.FastCall);
         }
 
         public void SuspendThreads(params int[] except)
         {
-            pd.MemoryHandler.SuspendAllThreads(except);
+            pd.SuspendAllThreads(except);
         }
 
         public void ResumeThreads()
         {
-            pd.MemoryHandler.ResumeAllThreads();
+            pd.ResumeAllThreads();
         }
 
         public void Log(string message, params object[] args)

@@ -100,7 +100,7 @@ namespace Itchy
         {
             //lock ("sockLock")
             {
-                var item = pd.MemoryHandler.Read<UnitAny>(pItem);
+                var item = pd.Read<UnitAny>(pItem);
                 socketsPerItem[item.dwUnitId] = GetUnitStat(pItem, Stat.Sockets);
             }
         }*/
@@ -111,12 +111,12 @@ namespace Itchy
 
             try
             {
-                var item = pd.MemoryHandler.Read<UnitAny>(pItem);
+                var item = pd.Read<UnitAny>(pItem);
                 var pUnit = GetPlayerUnit();
-                var diff = pd.MemoryHandler.ReadByte(pd.GetModuleAddress("d2client.dll") + D2Client.pDifficulty);
-                var pItemPriceList = pd.MemoryHandler.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pItemPriceList);
+                var diff = pd.ReadByte(pd.GetModuleAddress("d2client.dll") + D2Client.pDifficulty);
+                var pItemPriceList = pd.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pItemPriceList);
 
-                var val = pd.MemoryHandler.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetItemPrice,
+                var val = pd.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetItemPrice,
                     CallingConventionEx.StdCall,
                     pUnit, pItem, (uint)diff, pItemPriceList, 0x9A, 1);
 
@@ -176,12 +176,12 @@ namespace Itchy
 
                         try
                         {
-                            var item = pd.MemoryHandler.Read<UnitAny>(pItem);
+                            var item = pd.Read<UnitAny>(pItem);
                             var pUnit = GetPlayerUnit();
-                            var diff = pd.MemoryHandler.ReadByte(pd.GetModuleAddress("d2client.dll") + D2Client.pDifficulty);
-                            var pItemPriceList = pd.MemoryHandler.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pItemPriceList);
+                            var diff = pd.ReadByte(pd.GetModuleAddress("d2client.dll") + D2Client.pDifficulty);
+                            var pItemPriceList = pd.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pItemPriceList);
 
-                            var price = pd.MemoryHandler.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetItemPrice,
+                            var price = pd.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetItemPrice,
                                 CallingConventionEx.StdCall,
                                 pUnit, pItem, (uint)diff, pItemPriceList, 0x9A, 1);
 

@@ -61,7 +61,7 @@ namespace Itchy
             var pPacket = ctx.Edi;
             var len = ctx.Edx;
 
-            var packet = pd.MemoryHandler.ReadBytes(pPacket, (int)len);
+            var packet = pd.ReadBytes(pPacket, (int)len);
 
             //MessageBox.Show(packet.ToString());
 
@@ -76,7 +76,7 @@ namespace Itchy
                     var pUnit = Game.FindUnit(BitConverter.ToUInt32(packet, 2), (UnitType)packet[1]);
                     if (pUnit != 0)
                     {
-                        var unit = pd.MemoryHandler.Read<UnitAny>(pUnit);
+                        var unit = pd.Read<UnitAny>(pUnit);
                         if (unit.dwTxtFileNo == 0x3B)
                             skip = true;
                     }
@@ -89,22 +89,22 @@ namespace Itchy
                         !Game.Settings.ReceivePacketHack.FastTele)
                         break;
                     
-                    var pPlayer = pd.MemoryHandler.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pPlayerUnit);
+                    var pPlayer = pd.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pPlayerUnit);
                     if (pPlayer == 0)
                         break;
 
-                    var unit = pd.MemoryHandler.Read<UnitAny>(pPlayer);
+                    var unit = pd.Read<UnitAny>(pPlayer);
                     if (BitConverter.ToUInt32(packet, 2) == unit.dwUnitId)
                     {
                         // no flash
                         if (Game.Settings.ReceivePacketHack.BlockFlash)
-                            pd.MemoryHandler.WriteByte(pPacket + 10, 0);
+                            pd.WriteByte(pPacket + 10, 0);
 
                         // fast teleport
                         if (Game.Settings.ReceivePacketHack.FastTele && !allowableModes.Contains((PlayerMode)unit.dwMode))
                         {
                             unit.dwFrameRemain = 0;
-                            pd.MemoryHandler.Write<UnitAny>(pPlayer, unit);
+                            pd.Write<UnitAny>(pPlayer, unit);
                         }
                     }
                     break;
@@ -126,14 +126,14 @@ namespace Itchy
                     {
                         // no portal anim #2
                         if (Game.Settings.ReceivePacketHack.FastPortal)
-                            pd.MemoryHandler.WriteByte(pPacket + 12, 2);
+                            pd.WriteByte(pPacket + 12, 2);
 
                         UnitAny unit;
                         if (Game.backToTown && Game.GetPlayerUnit(out unit))
                         {
                             if (!Game.IsInTown())
                             {
-                                var path = pd.MemoryHandler.Read<Path>(unit.pPath);
+                                var path = pd.Read<Path>(unit.pPath);
                                 if (Misc.Distance(path.xPos, path.yPos, BitConverter.ToUInt16(packet, 8), BitConverter.ToUInt16(packet, 10)) < 10)
                                     Task.Factory.StartNew(() => Game.Interact(BitConverter.ToUInt32(packet, 2), UnitType.Object));
                             }
@@ -151,10 +151,10 @@ namespace Itchy
                             break;
 
                         var dwUnitId = BitConverter.ToUInt32(packet, 3);
-                        var pRosterUnit = pd.MemoryHandler.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pPlayerUnitList);
+                        var pRosterUnit = pd.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pPlayerUnitList);
                         for (; pRosterUnit != 0; )
                         {
-                            var rUnit = pd.MemoryHandler.Read<RosterUnit>(pRosterUnit);
+                            var rUnit = pd.Read<RosterUnit>(pRosterUnit);
                             if (rUnit.dwUnitId == dwUnitId)
                             {
                                 Task.Factory.StartNew(() => Game.ChickenTask(0, 0, true));
@@ -198,21 +198,21 @@ namespace Itchy
 
         public override bool HandleException(ref CONTEXT ctx, ProcessDebugger pd)
         {
-            ctx.Eax = (ctx.Eax & 0xFFFFFF00) | pd.MemoryHandler.ReadByte(ctx.Ebp + 0x12A);
+            ctx.Eax = (ctx.Eax & 0xFFFFFF00) | pd.ReadByte(ctx.Ebp + 0x12A);
             ctx.Eip += 6;
 
             var pString = ctx.Edi;
             var pItem = ctx.Ebx;
-            var str = pd.MemoryHandler.ReadUTF16String(pString);
+            var str = pd.ReadUTF16String(pString);
             //"ÿc";
             //str = "ÿc1" + str;
             
 
-            var item = pd.MemoryHandler.Read<UnitAny>(pItem);
-            var itemData = pd.MemoryHandler.Read<ItemData>(item.pItemData);
+            var item = pd.Read<UnitAny>(pItem);
+            var itemData = pd.Read<ItemData>(item.pItemData);
 
             var pTxt = Game.GetItemText(item.dwTxtFileNo);
-            var txt = pd.MemoryHandler.Read<ItemTxt>(pTxt);
+            var txt = pd.Read<ItemTxt>(pTxt);
             var dwCode = txt.GetDwCode();
             var code = txt.GetCode();
 
@@ -289,7 +289,7 @@ namespace Itchy
             }
 
             if (changed)
-                pd.MemoryHandler.WriteUTF16String(pString, str);
+                pd.WriteUTF16String(pString, str);
 
             return true;
         }

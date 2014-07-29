@@ -18,19 +18,19 @@ namespace Itchy
             if (player.pPath == 0 || player.pInventory == 0 || player.pAct == 0)
                 return false;
 
-            var path = pd.MemoryHandler.Read<Path>(player.pPath);
+            var path = pd.Read<Path>(player.pPath);
             if (path.xPos == 0 || path.pRoom1 == 0)
                 return false;
 
-            var room1 = pd.MemoryHandler.Read<Room1>(path.pRoom1);
+            var room1 = pd.Read<Room1>(path.pRoom1);
             if (room1.pRoom2 == 0)
                 return false;
 
-            var room2 = pd.MemoryHandler.Read<Room2>(room1.pRoom2);
+            var room2 = pd.Read<Room2>(room1.pRoom2);
             if (room2.pLevel == 0)
                 return false;
 
-            var lvl = pd.MemoryHandler.Read<Level>(room2.pLevel);
+            var lvl = pd.Read<Level>(room2.pLevel);
             if (lvl.dwLevelNo == 0)
                 return false;
 
@@ -52,28 +52,28 @@ namespace Itchy
                 return false;
             }
 
-            var path = pd.MemoryHandler.Read<Path>(player.pPath);
+            var path = pd.Read<Path>(player.pPath);
             if (path.pRoom1 == 0)
             {
                 level = new Level();
                 return false;
             }
 
-            var room1 = pd.MemoryHandler.Read<Room1>(path.pRoom1);
+            var room1 = pd.Read<Room1>(path.pRoom1);
             if (room1.pRoom2 == 0)
             {
                 level = new Level();
                 return false;
             }
 
-            var room2 = pd.MemoryHandler.Read<Room2>(room1.pRoom2);
+            var room2 = pd.Read<Room2>(room1.pRoom2);
             if (room2.pLevel == 0)
             {
                 level = new Level();
                 return false;
             }
 
-            level = pd.MemoryHandler.Read<Level>(room2.pLevel);
+            level = pd.Read<Level>(room2.pLevel);
             return true;
         }
 
@@ -142,7 +142,7 @@ namespace Itchy
 
         public uint GetUnitStat(uint pItem, Stat stat)
         {
-            return pd.MemoryHandler.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetUnitStat,
+            return pd.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetUnitStat,
                 CallingConventionEx.StdCall,
                 pItem, (uint)stat, 0);
         }
