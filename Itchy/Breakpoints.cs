@@ -206,7 +206,6 @@ namespace Itchy
             var str = pd.ReadUTF16String(pString);
             //"ÿc";
             //str = "ÿc1" + str;
-            
 
             var item = pd.Read<UnitAny>(pItem);
             var itemData = pd.Read<ItemData>(item.pItemData);

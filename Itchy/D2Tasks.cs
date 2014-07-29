@@ -163,8 +163,8 @@ namespace Itchy
         {
             var val = uint.MaxValue;
 
-            if (socketsPerItem.ContainsKey(dwItemId))
-                val = socketsPerItem[dwItemId];
+            if (pricePerItem.ContainsKey(dwItemId))
+                val = pricePerItem[dwItemId];
             else
             {
                 if (!hasPendingTask)
