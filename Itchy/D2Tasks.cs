@@ -96,16 +96,16 @@ namespace Itchy
             chickening = false;
         }
 
-        public void FillItemSockets(uint pItem)
+        /*public void FillItemSockets(uint pItem)
         {
             //lock ("sockLock")
             {
                 var item = pd.MemoryHandler.Read<UnitAny>(pItem);
                 socketsPerItem[item.dwUnitId] = GetUnitStat(pItem, Stat.Sockets);
             }
-        }
+        }*/
 
-        public void FillItemPrice(uint pItem)
+        /*public void FillItemPrice(uint pItem)
         {
             SuspendThreads();
 
@@ -127,6 +127,77 @@ namespace Itchy
             }
 
             ResumeThreads();
+        }*/
+
+        public uint GetItemSockets(uint pItem, uint dwItemId)
+        {
+            var val = uint.MaxValue;
+
+            if (socketsPerItem.ContainsKey(dwItemId))
+                val = socketsPerItem[dwItemId];
+            else
+            {
+                if (!hasPendingTask)
+                {
+                    hasPendingTask = true;
+                    Task.Factory.StartNew(() =>
+                    {
+                        SuspendThreads();
+                        try
+                        {
+                            socketsPerItem[dwItemId] = GetUnitStat(pItem, Stat.Sockets);
+                        }
+                        catch (Exception)
+                        {
+                        }
+                        ResumeThreads();
+                        hasPendingTask = false;
+                    });
+                }
+            }
+
+            return val;
+        }
+
+        public uint GetItemPrice(uint pItem, uint dwItemId)
+        {
+            var val = uint.MaxValue;
+
+            if (socketsPerItem.ContainsKey(dwItemId))
+                val = socketsPerItem[dwItemId];
+            else
+            {
+                if (!hasPendingTask)
+                {
+                    hasPendingTask = true;
+                    Task.Factory.StartNew(() =>
+                    {
+                        SuspendThreads();
+
+                        try
+                        {
+                            var item = pd.MemoryHandler.Read<UnitAny>(pItem);
+                            var pUnit = GetPlayerUnit();
+                            var diff = pd.MemoryHandler.ReadByte(pd.GetModuleAddress("d2client.dll") + D2Client.pDifficulty);
+                            var pItemPriceList = pd.MemoryHandler.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pItemPriceList);
+
+                            var price = pd.MemoryHandler.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetItemPrice,
+                                CallingConventionEx.StdCall,
+                                pUnit, pItem, (uint)diff, pItemPriceList, 0x9A, 1);
+
+                            pricePerItem[item.dwUnitId] = price;
+                        }
+                        catch (Exception)
+                        {
+                        }
+
+                        ResumeThreads();
+                        hasPendingTask = false;
+                    });
+                }
+            }
+
+            return val;
         }
     }
 }

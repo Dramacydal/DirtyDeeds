@@ -237,11 +237,7 @@ namespace Itchy
 
             if (Game.Settings.ItemName.ShowSockets)
             {
-                uint cnt = uint.MaxValue;
-                {
-                    if (Game.socketsPerItem.ContainsKey(item.dwUnitId))
-                        cnt = Game.socketsPerItem[item.dwUnitId];
-                }
+                var cnt = Game.GetItemSockets(pItem, item.dwUnitId);
 
                 if (cnt > 0 && cnt != uint.MaxValue)
                 {
@@ -250,8 +246,6 @@ namespace Itchy
                     str += "(" + cnt + ")";
                     changed = true;
                 }
-                else if (cnt != 0)
-                    Task.Factory.StartNew(() => Game.FillItemSockets(pItem));
             }
 
             if (Game.Settings.ItemName.ShowItemLevel && itemData.dwItemLevel > 1)
@@ -264,11 +258,7 @@ namespace Itchy
 
             if (Game.Settings.ItemName.ShowItemPrice)
             {
-                uint price = uint.MaxValue;
-                {
-                    if (Game.pricePerItem.ContainsKey(item.dwUnitId))
-                        price = Game.pricePerItem[item.dwUnitId];
-                }
+                var price = Game.GetItemPrice(pItem, item.dwUnitId);
 
                 if (price > 0 && price != uint.MaxValue)
                 {
@@ -277,8 +267,25 @@ namespace Itchy
                     str += "($" + price + ")";
                     changed = true;
                 }
-                else if (price != 0)
-                    Task.Factory.StartNew(() => Game.FillItemPrice(pItem));
+            }
+
+            if (Game.Settings.ItemName.ChangeItemColor)
+            {
+                var itemInfo = Game.ItemStorage.GetInfo(item.dwTxtFileNo);
+                if (itemInfo != null)
+                {
+                    var sock = Game.GetItemSockets(pItem, item.dwUnitId);
+                    var configEntry = Game.ItemSettings.GetMatch(itemInfo, txt.GetCode(), sock,
+                        (itemData.dwFlags & 0x400000) != 0, (ItemQuality)itemData.dwQuality);
+                    if (configEntry != null)
+                    {
+                        if (configEntry.Color != D2Color.Default)
+                        {
+                            str = "ÿc" + configEntry.Color.GetCode() + str;
+                            changed = true;
+                        }
+                    }
+                }
             }
 
             if (changed)

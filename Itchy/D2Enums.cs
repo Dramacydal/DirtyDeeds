@@ -43,7 +43,6 @@ namespace Itchy
 
     public enum D2Color : uint
     {
-        Default = 0,
         White = 0,
         Red = 1,
         Greed = 2,
@@ -58,7 +57,9 @@ namespace Itchy
         BoldWhite = '-',
         BoldWhite2 = '+',
         DarkGreen = '<',
-        DarkGreen2 = ';'
+        Purple = ';',
+
+        Default = White,
     }
 
     public enum UIVars : uint
@@ -157,4 +158,19 @@ namespace Itchy
         Slow = 150, // = slow = %
         Sockets = 194,
     }
+
+    public enum ItemQuality : uint
+    {
+        Any = 0,    // custom value
+        Inferior = 1,
+        Normal = 2,
+        Superior = 3,
+        Magic = 4,
+        Set = 5,
+        Rare = 6,
+        Unique = 7,
+        Craft = 8,
+    }
+
+    //public enum Item
 }

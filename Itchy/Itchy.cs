@@ -26,8 +26,11 @@ namespace Itchy
         static extern IntPtr GetForegroundWindow();
 
         public volatile GameSettings Settings = null;
+        public volatile ItemDisplaySettings ItemSettings = null;
+        public volatile ItemStorage ItemStorage = null;
 
-        public static string ConfigFileName = "Settings.xml";
+        private static string ConfigFileName = "Settings.xml";
+        private static string ItemConfigFileName = "Items.ini";
 
         public Itchy()
         {
@@ -47,6 +50,8 @@ namespace Itchy
             _proc = new HookProc(HookCallback);
             hookId = SetHook(_proc);
 
+            ItemStorage = new ItemStorage();
+            ItemSettings = new ItemDisplaySettings(ItemConfigFileName);
             LoadSettings();
         }
 
@@ -87,6 +92,10 @@ namespace Itchy
                 if (s != null)
                     s.Close();
             }
+        }
+
+        void LoadItemSettings()
+        {
         }
 
         [DllImport("gdi32.dll", ExactSpelling = true)]

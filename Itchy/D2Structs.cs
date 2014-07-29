@@ -260,6 +260,8 @@ namespace Itchy
     [StructLayout(LayoutKind.Explicit)]
     public struct ItemData
     {
+        [FieldOffset(0)]
+        public uint dwQuality;
         [FieldOffset(0x18)]
         public uint dwFlags;
         [FieldOffset(0x2C)]
@@ -317,6 +319,8 @@ namespace Itchy
         [FieldOffset(0x80)]
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4, ArraySubType = UnmanagedType.U1)]
         public byte[] szCode;           // 0x40
+        [FieldOffset(0xFC)]
+        public byte rarity;
         [FieldOffset(0x10F)]
         public byte xSize;              // 0x10F
         [FieldOffset(0x110)]

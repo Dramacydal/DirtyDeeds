@@ -24,8 +24,10 @@ namespace Itchy
         public bool Installed { get { return pd != null; } }
         public OverlayWindow Overlay { get { return overlay; } }
         public Itchy Itchy { get { return itchy; } }
+        public ItemStorage ItemStorage { get { return itchy.ItemStorage; } }
 
-        public GameSettings Settings { get { return Itchy.Settings; } }
+        public GameSettings Settings { get { return itchy.Settings; } }
+        public ItemDisplaySettings ItemSettings { get { return itchy.ItemSettings; } }
 
         protected Process process = null;
         protected ProcessDebugger pd = null;
@@ -35,6 +37,8 @@ namespace Itchy
 
         protected List<uint> revealedActs = new List<uint>();
         public volatile bool backToTown = false;
+
+        public volatile bool hasPendingTask = false;
 
         public volatile ConcurrentDictionary<uint, uint> socketsPerItem = new ConcurrentDictionary<uint, uint>();
         public volatile ConcurrentDictionary<uint, uint> pricePerItem = new ConcurrentDictionary<uint, uint>();
@@ -203,7 +207,15 @@ namespace Itchy
             if (!GetPlayerUnit(out unit))
                 return;
 
-            OpenPortal();
+            var inv = pd.MemoryHandler.Read<Inventory>(unit.pInventory);
+            if (inv.pCursorItem == 0)
+                return;
+
+            var item = pd.MemoryHandler.Read<UnitAny>(inv.pCursorItem);
+            var pTxt = GetItemText(item.dwTxtFileNo);
+            var txt = pd.MemoryHandler.Read<ItemTxt>(pTxt);
+
+            //OpenPortal();
         }
 
         public void ResumeStormThread()
@@ -250,12 +262,12 @@ namespace Itchy
                 CallingConventionEx.FastCall);
         }
 
-        private void SuspendThreads(params int[] except)
+        public void SuspendThreads(params int[] except)
         {
             pd.MemoryHandler.SuspendAllThreads(except);
         }
 
-        private void ResumeThreads()
+        public void ResumeThreads()
         {
             pd.MemoryHandler.ResumeAllThreads();
         }
