@@ -37,6 +37,7 @@ namespace Itchy
 
         protected List<uint> revealedActs = new List<uint>();
         public volatile bool backToTown = false;
+        public volatile uint viewingUnit = 0;
 
         public volatile bool hasPendingTask = false;
 
@@ -84,7 +85,7 @@ namespace Itchy
                 //pd.AddBreakPoint("d2common.dll", bp2);
 
                 // 0x6FAD33A7 0x233A7
-                var bp = new LightBreakPoint(this, 0x233A7, 1, HardwareBreakPoint.Condition.Code);
+                /*var bp = new LightBreakPoint(this, 0x233A7, 1, HardwareBreakPoint.Condition.Code);
                 pd.AddBreakPoint("d2client.dll", bp);
 
                 // 6FB332FF
@@ -92,6 +93,15 @@ namespace Itchy
                 pd.AddBreakPoint("d2client.dll", bp2);
 
                 var bp3 = new ItemNameBreakPoint(this, 0x96736, 1, HardwareBreakPoint.Condition.Code);
+                pd.AddBreakPoint("d2client.dll", bp3);*/
+
+                var bp = new ViewInventoryBp1(this, 0x997B2, 1, HardwareBreakPoint.Condition.Code);
+                pd.AddBreakPoint("d2client.dll", bp);
+
+                var bp2 = new ViewInventoryBp2(this, 0x98E84, 1, HardwareBreakPoint.Condition.Code);
+                pd.AddBreakPoint("d2client.dll", bp2);
+
+                var bp3 = new ViewInventoryBp3(this, 0x97E41, 1, HardwareBreakPoint.Condition.Code);
                 pd.AddBreakPoint("d2client.dll", bp3);
             }
             catch (Exception)
@@ -143,6 +153,17 @@ namespace Itchy
                 return 0;
 
             return pd.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pUiVars + (uint)uiVar * 4);
+        }
+
+        public void SetUIVar(UIVars uiVar, uint value)
+        {
+            if (uiVar > UIVars.Max)
+                return;
+
+            pd.Call(pd.GetModuleAddress("d2client.dll") + D2Client.SetUiVar,
+                CallingConventionEx.FastCall,
+                value,
+                0);
         }
 
         public bool GetPlayerUnit(out UnitAny unit)
@@ -288,6 +309,7 @@ namespace Itchy
             backToTown = false;
             pricePerItem.Clear();
             socketsPerItem.Clear();
+            viewingUnit = 0;
         }
 
         public void EnteredGame()
@@ -295,10 +317,68 @@ namespace Itchy
             revealedActs.Clear();
         }
 
+        public uint GetViewingUnit()
+        {
+            var pPlayer = GetPlayerUnit();
+            if (viewingUnit == 0)
+                return pPlayer;
+
+            if (GetUIVar(UIVars.Inventory) == 0)
+            {
+                viewingUnit = 0;
+                return pPlayer;
+            }
+
+            var pUnit = FindServerSideUnit(viewingUnit, (uint)UnitType.Player);
+            if (pUnit == 0)
+            {
+                viewingUnit = 0;
+                return pPlayer;
+            }
+
+            var unit = pd.Read<UnitAny>(pUnit);
+            if (unit.pInventory == 0)
+            {
+                viewingUnit = 0;
+                return pPlayer;
+            }
+
+            return pUnit;
+        }
+
+        public void OnViewInventoryKey()
+        {
+            var pSelected = pd.Call(pd.GetModuleAddress("d2client.dll") + D2Client.GetSelectedUnit,
+                CallingConventionEx.StdCall);
+
+            if (pSelected == 0)
+                return;
+
+            var unit = pd.Read<UnitAny>(pSelected);
+            if (unit.dwMode == 0 || unit.dwMode == 17 || unit.dwType != (uint)UnitType.Player)
+                return;
+
+            viewingUnit = unit.dwUnitId;
+            if (GetUIVar(UIVars.Inventory) == 0)
+                SetUIVar(UIVars.Inventory, 0);
+        }
+
+        public uint GetMouseX()
+        {
+            return pd.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pMouseX);
+        }
+
+        public uint GetMouseY()
+        {
+            return pd.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pMouseY);
+        }
+
         enum MessageEvent : int
         {
             WM_KEYDOWN = 0x100,
             WM_KEYUP = 0x101,
+            WM_LBUTTONDOWN = 0x201,
+            WM_LBUTTONUP = 0x202,
             WM_HOTKEY = 0x312,
         }
 
@@ -345,6 +425,20 @@ namespace Itchy
                         backToTown = true;
                     ResumeThreads();
                 }
+
+                if (vkCode == Settings.ViewInventory.ViewInventoryKey && Settings.ViewInventory.Enabled)
+                {
+                    SuspendThreads();
+                    OnViewInventoryKey();
+                    ResumeThreads();
+                }
+            }
+
+            if (mEvent == MessageEvent.WM_LBUTTONDOWN && Settings.ViewInventory.Enabled)
+            {
+                if (viewingUnit != 0 && GameReady() && GetUIVar(UIVars.Inventory) != 0 && GetViewingUnit() != 0 &&
+                    viewingUnit != 0 && GetMouseX() >= 400)
+                    return false;
             }
 
             return true;

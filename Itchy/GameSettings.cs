@@ -61,6 +61,12 @@ namespace Itchy
     }
 
     [Serializable]
+    public class ViewInventorySettings : HackSettings
+    {
+        public Keys ViewInventoryKey = Keys.None;
+    }
+
+    [Serializable]
     public class GameSettings
     {
         public GameSettings() { }
@@ -76,6 +82,7 @@ namespace Itchy
         public FastPortalSettings FastPortal = new FastPortalSettings();
         public ChickenSettings Chicken = new ChickenSettings();
         public ItemNameSettings ItemName = new ItemNameSettings();
+        public ViewInventorySettings ViewInventory =new ViewInventorySettings();
     }
 
     public class ItemDisplayInfo

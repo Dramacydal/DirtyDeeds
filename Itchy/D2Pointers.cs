@@ -39,11 +39,15 @@ namespace Itchy
         public static uint pPlayerUnit = 0x11D050;
         public static uint ExitGame = 0x43870; // fastcall
         public static uint GetUiVar_I = 0x17C50; // register (DWORD dwVarNo)
+        public static uint SetUiVar = 0x1C190; // __fastcall, (DWORD varno, DWORD howset, DWORD unknown1)
         public static uint pUiVars = 0x6FBCC890 - 0x6FAB0000;
         public static uint pServerUnitTable = 0x1047B8;
         public static uint pClientUnitTable = 0x103BB8;
         public static uint pPlayerUnitList = 0x11CB04;  // RosterUnit*
         public static uint pItemPriceList = 0x1018B3;  // __stdcall, (void)
+        public static uint GetSelectedUnit = 0x17280; // __stdcall, (void)
+        public static uint pMouseX = 0x11C950;  // DWORD
+        public static uint pMouseY = 0x11C94C;  // DWORD
     }
 
     public static class D2Net       // 0x6FBF0000

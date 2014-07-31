@@ -19,8 +19,9 @@ namespace Itchy
 {
     public partial class Itchy : Form
     {
-        protected IntPtr hookId;
-        protected HookProc _proc;
+        protected IntPtr keyHookId;
+        protected IntPtr mouseHookId;
+        protected HookProc hookProc;
 
         [DllImport("user32.dll")]
         static extern IntPtr GetForegroundWindow();
@@ -47,8 +48,9 @@ namespace Itchy
             clientsComboBox.DataSource = games;
             UpdateGames();
 
-            _proc = new HookProc(HookCallback);
-            hookId = SetHook(_proc);
+            hookProc = new HookProc(HookCallback);
+            keyHookId = SetKeyHook(hookProc);
+            mouseHookId = SetMouseHook(hookProc);
 
             ItemStorage = new ItemStorage();
             ItemSettings = new ItemDisplaySettings(ItemConfigFileName);
@@ -139,7 +141,8 @@ namespace Itchy
         private void Itchy_FormClosing(object sender, FormClosingEventArgs e)
         {
             SaveSettings();
-            Hook.UnhookWindowsHookEx(hookId);
+            Hook.UnhookWindowsHookEx(keyHookId);
+            Hook.UnhookWindowsHookEx(mouseHookId);
 
             foreach (var g in Games)
             {
@@ -179,12 +182,21 @@ namespace Itchy
             g.Test();
         }
 
-        protected IntPtr SetHook(HookProc proc)
+        protected IntPtr SetKeyHook(HookProc proc)
         {
             using (var curProc = Process.GetCurrentProcess())
             using (var curModule = curProc.MainModule)
             {
                 return Hook.SetWindowsHookEx(HookType.WH_KEYBOARD_LL, proc, Hook.GetModuleHandle(curModule.ModuleName), 0);
+            }
+        }
+
+        protected IntPtr SetMouseHook(HookProc proc)
+        {
+            using (var curProc = Process.GetCurrentProcess())
+            using (var curModule = curProc.MainModule)
+            {
+                return Hook.SetWindowsHookEx(HookType.WH_MOUSE_LL, proc, Hook.GetModuleHandle(curModule.ModuleName), 0);
             }
         }
 

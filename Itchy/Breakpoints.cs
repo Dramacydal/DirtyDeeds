@@ -39,7 +39,7 @@ namespace Itchy
 
         public override bool HandleException(ref CONTEXT ctx, ProcessDebugger pd)
         {
-            ctx.Eax &= 0xFFFFFF00;
+            ctx.Al &= 0;
             ctx.Eip += 4;
 
             return true;
@@ -198,7 +198,7 @@ namespace Itchy
 
         public override bool HandleException(ref CONTEXT ctx, ProcessDebugger pd)
         {
-            ctx.Eax = (ctx.Eax & 0xFFFFFF00) | pd.ReadByte(ctx.Ebp + 0x12A);
+            ctx.Al = pd.ReadByte(ctx.Ebp + 0x12A);
             ctx.Eip += 6;
 
             var pString = ctx.Edi;
@@ -289,6 +289,51 @@ namespace Itchy
 
             if (changed)
                 pd.WriteUTF16String(pString, str);
+
+            return true;
+        }
+    }
+
+    // 1.13 0x997B2 0x6FB497B2
+    public class ViewInventoryBp1 : D2BreakPoint
+    {
+        public ViewInventoryBp1(D2Game game, int address, uint len, Condition condition) : base(game, address, len, condition) { }
+
+        public override bool HandleException(ref CONTEXT ctx, ProcessDebugger pd)
+        {
+            ctx.Esi = Game.GetViewingUnit();
+            ctx.Eip += 6;
+
+            return true;
+        }
+    }
+
+    // 1.13 0x98E84 0x6FB48E84
+    public class ViewInventoryBp2 : D2BreakPoint
+    {
+        public ViewInventoryBp2(D2Game game, int address, uint len, Condition condition) : base(game, address, len, condition) { }
+
+        public override bool HandleException(ref CONTEXT ctx, ProcessDebugger pd)
+        {
+            ctx.Ebx = Game.GetViewingUnit();
+            ctx.Eip += 6;
+
+            return true;
+        }
+    }
+
+    // 1.13 0x97E3F 0x6FB47E3F
+    // new 0x97E41 0x6FB47E41
+    public class ViewInventoryBp3 : D2BreakPoint
+    {
+        public ViewInventoryBp3(D2Game game, int address, uint len, Condition condition) : base(game, address, len, condition) { }
+
+        public override bool HandleException(ref CONTEXT ctx, ProcessDebugger pd)
+        {
+            var viewvingUnit = Game.GetViewingUnit();
+            ctx.Edi = viewvingUnit;
+            ctx.Ecx = pd.ReadUInt(ctx.Edi + 0x60);
+            ctx.Eip += 3;
 
             return true;
         }
