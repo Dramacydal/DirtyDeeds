@@ -81,32 +81,31 @@ namespace Itchy
                     return false;
 
                 // 0x6FD80C92 0x30C92
-                //var bp2 = new RainBreakPoint(0x30C92, 1, HardwareBreakPoint.Condition.Code);
-                //pd.AddBreakPoint("d2common.dll", bp2);
+                /*var bp2 = new RainBreakPoint(this);
+                pd.AddBreakPoint(bp2, pd.GetModuleAddress(bp2.ModuleName));
 
                 // 0x6FAD33A7 0x233A7
-                /*var bp = new LightBreakPoint(this, 0x233A7, 1, HardwareBreakPoint.Condition.Code);
-                pd.AddBreakPoint("d2client.dll", bp);
+                var bp = new LightBreakPoint(this);
+                pd.AddBreakPoint(bp, pd.GetModuleAddress(bp.ModuleName));
 
                 // 6FB332FF
-                var bp2 = new ReceivePacketBreakPoint(this, 0x832FF, 1, HardwareBreakPoint.Condition.Code);
-                pd.AddBreakPoint("d2client.dll", bp2);
+                var bp2 = new ReceivePacketBreakPoint(this);
+                pd.AddBreakPoint(bp2, pd.GetModuleAddress(bp2.ModuleName));
 
-                var bp3 = new ItemNameBreakPoint(this, 0x96736, 1, HardwareBreakPoint.Condition.Code);
-                pd.AddBreakPoint("d2client.dll", bp3);*/
+                var bp3 = new ItemNameBreakPoint(this);
+                pd.AddBreakPoint(bp3, pd.GetModuleAddress(bp3.ModuleName));*/
 
-                var bp = new ViewInventoryBp1(this, 0x997B2, 1, HardwareBreakPoint.Condition.Code);
-                pd.AddBreakPoint("d2client.dll", bp);
+                var bp = new ViewInventoryBp1(this);
+                pd.AddBreakPoint(bp, pd.GetModuleAddress(bp.ModuleName));
 
-                var bp2 = new ViewInventoryBp2(this, 0x98E84, 1, HardwareBreakPoint.Condition.Code);
-                pd.AddBreakPoint("d2client.dll", bp2);
+                var bp2 = new ViewInventoryBp2(this);
+                pd.AddBreakPoint(bp2, pd.GetModuleAddress(bp2.ModuleName));
 
-                var bp3 = new ViewInventoryBp3(this, 0x97E41, 1, HardwareBreakPoint.Condition.Code);
-                pd.AddBreakPoint("d2client.dll", bp3);
+                var bp3 = new ViewInventoryBp3(this);
+                pd.AddBreakPoint(bp3, pd.GetModuleAddress(bp3.ModuleName));
             }
             catch (Exception)
             {
-
                 return false;
             }
 
@@ -162,6 +161,7 @@ namespace Itchy
 
             pd.Call(pd.GetModuleAddress("d2client.dll") + D2Client.SetUiVar,
                 CallingConventionEx.FastCall,
+                (uint)uiVar,
                 value,
                 0);
         }
@@ -228,13 +228,7 @@ namespace Itchy
             if (!GetPlayerUnit(out unit))
                 return;
 
-            var inv = pd.Read<Inventory>(unit.pInventory);
-            if (inv.pCursorItem == 0)
-                return;
-
-            var item = pd.Read<UnitAny>(inv.pCursorItem);
-            var pTxt = GetItemText(item.dwTxtFileNo);
-            var txt = pd.Read<ItemTxt>(pTxt);
+            SetUIVar(UIVars.Inventory, 0);
 
             //OpenPortal();
         }
@@ -348,6 +342,9 @@ namespace Itchy
 
         public void OnViewInventoryKey()
         {
+            if (!GameReady())
+                return;
+
             var pSelected = pd.Call(pd.GetModuleAddress("d2client.dll") + D2Client.GetSelectedUnit,
                 CallingConventionEx.StdCall);
 

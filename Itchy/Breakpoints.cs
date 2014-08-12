@@ -12,17 +12,21 @@ namespace Itchy
     public class D2BreakPoint : HardwareBreakPoint
     {
         public D2Game Game { get; set; }
+        public string ModuleName { get { return moduleName; } }
 
-        public D2BreakPoint(D2Game game, int address, uint len, Condition condition)
-            : base(address, len, condition)
+        protected string moduleName;
+
+        public D2BreakPoint(D2Game game, string moduleName, int address)
+            : base(address, 1, Condition.Code)
         {
             this.Game = game;
+            this.moduleName = moduleName;
         }
     }
 
     public class LightBreakPoint : D2BreakPoint
     {
-        public LightBreakPoint(D2Game game, int address, uint len, Condition condition) : base(game, address, len, condition) { }
+        public LightBreakPoint(D2Game game) : base(game, "d2client.dll", 0x233A7) { }
 
         public override bool HandleException(ref CONTEXT ctx, ProcessDebugger pd)
         {
@@ -35,7 +39,7 @@ namespace Itchy
 
     public class RainBreakPoint : D2BreakPoint
     {
-        public RainBreakPoint(D2Game game, int address, uint len, Condition condition) : base(game, address, len, condition) { }
+        public RainBreakPoint(D2Game game) : base(game, "d2common.dll", 0x30C92) { }
 
         public override bool HandleException(ref CONTEXT ctx, ProcessDebugger pd)
         {
@@ -49,7 +53,7 @@ namespace Itchy
     // 6FB332FF
     public class ReceivePacketBreakPoint : D2BreakPoint
     {
-        public ReceivePacketBreakPoint(D2Game game, int address, uint len, Condition condition) : base(game, address, len, condition) { }
+        public ReceivePacketBreakPoint(D2Game game) : base(game, "d2client.dll", 0x832FF) { }
 
         private static PlayerMode[] allowableModes = new PlayerMode[] {PlayerMode.Death, PlayerMode.Stand_OutTown,PlayerMode.Walk_OutTown,PlayerMode.Run,PlayerMode.Stand_InTown,PlayerMode.Walk_InTown,
                             PlayerMode.Dead,PlayerMode.Sequence,PlayerMode.Being_Knockback};
@@ -194,7 +198,7 @@ namespace Itchy
     // 1.13d 0x96736 6FB46736
     public class ItemNameBreakPoint : D2BreakPoint
     {
-        public ItemNameBreakPoint(D2Game game, int address, uint len, Condition condition) : base(game, address, len, condition) { }
+        public ItemNameBreakPoint(D2Game game) : base(game, "d2client.dll", 0x96736) { }
 
         public override bool HandleException(ref CONTEXT ctx, ProcessDebugger pd)
         {
@@ -297,7 +301,7 @@ namespace Itchy
     // 1.13 0x997B2 0x6FB497B2
     public class ViewInventoryBp1 : D2BreakPoint
     {
-        public ViewInventoryBp1(D2Game game, int address, uint len, Condition condition) : base(game, address, len, condition) { }
+        public ViewInventoryBp1(D2Game game) : base(game, "d2client.dll", 0x997B2) { }
 
         public override bool HandleException(ref CONTEXT ctx, ProcessDebugger pd)
         {
@@ -311,7 +315,7 @@ namespace Itchy
     // 1.13 0x98E84 0x6FB48E84
     public class ViewInventoryBp2 : D2BreakPoint
     {
-        public ViewInventoryBp2(D2Game game, int address, uint len, Condition condition) : base(game, address, len, condition) { }
+        public ViewInventoryBp2(D2Game game) : base(game, "d2client.dll", 0x98E84) { }
 
         public override bool HandleException(ref CONTEXT ctx, ProcessDebugger pd)
         {
@@ -324,16 +328,22 @@ namespace Itchy
 
     // 1.13 0x97E3F 0x6FB47E3F
     // new 0x97E41 0x6FB47E41
+    // 97E1A 6FB47E1A
     public class ViewInventoryBp3 : D2BreakPoint
     {
-        public ViewInventoryBp3(D2Game game, int address, uint len, Condition condition) : base(game, address, len, condition) { }
+        public ViewInventoryBp3(D2Game game) : base(game, "d2client.dll", 0x97E1A) { }
 
         public override bool HandleException(ref CONTEXT ctx, ProcessDebugger pd)
         {
-            var viewvingUnit = Game.GetViewingUnit();
-            ctx.Edi = viewvingUnit;
-            ctx.Ecx = pd.ReadUInt(ctx.Edi + 0x60);
-            ctx.Eip += 3;
+            var viewingUnit = Game.GetViewingUnit();
+            //var val = pd.ReadUInt(ctx.Edi);
+            //if (val != 1)
+                ctx.Edi = viewingUnit;
+
+            //ctx.Ecx = pd.ReadUInt(ctx.Edi + 0x60);
+            //ctx.Eip += 3;
+
+            ctx.Eip += 7;
 
             return true;
         }

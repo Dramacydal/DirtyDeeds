@@ -22,6 +22,7 @@ namespace Itchy
         public static uint GetUnitStat = 0x584E0; // __stdcall, (UnitAny* pUnit, DWORD dwStat, DWORD dwStat2)
         public static uint GetItemPrice = 0x48620; // __stdcall, (UnitAny * player, UnitAny * item, DWORD difficulty, void* questinfo, int value, DWORD flag)
         public static uint sgptDataTables = 0x6FDF33F0 - 0x6FD50000;
+        public static uint GetObjectTxt = 0x1ADC0; // ObjectTxt * __stdcall, (DWORD objno)
     }
 
     public static class D2Client    // 0x6FAB0000
@@ -48,6 +49,8 @@ namespace Itchy
         public static uint GetSelectedUnit = 0x17280; // __stdcall, (void)
         public static uint pMouseX = 0x11C950;  // DWORD
         public static uint pMouseY = 0x11C94C;  // DWORD
+        public static uint NewAutomapCell = 0x703C0; // AutomapCell * __fastcall, (void)
+        public static uint AddAutomapCell = 0x71EA0; // void __fastcall, (AutomapCell *aCell, AutomapCell **node)
     }
 
     public static class D2Net       // 0x6FBF0000
