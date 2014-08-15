@@ -26,7 +26,12 @@ namespace Itchy
         public Itchy Itchy { get { return itchy; } }
         public ItemStorage ItemStorage { get { return itchy.ItemStorage; } }
 
-        public GameSettings Settings { get { return itchy.Settings; } }
+        public GameSettings Settings
+        {
+            get { return itchy.Settings; }
+            set { itchy.Settings = value; }
+        }
+
         public ItemDisplaySettings ItemSettings { get { return itchy.ItemSettings; } }
 
         protected Process process = null;
@@ -43,6 +48,8 @@ namespace Itchy
 
         public volatile ConcurrentDictionary<uint, uint> socketsPerItem = new ConcurrentDictionary<uint, uint>();
         public volatile ConcurrentDictionary<uint, uint> pricePerItem = new ConcurrentDictionary<uint, uint>();
+
+        private int threadSuspendCount = 0;
 
         public D2Game() { }
         public D2Game(Process process, Itchy itchy)
@@ -80,29 +87,7 @@ namespace Itchy
                 if (!pd.WaitForComeUp(500))
                     return false;
 
-                // 0x6FD80C92 0x30C92
-                /*var bp2 = new RainBreakPoint(this);
-                pd.AddBreakPoint(bp2, pd.GetModuleAddress(bp2.ModuleName));
-
-                // 0x6FAD33A7 0x233A7
-                var bp = new LightBreakPoint(this);
-                pd.AddBreakPoint(bp, pd.GetModuleAddress(bp.ModuleName));
-
-                // 6FB332FF
-                var bp2 = new ReceivePacketBreakPoint(this);
-                pd.AddBreakPoint(bp2, pd.GetModuleAddress(bp2.ModuleName));
-
-                var bp3 = new ItemNameBreakPoint(this);
-                pd.AddBreakPoint(bp3, pd.GetModuleAddress(bp3.ModuleName));*/
-
-                var bp = new ViewInventoryBp1(this);
-                pd.AddBreakPoint(bp, pd.GetModuleAddress(bp.ModuleName));
-
-                var bp2 = new ViewInventoryBp2(this);
-                pd.AddBreakPoint(bp2, pd.GetModuleAddress(bp2.ModuleName));
-
-                var bp3 = new ViewInventoryBp3(this);
-                pd.AddBreakPoint(bp3, pd.GetModuleAddress(bp3.ModuleName));
+                ApplySettings();
             }
             catch (Exception)
             {
@@ -279,11 +264,17 @@ namespace Itchy
 
         public void SuspendThreads(params int[] except)
         {
+            if (++threadSuspendCount > 1)
+                return;
+
             pd.SuspendAllThreads(except);
         }
 
         public void ResumeThreads()
         {
+            if (--threadSuspendCount > 0)
+                return;
+
             pd.ResumeAllThreads();
         }
 
@@ -389,11 +380,14 @@ namespace Itchy
 
             if (vkCode == Keys.LControlKey || vkCode == Keys.RControlKey)
             {
-                if (mEvent == MessageEvent.WM_KEYUP && !overlay.ClickThrough)
+                if (mEvent == MessageEvent.WM_KEYUP && !overlay.ClickThrough && !overlay.propertiesExpandButton.Expanded)
                         overlay.MakeNonInteractive(true);
                     else if (mEvent == MessageEvent.WM_KEYDOWN && overlay.ClickThrough)
                         overlay.MakeNonInteractive(false);
             }
+
+            if (mEvent == MessageEvent.WM_KEYUP && overlay.propertiesExpandButton.Expanded)
+                return overlay.HandleMessage(code, wParam, lParam);
 
             if (mEvent == MessageEvent.WM_KEYUP && GetUIVar(UIVars.ChatInput) == 0)
             {
@@ -418,7 +412,7 @@ namespace Itchy
                 if (vkCode == Settings.FastPortal.Key)
                 {
                     SuspendThreads();
-                    if (OpenPortal())
+                    if (OpenPortal() && Settings.FastPortal.GoToTown)
                         backToTown = true;
                     ResumeThreads();
                 }
@@ -439,6 +433,39 @@ namespace Itchy
             }
 
             return true;
+        }
+
+        private void AddBreakPoint(D2BreakPoint bp)
+        {
+            pd.AddBreakPoint(bp, pd.GetModuleAddress(bp.ModuleName));
+        }
+
+        public void ApplySettings()
+        {
+            process.Refresh();
+            if (process.HasExited)
+                return;
+
+            pd.RemoveBreakPoints();
+
+            if (Settings.LightHack.Enabled)
+                AddBreakPoint(new LightBreakPoint(this));
+
+            if (Settings.WeatherHack.Enabled)
+                AddBreakPoint(new WeatherBreakPoint(this));
+
+            if (Settings.ReceivePacketHack.Enabled)
+                AddBreakPoint(new ReceivePacketBreakPoint(this));
+
+            if (Settings.ItemNameHack.Enabled)
+                AddBreakPoint(new ItemNameBreakPoint(this));
+
+            if (Settings.ViewInventory.Enabled)
+            {
+                AddBreakPoint(new ViewInventoryBp1(this));
+                AddBreakPoint(new ViewInventoryBp2(this));
+                AddBreakPoint(new ViewInventoryBp3(this));
+            }
         }
     }
 }

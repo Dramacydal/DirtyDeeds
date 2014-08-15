@@ -54,6 +54,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Breakpoints.cs" />
+    <Compile Include="Controls\KeybindButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="D2Api\D2Api.cs" />
     <Compile Include="D2Api\LowLevel.cs" />
     <Compile Include="D2Game.cs" />

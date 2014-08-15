@@ -82,7 +82,7 @@ namespace Itchy
             }
 
             var now = DateTime.Now;
-            while ((DateTime.Now.Ticks - now.Ticks) / TimeSpan.TicksPerMillisecond < 2000 && !IsInTown())
+            while (now.MSecToNow() < 2000 && !IsInTown())
             {
                 Thread.Sleep(300);
             }
@@ -95,39 +95,6 @@ namespace Itchy
 
             chickening = false;
         }
-
-        /*public void FillItemSockets(uint pItem)
-        {
-            //lock ("sockLock")
-            {
-                var item = pd.Read<UnitAny>(pItem);
-                socketsPerItem[item.dwUnitId] = GetUnitStat(pItem, Stat.Sockets);
-            }
-        }*/
-
-        /*public void FillItemPrice(uint pItem)
-        {
-            SuspendThreads();
-
-            try
-            {
-                var item = pd.Read<UnitAny>(pItem);
-                var pUnit = GetPlayerUnit();
-                var diff = pd.ReadByte(pd.GetModuleAddress("d2client.dll") + D2Client.pDifficulty);
-                var pItemPriceList = pd.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pItemPriceList);
-
-                var val = pd.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetItemPrice,
-                    CallingConventionEx.StdCall,
-                    pUnit, pItem, (uint)diff, pItemPriceList, 0x9A, 1);
-
-                pricePerItem[item.dwUnitId] = val;
-            }
-            catch (Exception)
-            {
-            }
-
-            ResumeThreads();
-        }*/
 
         public uint GetItemSockets(uint pItem, uint dwItemId)
         {
@@ -147,9 +114,8 @@ namespace Itchy
                         {
                             socketsPerItem[dwItemId] = GetUnitStat(pItem, Stat.Sockets);
                         }
-                        catch (Exception)
-                        {
-                        }
+                        catch (Exception) { }
+
                         ResumeThreads();
                         hasPendingTask = false;
                     });
@@ -183,13 +149,11 @@ namespace Itchy
 
                             var price = pd.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetItemPrice,
                                 CallingConventionEx.StdCall,
-                                pUnit, pItem, (uint)diff, pItemPriceList, 0x9A, 1);
+                                pUnit, pItem, diff, pItemPriceList, 0x9A, 1);
 
                             pricePerItem[item.dwUnitId] = price;
                         }
-                        catch (Exception)
-                        {
-                        }
+                        catch (Exception) { }
 
                         ResumeThreads();
                         hasPendingTask = false;

@@ -6,24 +6,24 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using IniParser;
-using WhiteMagic;
 
 namespace Itchy
 {
     [Serializable]
     public class HackSettings
     {
-        public bool Enabled = false;
-
         public HackSettings() { }
+
+        public bool Enabled = false;
+        public static int Cost { get { return 1; } }
     }
 
     [Serializable]
     public class KeySettings
     {
-        public Keys Key = Keys.None;
-
         public KeySettings() { }
+
+        public Keys Key = Keys.None;
     }
 
     [Serializable]
@@ -50,7 +50,7 @@ namespace Itchy
     }
 
     [Serializable]
-    public class ItemNameSettings : HackSettings
+    public class ItemNameHackSettings : HackSettings
     {
         public bool ShowEth = false;
         public bool ShowItemLevel = false;
@@ -63,6 +63,8 @@ namespace Itchy
     [Serializable]
     public class ViewInventorySettings : HackSettings
     {
+        public new static int Cost { get { return 3; } }
+
         public Keys ViewInventoryKey = Keys.None;
     }
 
@@ -74,6 +76,8 @@ namespace Itchy
         public HackSettings LightHack = new HackSettings();
         public HackSettings WeatherHack = new HackSettings();
         public PacketReceivedHackSettings ReceivePacketHack = new PacketReceivedHackSettings();
+        public ItemNameHackSettings ItemNameHack = new ItemNameHackSettings();
+        public ViewInventorySettings ViewInventory = new ViewInventorySettings();
 
         public KeySettings RevealAct = new KeySettings();
         public KeySettings OpenStash = new KeySettings();
@@ -81,8 +85,6 @@ namespace Itchy
         public KeySettings FastExit = new KeySettings();
         public FastPortalSettings FastPortal = new FastPortalSettings();
         public ChickenSettings Chicken = new ChickenSettings();
-        public ItemNameSettings ItemName = new ItemNameSettings();
-        public ViewInventorySettings ViewInventory =new ViewInventorySettings();
     }
 
     public class ItemDisplayInfo
@@ -116,7 +118,6 @@ namespace Itchy
         }
     }
 
-    [Serializable]
     public class ItemDisplaySettings
     {
         private List<ItemDisplayInfo> Info = new List<ItemDisplayInfo>();
@@ -262,7 +263,7 @@ namespace Itchy
         {
             return Info.Find(e => !e.Empty() &&
                 //(e.TxtIds.Count == 0 || e.TxtIds.Contains(info.Id)) &&
-                (e.Codes.Count==0||e.Codes.Contains(code)) &&
+                (e.Codes.Count == 0 || e.Codes.Contains(code)) &&
                 (e.SocketNum.Count == 0 || e.SocketNum.Contains(sock)) &&
                 (e.IsEth.Count == 0 || e.IsEth.Contains(isEth)) &&
                 (e.Rarity.Count == 0 || e.Rarity.Contains(info.Rarity)) &&

@@ -219,5 +219,18 @@ namespace Itchy
             }
             return Hook.CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
         }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            Visible = false;
+            ShowInTaskbar = false;
+
+            base.OnLoad(e);
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
     }
 }

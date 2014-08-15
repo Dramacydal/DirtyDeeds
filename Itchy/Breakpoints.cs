@@ -37,9 +37,9 @@ namespace Itchy
         }
     }
 
-    public class RainBreakPoint : D2BreakPoint
+    public class WeatherBreakPoint : D2BreakPoint
     {
-        public RainBreakPoint(D2Game game) : base(game, "d2common.dll", 0x30C92) { }
+        public WeatherBreakPoint(D2Game game) : base(game, "d2common.dll", 0x30C92) { }
 
         public override bool HandleException(ref CONTEXT ctx, ProcessDebugger pd)
         {
@@ -221,7 +221,7 @@ namespace Itchy
 
             bool changed = false;
 
-            if (Game.Settings.ItemName.ShowEth && (itemData.dwFlags & 0x400000) != 0)
+            if (Game.Settings.ItemNameHack.ShowEth && (itemData.dwFlags & 0x400000) != 0)
             {
                 if (!changed)
                     str += " ";
@@ -230,7 +230,7 @@ namespace Itchy
             }
 
             var runeNumber = item.RuneNumber();
-            if (runeNumber > 0 && Game.Settings.ItemName.ShowRuneNumber)
+            if (runeNumber > 0 && Game.Settings.ItemNameHack.ShowRuneNumber)
             {
                 if (!changed)
                     str += " ";
@@ -238,7 +238,7 @@ namespace Itchy
                 changed = true;
             }
 
-            if (Game.Settings.ItemName.ShowSockets)
+            if (Game.Settings.ItemNameHack.ShowSockets)
             {
                 var cnt = Game.GetItemSockets(pItem, item.dwUnitId);
 
@@ -251,7 +251,7 @@ namespace Itchy
                 }
             }
 
-            if (Game.Settings.ItemName.ShowItemLevel && itemData.dwItemLevel > 1)
+            if (Game.Settings.ItemNameHack.ShowItemLevel && itemData.dwItemLevel > 1)
             {
                 if (!changed)
                     str += " ";
@@ -259,7 +259,7 @@ namespace Itchy
                 changed = true;
             }
 
-            if (Game.Settings.ItemName.ShowItemPrice)
+            if (Game.Settings.ItemNameHack.ShowItemPrice)
             {
                 var price = Game.GetItemPrice(pItem, item.dwUnitId);
 
@@ -272,7 +272,7 @@ namespace Itchy
                 }
             }
 
-            if (Game.Settings.ItemName.ChangeItemColor)
+            if (Game.Settings.ItemNameHack.ChangeItemColor)
             {
                 var itemInfo = Game.ItemStorage.GetInfo(item.dwTxtFileNo);
                 if (itemInfo != null)

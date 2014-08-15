@@ -81,5 +81,10 @@ namespace Itchy
 
             return '0';
         }
+
+        public static long MSecToNow(this DateTime date)
+        {
+            return (DateTime.Now.Ticks - date.Ticks) / TimeSpan.TicksPerMillisecond;
+        }
     }
 }

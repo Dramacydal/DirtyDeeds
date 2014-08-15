@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Security.Permissions;
+using ItchyControls;
 
 namespace Itchy
 {
@@ -44,6 +45,8 @@ namespace Itchy
             gameCheckThread.Start();
 
             CheckInGame(true);
+
+            SetupSettings(game.Settings);
 
             //translucentPanel1.BackColor = Color.FromArgb(127, Color.White);
 
@@ -80,7 +83,7 @@ namespace Itchy
             {
                 try
                 {
-                    w.Invoke((MethodInvoker)delegate { if (!w.disposing) w.RelocateWindow(); });
+                    w.Invoke((MethodInvoker)delegate { if (!w.disposing) w.UpdateOverlay(); });
                 }
                 catch (Exception)
                 {
@@ -126,7 +129,6 @@ namespace Itchy
 
             if (inGame)
             {
-                button1.Show();
                 logTranslucentPanel.Show();
                 itchyLabel.Show();
                 logExpandButton.Show();
@@ -135,7 +137,6 @@ namespace Itchy
             }
             else
             {
-                button1.Hide();
                 logTranslucentPanel.Hide();
                 itchyLabel.Hide();
                 logExpandButton.Hide();
@@ -156,8 +157,11 @@ namespace Itchy
             return false;
         }
 
-        private void RelocateWindow()
+        private void UpdateOverlay()
         {
+            if (!this.ClickThrough && !this.propertiesExpandButton.Expanded)
+                MakeNonInteractive(true);
+
             var foreGroundWindow = GetForegroundWindow();
             var newState = foreGroundWindow == this.game.Process.MainWindowHandle;
             if (newState != this.TopMost)
@@ -230,10 +234,207 @@ namespace Itchy
             //e.Graphics.FillRectangle(hb, this.DisplayRectangle);
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void SetupSettings(GameSettings settings)
         {
-            var form1 = new Form1();
-            form1.Show();
+            lightHackCheckBox.Checked = settings.LightHack.Enabled;
+            weatherHackCheckBox.Checked = settings.WeatherHack.Enabled;
+
+            packetReceiveHackCheckBox.Checked = settings.ReceivePacketHack.Enabled;
+            blockFlashCheckBox.Checked = settings.ReceivePacketHack.BlockFlash;
+            fastTeleCheckBox.Checked = settings.ReceivePacketHack.FastTele;
+            fastPortalCheckBox.Checked = settings.ReceivePacketHack.FastPortal;
+
+            itemNameHackCheckBox.Checked = settings.ItemNameHack.Enabled;
+            showEthCheckBox.Checked = settings.ItemNameHack.ShowEth;
+            showItemLevelCheckBox.Checked = settings.ItemNameHack.ShowItemLevel;
+            showItemPriceCheckBox.Checked = settings.ItemNameHack.ShowItemPrice;
+            showRuneNumberCheckBox.Checked = settings.ItemNameHack.ShowRuneNumber;
+            changeColorCheckBox.Checked = settings.ItemNameHack.ChangeItemColor;
+
+            viewInventoryHackCheckBox.Checked = settings.ViewInventory.Enabled;
+            viewInventoryKeybindButton.Key = settings.ViewInventory.ViewInventoryKey;
+
+            revealActKeybindButton.Key = settings.RevealAct.Key;
+            openStashKeybindButton.Key = settings.OpenStash.Key;
+            openCubeKeybindButton.Key = settings.OpenCube.Key;
+            fastExitKeybindButton.Key = settings.FastExit.Key;
+            townPortalKeybindButton.Key = settings.FastPortal.Key;
+            goToTownCheckBox.Checked = settings.FastPortal.GoToTown;
+
+            enableChickenCheckBox.Checked = settings.Chicken.Enabled;
+            chickenToTownCheckBox.Checked = settings.Chicken.ChickenToTown;
+            chickenOnHostileTextBox.Checked = settings.Chicken.ChickenOnHostile;
+            chickenLifePctTextBox.Text = settings.Chicken.ChickenLifePercent.ToString();
+            chickenManaPctTextBox.Text = settings.Chicken.ChickenManaPercent.ToString();
+        }
+
+        private GameSettings GetSettings()
+        {
+            var settings = new GameSettings();
+
+            settings.LightHack.Enabled = lightHackCheckBox.Checked;
+            settings.WeatherHack.Enabled = weatherHackCheckBox.Checked;
+
+            settings.ReceivePacketHack.Enabled = packetReceiveHackCheckBox.Checked;
+            settings.ReceivePacketHack.BlockFlash = blockFlashCheckBox.Checked;
+            settings.ReceivePacketHack.FastTele = fastTeleCheckBox.Checked;
+            settings.ReceivePacketHack.FastPortal = fastPortalCheckBox.Checked;
+
+            settings.ItemNameHack.Enabled = itemNameHackCheckBox.Checked;
+            settings.ItemNameHack.ShowEth = showEthCheckBox.Checked;
+            settings.ItemNameHack.ShowItemLevel = showItemLevelCheckBox.Checked;
+            settings.ItemNameHack.ShowItemPrice = showItemPriceCheckBox.Checked;
+            settings.ItemNameHack.ShowRuneNumber = showRuneNumberCheckBox.Checked;
+            settings.ItemNameHack.ChangeItemColor = changeColorCheckBox.Checked;
+
+            settings.ViewInventory.Enabled = viewInventoryHackCheckBox.Checked;
+            settings.ViewInventory.ViewInventoryKey = viewInventoryKeybindButton.Key;
+
+            settings.RevealAct.Key = revealActKeybindButton.Key;
+            settings.OpenStash.Key = openStashKeybindButton.Key;
+            settings.OpenCube.Key = openCubeKeybindButton.Key;
+            settings.FastExit.Key = fastExitKeybindButton.Key;
+            settings.FastPortal.Key = townPortalKeybindButton.Key;
+            settings.FastPortal.GoToTown = goToTownCheckBox.Checked;
+
+            settings.Chicken.Enabled = enableChickenCheckBox.Checked;
+            settings.Chicken.ChickenToTown = chickenToTownCheckBox.Checked;
+            settings.Chicken.ChickenOnHostile = chickenOnHostileTextBox.Checked;
+
+            try
+            {
+                var val = Convert.ToDouble(chickenLifePctTextBox.Text);
+                settings.Chicken.ChickenLifePercent = val;
+            }
+            catch (Exception) { }
+
+            try
+            {
+                var val = Convert.ToDouble(chickenManaPctTextBox.Text);
+                settings.Chicken.ChickenManaPercent = val;
+            }
+            catch (Exception) { }
+
+            return settings;
+        }
+
+        private int GetCost()
+        {
+            int cost = 0;
+            if (lightHackCheckBox.Checked)
+                cost += HackSettings.Cost;
+            if (weatherHackCheckBox.Checked)
+                cost += HackSettings.Cost;
+            if (packetReceiveHackCheckBox.Checked)
+                cost += PacketReceivedHackSettings.Cost;
+            if (itemNameHackCheckBox.Checked)
+                cost += ItemNameHackSettings.Cost;
+            if (viewInventoryHackCheckBox.Checked)
+                cost += ViewInventorySettings.Cost;
+
+            return cost;
+        }
+
+        private bool ValidateSettings()
+        {
+            return GetCost() <= 4;
+        }
+
+        private void packetReceiveHackCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            var state = packetReceiveHackCheckBox.Checked;
+
+            blockFlashCheckBox.Enabled = state;
+            fastTeleCheckBox.Enabled = state;
+            fastPortalCheckBox.Enabled = state;
+
+            goToTownCheckBox.Enabled = state;
+
+            enableChickenCheckBox.Enabled = state;
+            chickenToTownCheckBox.Enabled = state;
+            chickenOnHostileTextBox.Enabled = state;
+            chickenLifePctTextBox.Enabled = state;
+            chickenManaPctTextBox.Enabled = state;
+        }
+
+        private void itemNameHackCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            var state = itemNameHackCheckBox.Checked;
+
+            showEthCheckBox.Enabled = state;
+            showItemLevelCheckBox.Enabled = state;
+            showItemPriceCheckBox.Enabled = state;
+            showRuneNumberCheckBox.Enabled = state;
+            showSocketsCheckBox.Enabled = state;
+            changeColorCheckBox.Enabled = state;
+        }
+
+        private void viewInventoryHackCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            var state = viewInventoryHackCheckBox.Checked;
+
+            viewInventoryKeybindButton.Enabled = state;
+        }
+
+        private void refreshButton_Click(object sender, EventArgs e)
+        {
+            SetupSettings(game.Settings);
+        }
+
+        private void closeButton_Click(object sender, EventArgs e)
+        {
+            propertiesExpandButton.Expanded = false;
+        }
+
+        private void applyButton_Click(object sender, EventArgs e)
+        {
+            if (!ValidateSettings())
+            {
+                MessageBox.Show("Too many hacks selected", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            game.Settings = GetSettings();
+            game.ApplySettings();
+        }
+
+        public bool HandleMessage(int code, IntPtr wParam, IntPtr lParam)
+        {
+            var vkCode = (Keys)Marshal.ReadInt32(lParam);
+
+            var t = this.GetType();
+
+            var changed = false;
+            foreach (var f in t.GetFields())
+            {
+                if (f.FieldType != typeof(KeybindButton))
+                    continue;
+
+                var b = (KeybindButton)f.GetValue(this);
+                if (b.WaitingKeyPress)
+                {
+                    changed = true;
+                    if (vkCode == Keys.Escape)
+                        b.Reset();
+                    else
+                        b.Key = vkCode;
+
+                    foreach (var f2 in t.GetFields())
+                    {
+                        if (f2.FieldType != typeof(KeybindButton))
+                            continue;
+
+                        if (f2.Name == f.Name)
+                            continue;
+
+                        var b2 = (KeybindButton)f2.GetValue(this);
+                        if (b2.Key == vkCode)
+                            b2.Key = Keys.None;
+                    }
+                }
+            }
+
+            return !changed;
         }
     }
 }
