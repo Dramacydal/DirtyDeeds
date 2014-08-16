@@ -19,10 +19,6 @@ namespace Itchy
     {
         public D2Game game { get; set; }
 
-        protected Thread syncThread;
-        protected Thread gameCheckThread;
-
-        public volatile bool disposing = false;
         public bool ClickThrough { get; set; }
 
         public OverlayWindow()
@@ -37,14 +33,6 @@ namespace Itchy
 
             MakeTransparent(true);
             MakeNonInteractive(true);
-
-            syncThread = new Thread(() => WindowChecker(this));
-            syncThread.Start();
-
-            gameCheckThread = new Thread(() => GameChecker(this));
-            gameCheckThread.Start();
-
-            CheckInGame(true);
 
             SetupSettings(game.Settings);
 
@@ -79,74 +67,6 @@ namespace Itchy
                 SetWindowLong(this.Handle, -20, initialStyle & (initialStyle ^ 0x20));
         }
 
-        protected static void WindowChecker(OverlayWindow w)
-        {
-            while (true)
-            {
-                try
-                {
-                    w.Invoke((MethodInvoker)delegate { if (!w.disposing) w.UpdateOverlay(); });
-                }
-                catch (Exception)
-                {
-                    //MessageBox.Show(e.ToString());
-                }
-                Thread.Sleep(300);
-            }
-        }
-
-        protected static void GameChecker(OverlayWindow w)
-        {
-            while (true)
-            {
-                try
-                {
-                    w.Invoke((MethodInvoker)delegate { w.CheckInGame(); });
-                }
-                catch (Exception)
-                {
-                    //MessageBox.Show(e.ToString());
-                }
-                Thread.Sleep(300);
-            }
-        }
-
-        volatile bool inGame;
-        private void CheckInGame(bool first = false)
-        {
-            var check = game.GetPlayerUnit() != 0;
-            if (check == inGame && !first)
-                return;
-
-            if (check)
-            {
-                var name = game.GetPlayerName();
-                game.PlayerName = name;
-            }
-            else
-                game.PlayerName = "";
-            game.Itchy.games.ResetBindings();
-
-            inGame = check;
-
-            if (inGame)
-            {
-                logTranslucentPanel.Show();
-                itchyLabel.Show();
-                logExpandButton.Show();
-
-                game.EnteredGame();
-            }
-            else
-            {
-                logTranslucentPanel.Hide();
-                itchyLabel.Hide();
-                logExpandButton.Hide();
-
-                game.ExitedGame();
-            }
-        }
-
         private bool IsApplicationChildForm(IntPtr handle)
         {
             if (handle == game.Itchy.Handle)
@@ -159,7 +79,7 @@ namespace Itchy
             return false;
         }
 
-        private void UpdateOverlay()
+        public void UpdateOverlay()
         {
             if (!this.ClickThrough && !this.propertiesExpandButton.Expanded)
                 MakeNonInteractive(true);
@@ -320,7 +240,7 @@ namespace Itchy
             return settings;
         }
 
-        private int GetCost()
+        private int GetHackCost()
         {
             int cost = 0;
             if (lightHackCheckBox.Checked)
@@ -339,7 +259,7 @@ namespace Itchy
 
         private bool ValidateSettings()
         {
-            return GetCost() <= 4;
+            return GetHackCost() <= 4;
         }
 
         private void packetReceiveHackCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -398,6 +318,22 @@ namespace Itchy
 
             game.Settings = GetSettings();
             game.ApplySettings();
+        }
+
+        public void InGameStateChanged(bool inGame)
+        {
+            if (inGame)
+            {
+                logTranslucentPanel.Show();
+                itchyLabel.Show();
+                logExpandButton.Show();
+            }
+            else
+            {
+                logTranslucentPanel.Hide();
+                itchyLabel.Hide();
+                logExpandButton.Hide();
+            }
         }
 
         public bool HandleMessage(int code, IntPtr wParam, IntPtr lParam)

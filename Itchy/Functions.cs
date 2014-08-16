@@ -19,13 +19,20 @@ namespace Itchy
         //public static extern bool IsWow64Process([In] IntPtr processHandle,
         //     [Out, MarshalAs(UnmanagedType.Bool)] out bool wow64Process);
 
-        public D2Game SelectedGame { get { return (D2Game)clientsComboBox.SelectedItem; } }
-        public D2Game[] Games { get { return clientsComboBox.Items.Cast<D2Game>().ToArray(); } }
+        //public D2Game SelectedGame { get { return (D2Game)clientsComboBox.SelectedItem; } }
+        public List<D2Game> Games { get { return games; } }
 
-        public BindingList<D2Game> games = new BindingList<D2Game>();
+        public List<D2Game> games = new List<D2Game>();
 
         protected void UpdateGames()
         {
+            games.ForEach((g) =>
+                {
+                    if (!g.Exists())
+                        g.Dispose();
+                });
+            games.RemoveAll((g) => !g.Exists());
+
             for (var i = 0; i < games.Count; ++i)
             {
                 var g = games[i];

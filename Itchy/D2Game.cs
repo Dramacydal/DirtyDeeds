@@ -16,11 +16,10 @@ using System.Xml.Serialization;
 
 namespace Itchy
 {
-    public partial class D2Game
+    public partial class D2Game : IDisposable
     {
         public Process Process { get { return process; } }
         public ProcessDebugger Debugger { get { return pd; } }
-        public Thread Thread { get { return th; } }
         public bool Installed { get { return pd != null; } }
         public OverlayWindow Overlay { get { return overlay; } }
         public Itchy Itchy { get { return itchy; } }
@@ -36,7 +35,6 @@ namespace Itchy
 
         protected Process process = null;
         protected ProcessDebugger pd = null;
-        protected Thread th = null;
         protected volatile OverlayWindow overlay = null;
         protected Itchy itchy;
 
@@ -49,11 +47,14 @@ namespace Itchy
         public volatile ConcurrentDictionary<uint, uint> socketsPerItem = new ConcurrentDictionary<uint, uint>();
         public volatile ConcurrentDictionary<uint, uint> pricePerItem = new ConcurrentDictionary<uint, uint>();
 
+        protected Thread syncThread = null;
+        protected Thread gameCheckThread = null;
+
         private int threadSuspendCount = 0;
 
         public D2Game() { }
 
-        ~D2Game()
+        public void Dispose()
         {
             if (!Installed)
                 return;
@@ -75,6 +76,12 @@ namespace Itchy
 
         public bool Exists()
         {
+            if (pd != null && pd.HasExited)
+                return false;
+
+            if (process.HasExited)
+                return false;
+
             process.Refresh();
 
             if (process.HasExited)
@@ -85,14 +92,13 @@ namespace Itchy
 
         public bool Install()
         {
-            process.Refresh();
-            if (process.HasExited)
+            if (!Exists())
                 return false;
 
             try
             {
                 pd = new ProcessDebugger(process.Id);
-                th = ProcessDebugger.Run(ref pd);
+                pd.Run();
 
                 var now = DateTime.Now;
                 while (!pd.WaitForComeUp(50) && now.MSecToNow() < 1000)
@@ -105,6 +111,15 @@ namespace Itchy
                 return false;
             }
 
+            syncThread = new Thread(() => WindowChecker(this));
+            syncThread.Start();
+
+            gameCheckThread = new Thread(() => GameChecker(this));
+            gameCheckThread.Start();
+
+            CheckInGame(true);
+
+
             overlay = new OverlayWindow();
             overlay.game = this;
             //overlay.Visible = false;
@@ -116,25 +131,114 @@ namespace Itchy
 
         public bool Detach()
         {
-            overlay.Dispose();
-            overlay = null;
-
-            process.Refresh();
-            if (process.HasExited)
-                return true;
-
-            try
+            if (overlay != null)
             {
-                pd.StopDebugging();
-                th.Join();
-                pd = null;
+                overlay.Dispose();
+                overlay = null;
             }
-            catch (Exception)
+
+            if (syncThread != null)
             {
-                return false;
+                syncThread.Abort();
+                syncThread = null;
+            }
+            if (gameCheckThread != null)
+            {
+                gameCheckThread.Abort();
+                gameCheckThread = null;
+            }
+
+            if (Installed)
+            {
+                try
+                {
+                    pd.StopDebugging();
+                    pd.Join();
+                    pd = null;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
             }
 
             return true;
+        }
+
+        protected static void WindowChecker(D2Game game)
+        {
+            while (true)
+            {
+                try
+                {
+                    if (game.Debugger.HasExited)
+                    {
+                        game.Detach();
+                        return;
+                    }
+
+                    if (game.Overlay != null)
+                    {
+                        game.Overlay.Invoke((MethodInvoker)delegate
+                        {
+                            game.Overlay.UpdateOverlay();
+                        });
+                    }
+                }
+                catch (Exception)
+                {
+                    //MessageBox.Show(e.ToString());
+                }
+                Thread.Sleep(300);
+            }
+        }
+
+        protected static void GameChecker(D2Game g)
+        {
+            while (true)
+            {
+                try
+                {
+                    g.CheckInGame();
+                }
+                catch (Exception)
+                {
+                    //MessageBox.Show(e.ToString());
+                }
+                Thread.Sleep(300);
+            }
+        }
+
+        volatile bool inGame;
+        private void CheckInGame(bool first = false)
+        {
+            var check = GetPlayerUnit() != 0;
+            if (check == inGame && !first)
+                return;
+
+            if (check)
+                PlayerName = GetPlayerName();
+            else
+                PlayerName = "";
+
+            inGame = check;
+
+            if (inGame)
+                EnteredGame();
+            else
+                ExitedGame();
+
+            try
+            {
+                overlay.Invoke((MethodInvoker)delegate
+                {
+                    overlay.InGameStateChanged(inGame);
+                });
+            }
+            catch (Exception)
+            {
+                //MessageBox.Show(e.ToString());
+            }
         }
 
         public uint GetPlayerUnit()
@@ -426,7 +530,7 @@ namespace Itchy
                 if (vkCode == Settings.FastPortal.Key)
                 {
                     SuspendThreads();
-                    if (OpenPortal() && Settings.FastPortal.GoToTown)
+                    if (OpenPortal() && Settings.FastPortal.GoToTown && Settings.ReceivePacketHack.Enabled)
                         backToTown = true;
                     ResumeThreads();
                 }
@@ -456,8 +560,7 @@ namespace Itchy
 
         public void ApplySettings()
         {
-            process.Refresh();
-            if (process.HasExited)
+            if (!Exists())
                 return;
 
             pd.RemoveBreakPoints();

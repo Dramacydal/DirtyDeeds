@@ -45,7 +45,7 @@ namespace Itchy
 
             InstallFont();
 
-            clientsComboBox.DataSource = games;
+            //clientsComboBox.DataSource = games;
             UpdateGames();
             UpdateTrayItemList();
 
@@ -130,7 +130,7 @@ namespace Itchy
 
         private void attachButton_Click(object sender, EventArgs e)
         {
-            var g = SelectedGame;
+            /*var g = SelectedGame;
             if (g == null)
                 return;
 
@@ -143,7 +143,7 @@ namespace Itchy
             {
                 statusLabel.Text = "Attached to " + g.ToString();
                 games.ResetBindings();
-            }
+            }*/
         }
 
         private void Itchy_FormClosing(object sender, FormClosingEventArgs e)
@@ -152,7 +152,7 @@ namespace Itchy
             Hook.UnhookWindowsHookEx(keyHookId);
             Hook.UnhookWindowsHookEx(mouseHookId);
 
-            foreach (var g in Games)
+            foreach (var g in games)
             {
                 if (!g.Installed)
                     continue;
@@ -163,7 +163,7 @@ namespace Itchy
 
         private void detachButton_Click(object sender, EventArgs e)
         {
-            var g = SelectedGame;
+            /*var g = SelectedGame;
             if (g == null)
                 return;
 
@@ -173,7 +173,7 @@ namespace Itchy
                 else
                     MessageBox.Show("Failed to detach");
 
-            games.ResetBindings();
+            games.ResetBindings();*/
         }
 
         private void clientsComboBox_DropDown(object sender, EventArgs e)
@@ -184,11 +184,11 @@ namespace Itchy
 
         private void testButton_Click(object sender, EventArgs e)
         {
-            var g = SelectedGame;
+            /*var g = SelectedGame;
             if (g == null)
                 return;
 
-            g.Test();
+            g.Test();*/
         }
 
         protected IntPtr SetKeyHook(HookProc proc)

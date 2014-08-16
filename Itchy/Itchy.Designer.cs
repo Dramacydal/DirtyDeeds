@@ -32,7 +32,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Itchy));
             this.attachButton = new System.Windows.Forms.Button();
             this.detachButton = new System.Windows.Forms.Button();
-            this.clientsComboBox = new System.Windows.Forms.ComboBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.testButton = new System.Windows.Forms.Button();
@@ -65,16 +64,6 @@
             this.detachButton.Text = "Detach";
             this.detachButton.UseVisualStyleBackColor = true;
             this.detachButton.Click += new System.EventHandler(this.detachButton_Click);
-            // 
-            // clientsComboBox
-            // 
-            this.clientsComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.clientsComboBox.FormattingEnabled = true;
-            this.clientsComboBox.Location = new System.Drawing.Point(207, 12);
-            this.clientsComboBox.Name = "clientsComboBox";
-            this.clientsComboBox.Size = new System.Drawing.Size(172, 21);
-            this.clientsComboBox.TabIndex = 4;
-            this.clientsComboBox.DropDown += new System.EventHandler(this.clientsComboBox_DropDown);
             // 
             // statusStrip1
             // 
@@ -116,7 +105,7 @@
             this.aboutToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.trayMenu.Name = "trayMenu";
-            this.trayMenu.Size = new System.Drawing.Size(153, 98);
+            this.trayMenu.Size = new System.Drawing.Size(111, 76);
             // 
             // clientsToolStripMenuItem
             // 
@@ -150,7 +139,6 @@
             this.ClientSize = new System.Drawing.Size(391, 262);
             this.Controls.Add(this.testButton);
             this.Controls.Add(this.statusStrip1);
-            this.Controls.Add(this.clientsComboBox);
             this.Controls.Add(this.detachButton);
             this.Controls.Add(this.attachButton);
             this.DoubleBuffered = true;
@@ -172,7 +160,6 @@
 
         private System.Windows.Forms.Button attachButton;
         private System.Windows.Forms.Button detachButton;
-        private System.Windows.Forms.ComboBox clientsComboBox;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel statusLabel;
         private System.Windows.Forms.Button testButton;
