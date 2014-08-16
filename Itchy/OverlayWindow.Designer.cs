@@ -34,7 +34,7 @@
         {
             this.itchyLabel = new System.Windows.Forms.Label();
             this.optionsTranslucentPanel = new ItchyControls.TranslucentPanel();
-            this.optionsTabControl = new System.Windows.Forms.TabControl();
+            this.settingsTabControl = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.closeButton = new System.Windows.Forms.Button();
             this.applyButton = new System.Windows.Forms.Button();
@@ -73,13 +73,12 @@
             this.packetReceiveHackCheckBox = new System.Windows.Forms.CheckBox();
             this.weatherHackCheckBox = new System.Windows.Forms.CheckBox();
             this.lightHackCheckBox = new System.Windows.Forms.CheckBox();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.propertiesExpandButton = new ItchyControls.ExpandButton();
             this.logExpandButton = new ItchyControls.ExpandButton();
             this.logTranslucentPanel = new ItchyControls.TranslucentPanel();
             this.logTextBox = new ItchyControls.TransparentRichTextBox();
             this.optionsTranslucentPanel.SuspendLayout();
-            this.optionsTabControl.SuspendLayout();
+            this.settingsTabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.logTranslucentPanel.SuspendLayout();
             this.SuspendLayout();
@@ -98,22 +97,21 @@
             // optionsTranslucentPanel
             // 
             this.optionsTranslucentPanel.BackColor = System.Drawing.Color.Transparent;
-            this.optionsTranslucentPanel.Controls.Add(this.optionsTabControl);
+            this.optionsTranslucentPanel.Controls.Add(this.settingsTabControl);
             this.optionsTranslucentPanel.Location = new System.Drawing.Point(19, 25);
             this.optionsTranslucentPanel.Name = "optionsTranslucentPanel";
             this.optionsTranslucentPanel.Size = new System.Drawing.Size(570, 405);
             this.optionsTranslucentPanel.TabIndex = 6;
             // 
-            // optionsTabControl
+            // settingsTabControl
             // 
-            this.optionsTabControl.Controls.Add(this.tabPage1);
-            this.optionsTabControl.Controls.Add(this.tabPage2);
-            this.optionsTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.optionsTabControl.Location = new System.Drawing.Point(0, 0);
-            this.optionsTabControl.Name = "optionsTabControl";
-            this.optionsTabControl.SelectedIndex = 0;
-            this.optionsTabControl.Size = new System.Drawing.Size(570, 405);
-            this.optionsTabControl.TabIndex = 0;
+            this.settingsTabControl.Controls.Add(this.tabPage1);
+            this.settingsTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.settingsTabControl.Location = new System.Drawing.Point(0, 0);
+            this.settingsTabControl.Name = "settingsTabControl";
+            this.settingsTabControl.SelectedIndex = 0;
+            this.settingsTabControl.Size = new System.Drawing.Size(570, 405);
+            this.settingsTabControl.TabIndex = 0;
             // 
             // tabPage1
             // 
@@ -527,26 +525,16 @@
             this.lightHackCheckBox.Text = "Light Hack: 1";
             this.lightHackCheckBox.UseVisualStyleBackColor = true;
             // 
-            // tabPage2
-            // 
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(562, 379);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "tabPage2";
-            this.tabPage2.UseVisualStyleBackColor = true;
-            // 
             // propertiesExpandButton
             // 
             this.propertiesExpandButton.ChildPanel = this.optionsTranslucentPanel;
-            this.propertiesExpandButton.Expanded = true;
+            this.propertiesExpandButton.Expanded = false;
             this.propertiesExpandButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.propertiesExpandButton.Location = new System.Drawing.Point(2, 49);
             this.propertiesExpandButton.Name = "propertiesExpandButton";
             this.propertiesExpandButton.Size = new System.Drawing.Size(18, 16);
             this.propertiesExpandButton.TabIndex = 5;
-            this.propertiesExpandButton.Text = " \\/";
+            this.propertiesExpandButton.Text = " /\\";
             this.propertiesExpandButton.UseVisualStyleBackColor = true;
             // 
             // logExpandButton
@@ -593,7 +581,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.Black;
+            this.BackColor = System.Drawing.Color.MidnightBlue;
             this.ClientSize = new System.Drawing.Size(800, 647);
             this.Controls.Add(this.optionsTranslucentPanel);
             this.Controls.Add(this.propertiesExpandButton);
@@ -604,13 +592,12 @@
             this.Name = "OverlayWindow";
             this.ShowInTaskbar = false;
             this.Text = "OverlayWindow";
-            this.TopMost = true;
-            this.TransparencyKey = System.Drawing.Color.Black;
+            this.TransparencyKey = System.Drawing.Color.MidnightBlue;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OverlayWindow_FormClosing);
             this.Load += new System.EventHandler(this.OverlayWindow_Load);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.OverlayWindow_Paint);
             this.optionsTranslucentPanel.ResumeLayout(false);
-            this.optionsTabControl.ResumeLayout(false);
+            this.settingsTabControl.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
             this.logTranslucentPanel.ResumeLayout(false);
@@ -627,9 +614,8 @@
         private ItchyControls.ExpandButton logExpandButton;
         public ItchyControls.ExpandButton propertiesExpandButton;
         private ItchyControls.TranslucentPanel optionsTranslucentPanel;
-        private System.Windows.Forms.TabControl optionsTabControl;
+        private System.Windows.Forms.TabControl settingsTabControl;
         private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.CheckBox lightHackCheckBox;
         private System.Windows.Forms.CheckBox weatherHackCheckBox;
         private System.Windows.Forms.CheckBox packetReceiveHackCheckBox;

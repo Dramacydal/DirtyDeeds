@@ -47,6 +47,7 @@ namespace Itchy
 
             clientsComboBox.DataSource = games;
             UpdateGames();
+            UpdateTrayItemList();
 
             hookProc = new HookProc(HookCallback);
             keyHookId = SetKeyHook(hookProc);
@@ -55,8 +56,15 @@ namespace Itchy
             ItemStorage = new ItemStorage();
             ItemSettings = new ItemDisplaySettings(ItemConfigFileName);
             LoadSettings();
+
+            clientsToolStripMenuItem.DropDown.Closing += RestrictClosing;
         }
 
+        private void RestrictClosing(object sender, ToolStripDropDownClosingEventArgs e)
+        {
+            e.Cancel = e.CloseReason == ToolStripDropDownCloseReason.ItemClicked || !needCloseToolstrip;
+            needCloseToolstrip = true;
+        }
         protected void LoadSettings()
         {
             StreamReader s = null;
@@ -171,6 +179,7 @@ namespace Itchy
         private void clientsComboBox_DropDown(object sender, EventArgs e)
         {
             UpdateGames();
+            UpdateTrayItemList();
         }
 
         private void testButton_Click(object sender, EventArgs e)

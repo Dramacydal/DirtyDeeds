@@ -52,6 +52,15 @@ namespace Itchy
         private int threadSuspendCount = 0;
 
         public D2Game() { }
+
+        ~D2Game()
+        {
+            if (!Installed)
+                return;
+
+            Detach();
+        }
+
         public D2Game(Process process, Itchy itchy)
         {
             this.process = process;
@@ -60,7 +69,8 @@ namespace Itchy
 
         public override string ToString()
         {
-            return process.MainModule.FileVersionInfo.InternalName + " - " + process.Id + (Installed ? " (*) " + PlayerName : "");
+            //return process.MainModule.FileVersionInfo.InternalName + " - " + process.Id + (Installed ? " (*) " + PlayerName : "");
+            return process.MainModule.FileVersionInfo.InternalName + " - " + process.Id + (Installed ? " " + PlayerName : "");
         }
 
         public bool Exists()
@@ -84,8 +94,9 @@ namespace Itchy
                 pd = new ProcessDebugger(process.Id);
                 th = ProcessDebugger.Run(ref pd);
 
-                if (!pd.WaitForComeUp(500))
-                    return false;
+                var now = DateTime.Now;
+                while (!pd.WaitForComeUp(50) && now.MSecToNow() < 1000)
+                { }
 
                 ApplySettings();
             }
@@ -96,13 +107,18 @@ namespace Itchy
 
             overlay = new OverlayWindow();
             overlay.game = this;
-            overlay.Show();
+            //overlay.Visible = false;
+            overlay.PostCreate();
+            //overlay.Show();
 
             return true;
         }
 
         public bool Detach()
         {
+            overlay.Dispose();
+            overlay = null;
+
             process.Refresh();
             if (process.HasExited)
                 return true;
@@ -117,9 +133,6 @@ namespace Itchy
             {
                 return false;
             }
-
-            overlay.Dispose();
-            overlay = null;
 
             return true;
         }
@@ -175,7 +188,7 @@ namespace Itchy
                     return "";
 
                 var data = pd.Read<PlayerData>(unit.pPlayerData);
-                return Encoding.ASCII.GetString(data.szName);
+                return data.szName;
             }
             catch (Exception)
             {
@@ -387,7 +400,8 @@ namespace Itchy
             }
 
             if (mEvent == MessageEvent.WM_KEYUP && overlay.propertiesExpandButton.Expanded)
-                return overlay.HandleMessage(code, wParam, lParam);
+                if (!overlay.HandleMessage(code, wParam, lParam))
+                    return false;
 
             if (mEvent == MessageEvent.WM_KEYUP && GetUIVar(UIVars.ChatInput) == 0)
             {

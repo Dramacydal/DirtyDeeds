@@ -31,7 +31,7 @@ namespace Itchy
         }
 
         //
-        protected void PostInit()
+        public void PostCreate()
         {
             //SetStyle(ControlStyles.SupportsTransparentBackColor | ControlStyles.UserPaint, true);
 
@@ -47,6 +47,8 @@ namespace Itchy
             CheckInGame(true);
 
             SetupSettings(game.Settings);
+
+            SetupControlPositions();
 
             //translucentPanel1.BackColor = Color.FromArgb(127, Color.White);
 
@@ -208,9 +210,9 @@ namespace Itchy
 
         private void OverlayWindow_Load(object sender, EventArgs e)
         {
-            PostInit();
+            //PostInit();
 
-            SetupControlPositions();
+            //SetupControlPositions();
         }
 
         private void SetupControlPositions()
@@ -220,7 +222,7 @@ namespace Itchy
 
             //translucentPanel1.Size = new Size(400, 40);
             //translucentPanel1.Location = new Point(115, rect.Height - translucentPanel1.Size.Height - 55);
-            itchyLabel.Font = Itchy.d2font;
+            //itchyLabel.Font = Itchy.d2font;
         }
 
         private void OverlayWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -434,7 +436,7 @@ namespace Itchy
                 }
             }
 
-            return !changed;
+            return changed;
         }
     }
 }

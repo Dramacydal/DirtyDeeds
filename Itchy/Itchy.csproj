@@ -54,6 +54,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Breakpoints.cs" />
+    <Compile Include="Controls\D2ToolstipMenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Controls\KeybindButton.cs">
       <SubType>Component</SubType>
     </Compile>

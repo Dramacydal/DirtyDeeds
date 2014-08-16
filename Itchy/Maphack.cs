@@ -226,7 +226,7 @@ namespace Itchy
                     }
                 }
 
-                if (cellNo > 0 && cellNo < 1258)
+                if (cellNo > 0/* && cellNo < 1258*/)
                 {
                     var pCell = pd.Call(pd.GetModuleAddress("d2client.dll") + D2Client.NewAutomapCell,
                         CallingConventionEx.FastCall);

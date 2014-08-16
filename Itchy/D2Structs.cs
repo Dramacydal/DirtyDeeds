@@ -138,8 +138,8 @@ namespace Itchy
     struct PlayerData
     {
         [FieldOffset(0x0)]
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x10, ArraySubType = UnmanagedType.U1)]
-        public byte[] szName;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 0x10)]
+        public string szName;
         [FieldOffset(0x10)]
         uint pNormalQuest;              // QuestInfo*
         [FieldOffset(0x14)]
