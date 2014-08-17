@@ -69,6 +69,13 @@ namespace Itchy
     }
 
     [Serializable]
+    public class InfravisionSettings : HackSettings
+    {
+        public bool HideCorpses = false;
+        public bool HideItems = false;
+    }
+
+    [Serializable]
     public class GameSettings
     {
         public GameSettings() { }
@@ -78,6 +85,7 @@ namespace Itchy
         public PacketReceivedHackSettings ReceivePacketHack = new PacketReceivedHackSettings();
         public ItemNameHackSettings ItemNameHack = new ItemNameHackSettings();
         public ViewInventorySettings ViewInventory = new ViewInventorySettings();
+        public InfravisionSettings Infravision = new InfravisionSettings();
 
         public KeySettings RevealAct = new KeySettings();
         public KeySettings OpenStash = new KeySettings();

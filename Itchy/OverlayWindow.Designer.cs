@@ -32,6 +32,9 @@
             this.optionsTranslucentPanel = new ItchyControls.TranslucentPanel();
             this.settingsTabControl = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.hideItemCheckBox = new System.Windows.Forms.CheckBox();
+            this.hideCorpsesCheckBox = new System.Windows.Forms.CheckBox();
+            this.infravisionHackCheckBox = new System.Windows.Forms.CheckBox();
             this.closeButton = new System.Windows.Forms.Button();
             this.applyButton = new System.Windows.Forms.Button();
             this.refreshButton = new System.Windows.Forms.Button();
@@ -96,7 +99,7 @@
             this.optionsTranslucentPanel.Controls.Add(this.settingsTabControl);
             this.optionsTranslucentPanel.Location = new System.Drawing.Point(19, 25);
             this.optionsTranslucentPanel.Name = "optionsTranslucentPanel";
-            this.optionsTranslucentPanel.Size = new System.Drawing.Size(570, 405);
+            this.optionsTranslucentPanel.Size = new System.Drawing.Size(570, 474);
             this.optionsTranslucentPanel.TabIndex = 6;
             // 
             // settingsTabControl
@@ -106,11 +109,14 @@
             this.settingsTabControl.Location = new System.Drawing.Point(0, 0);
             this.settingsTabControl.Name = "settingsTabControl";
             this.settingsTabControl.SelectedIndex = 0;
-            this.settingsTabControl.Size = new System.Drawing.Size(570, 405);
+            this.settingsTabControl.Size = new System.Drawing.Size(570, 474);
             this.settingsTabControl.TabIndex = 0;
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.hideItemCheckBox);
+            this.tabPage1.Controls.Add(this.hideCorpsesCheckBox);
+            this.tabPage1.Controls.Add(this.infravisionHackCheckBox);
             this.tabPage1.Controls.Add(this.closeButton);
             this.tabPage1.Controls.Add(this.applyButton);
             this.tabPage1.Controls.Add(this.refreshButton);
@@ -151,14 +157,47 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(562, 379);
+            this.tabPage1.Size = new System.Drawing.Size(562, 448);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // hideItemCheckBox
+            // 
+            this.hideItemCheckBox.AutoSize = true;
+            this.hideItemCheckBox.Enabled = false;
+            this.hideItemCheckBox.Location = new System.Drawing.Point(32, 425);
+            this.hideItemCheckBox.Name = "hideItemCheckBox";
+            this.hideItemCheckBox.Size = new System.Drawing.Size(76, 17);
+            this.hideItemCheckBox.TabIndex = 41;
+            this.hideItemCheckBox.Text = "Hide Items";
+            this.hideItemCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // hideCorpsesCheckBox
+            // 
+            this.hideCorpsesCheckBox.AutoSize = true;
+            this.hideCorpsesCheckBox.Enabled = false;
+            this.hideCorpsesCheckBox.Location = new System.Drawing.Point(32, 401);
+            this.hideCorpsesCheckBox.Name = "hideCorpsesCheckBox";
+            this.hideCorpsesCheckBox.Size = new System.Drawing.Size(89, 17);
+            this.hideCorpsesCheckBox.TabIndex = 40;
+            this.hideCorpsesCheckBox.Text = "Hide Corpses";
+            this.hideCorpsesCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // infravisionHackCheckBox
+            // 
+            this.infravisionHackCheckBox.AutoSize = true;
+            this.infravisionHackCheckBox.Location = new System.Drawing.Point(16, 377);
+            this.infravisionHackCheckBox.Name = "infravisionHackCheckBox";
+            this.infravisionHackCheckBox.Size = new System.Drawing.Size(115, 17);
+            this.infravisionHackCheckBox.TabIndex = 39;
+            this.infravisionHackCheckBox.Text = "Infravision Hack: 1";
+            this.infravisionHackCheckBox.UseVisualStyleBackColor = true;
+            this.infravisionHackCheckBox.CheckedChanged += new System.EventHandler(this.infravisionHackCheckBox_CheckedChanged);
+            // 
             // closeButton
             // 
-            this.closeButton.Location = new System.Drawing.Point(465, 351);
+            this.closeButton.Location = new System.Drawing.Point(463, 421);
             this.closeButton.Name = "closeButton";
             this.closeButton.Size = new System.Drawing.Size(75, 23);
             this.closeButton.TabIndex = 38;
@@ -168,7 +207,7 @@
             // 
             // applyButton
             // 
-            this.applyButton.Location = new System.Drawing.Point(384, 351);
+            this.applyButton.Location = new System.Drawing.Point(382, 421);
             this.applyButton.Name = "applyButton";
             this.applyButton.Size = new System.Drawing.Size(75, 23);
             this.applyButton.TabIndex = 37;
@@ -178,7 +217,7 @@
             // 
             // refreshButton
             // 
-            this.refreshButton.Location = new System.Drawing.Point(235, 350);
+            this.refreshButton.Location = new System.Drawing.Point(233, 420);
             this.refreshButton.Name = "refreshButton";
             this.refreshButton.Size = new System.Drawing.Size(75, 23);
             this.refreshButton.TabIndex = 36;
@@ -206,6 +245,7 @@
             // 
             // chickenManaPctTextBox
             // 
+            this.chickenManaPctTextBox.Enabled = false;
             this.chickenManaPctTextBox.Location = new System.Drawing.Point(396, 115);
             this.chickenManaPctTextBox.Name = "chickenManaPctTextBox";
             this.chickenManaPctTextBox.Size = new System.Drawing.Size(31, 20);
@@ -213,6 +253,7 @@
             // 
             // chickenLifePctTextBox
             // 
+            this.chickenLifePctTextBox.Enabled = false;
             this.chickenLifePctTextBox.Location = new System.Drawing.Point(396, 89);
             this.chickenLifePctTextBox.Name = "chickenLifePctTextBox";
             this.chickenLifePctTextBox.Size = new System.Drawing.Size(31, 20);
@@ -221,6 +262,7 @@
             // chickenOnHostileTextBox
             // 
             this.chickenOnHostileTextBox.AutoSize = true;
+            this.chickenOnHostileTextBox.Enabled = false;
             this.chickenOnHostileTextBox.Location = new System.Drawing.Point(396, 65);
             this.chickenOnHostileTextBox.Name = "chickenOnHostileTextBox";
             this.chickenOnHostileTextBox.Size = new System.Drawing.Size(113, 17);
@@ -231,6 +273,7 @@
             // chickenToTownCheckBox
             // 
             this.chickenToTownCheckBox.AutoSize = true;
+            this.chickenToTownCheckBox.Enabled = false;
             this.chickenToTownCheckBox.Location = new System.Drawing.Point(396, 42);
             this.chickenToTownCheckBox.Name = "chickenToTownCheckBox";
             this.chickenToTownCheckBox.Size = new System.Drawing.Size(103, 17);
@@ -241,16 +284,19 @@
             // enableChickenCheckBox
             // 
             this.enableChickenCheckBox.AutoSize = true;
+            this.enableChickenCheckBox.Enabled = false;
             this.enableChickenCheckBox.Location = new System.Drawing.Point(396, 18);
             this.enableChickenCheckBox.Name = "enableChickenCheckBox";
             this.enableChickenCheckBox.Size = new System.Drawing.Size(101, 17);
             this.enableChickenCheckBox.TabIndex = 29;
             this.enableChickenCheckBox.Text = "Enable Chicken";
             this.enableChickenCheckBox.UseVisualStyleBackColor = true;
+            this.enableChickenCheckBox.CheckedChanged += new System.EventHandler(this.enableChickenCheckBox_CheckedChanged);
             // 
             // goToTownCheckBox
             // 
             this.goToTownCheckBox.AutoSize = true;
+            this.goToTownCheckBox.Enabled = false;
             this.goToTownCheckBox.Location = new System.Drawing.Point(220, 148);
             this.goToTownCheckBox.Name = "goToTownCheckBox";
             this.goToTownCheckBox.Size = new System.Drawing.Size(106, 17);
@@ -381,6 +427,7 @@
             // changeColorCheckBox
             // 
             this.changeColorCheckBox.AutoSize = true;
+            this.changeColorCheckBox.Enabled = false;
             this.changeColorCheckBox.Location = new System.Drawing.Point(32, 304);
             this.changeColorCheckBox.Name = "changeColorCheckBox";
             this.changeColorCheckBox.Size = new System.Drawing.Size(90, 17);
@@ -391,6 +438,7 @@
             // showSocketsCheckBox
             // 
             this.showSocketsCheckBox.AutoSize = true;
+            this.showSocketsCheckBox.Enabled = false;
             this.showSocketsCheckBox.Location = new System.Drawing.Point(32, 280);
             this.showSocketsCheckBox.Name = "showSocketsCheckBox";
             this.showSocketsCheckBox.Size = new System.Drawing.Size(95, 17);
@@ -401,6 +449,7 @@
             // showRuneNumberCheckBox
             // 
             this.showRuneNumberCheckBox.AutoSize = true;
+            this.showRuneNumberCheckBox.Enabled = false;
             this.showRuneNumberCheckBox.Location = new System.Drawing.Point(32, 256);
             this.showRuneNumberCheckBox.Name = "showRuneNumberCheckBox";
             this.showRuneNumberCheckBox.Size = new System.Drawing.Size(122, 17);
@@ -411,6 +460,7 @@
             // showItemPriceCheckBox
             // 
             this.showItemPriceCheckBox.AutoSize = true;
+            this.showItemPriceCheckBox.Enabled = false;
             this.showItemPriceCheckBox.Location = new System.Drawing.Point(32, 232);
             this.showItemPriceCheckBox.Name = "showItemPriceCheckBox";
             this.showItemPriceCheckBox.Size = new System.Drawing.Size(103, 17);
@@ -421,6 +471,7 @@
             // showItemLevelCheckBox
             // 
             this.showItemLevelCheckBox.AutoSize = true;
+            this.showItemLevelCheckBox.Enabled = false;
             this.showItemLevelCheckBox.Location = new System.Drawing.Point(32, 208);
             this.showItemLevelCheckBox.Name = "showItemLevelCheckBox";
             this.showItemLevelCheckBox.Size = new System.Drawing.Size(105, 17);
@@ -431,6 +482,7 @@
             // showEthCheckBox
             // 
             this.showEthCheckBox.AutoSize = true;
+            this.showEthCheckBox.Enabled = false;
             this.showEthCheckBox.Location = new System.Drawing.Point(32, 184);
             this.showEthCheckBox.Name = "showEthCheckBox";
             this.showEthCheckBox.Size = new System.Drawing.Size(95, 17);
@@ -441,6 +493,7 @@
             // fastPortalCheckBox
             // 
             this.fastPortalCheckBox.AutoSize = true;
+            this.fastPortalCheckBox.Enabled = false;
             this.fastPortalCheckBox.Location = new System.Drawing.Point(32, 137);
             this.fastPortalCheckBox.Name = "fastPortalCheckBox";
             this.fastPortalCheckBox.Size = new System.Drawing.Size(126, 17);
@@ -451,6 +504,7 @@
             // fastTeleCheckBox
             // 
             this.fastTeleCheckBox.AutoSize = true;
+            this.fastTeleCheckBox.Enabled = false;
             this.fastTeleCheckBox.Location = new System.Drawing.Point(32, 113);
             this.fastTeleCheckBox.Name = "fastTeleCheckBox";
             this.fastTeleCheckBox.Size = new System.Drawing.Size(88, 17);
@@ -461,6 +515,7 @@
             // blockFlashCheckBox
             // 
             this.blockFlashCheckBox.AutoSize = true;
+            this.blockFlashCheckBox.Enabled = false;
             this.blockFlashCheckBox.Location = new System.Drawing.Point(32, 88);
             this.blockFlashCheckBox.Name = "blockFlashCheckBox";
             this.blockFlashCheckBox.Size = new System.Drawing.Size(81, 17);
@@ -524,13 +579,13 @@
             // propertiesExpandButton
             // 
             this.propertiesExpandButton.ChildPanel = this.optionsTranslucentPanel;
-            this.propertiesExpandButton.Expanded = false;
+            this.propertiesExpandButton.Expanded = true;
             this.propertiesExpandButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.propertiesExpandButton.Location = new System.Drawing.Point(2, 49);
             this.propertiesExpandButton.Name = "propertiesExpandButton";
             this.propertiesExpandButton.Size = new System.Drawing.Size(18, 16);
             this.propertiesExpandButton.TabIndex = 5;
-            this.propertiesExpandButton.Text = " /\\";
+            this.propertiesExpandButton.Text = " \\/";
             this.propertiesExpandButton.UseVisualStyleBackColor = true;
             // 
             // logExpandButton
@@ -649,5 +704,8 @@
         private System.Windows.Forms.Button closeButton;
         private System.Windows.Forms.Button applyButton;
         private System.Windows.Forms.Button refreshButton;
+        private System.Windows.Forms.CheckBox infravisionHackCheckBox;
+        private System.Windows.Forms.CheckBox hideItemCheckBox;
+        private System.Windows.Forms.CheckBox hideCorpsesCheckBox;
     }
 }

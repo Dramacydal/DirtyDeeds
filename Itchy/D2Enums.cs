@@ -30,6 +30,26 @@ namespace Itchy
         Being_Knockback = 19 // being knocked back
     }
 
+    public enum NpcMode : uint
+    {
+        Death = 0,
+        Stand = 1,
+        Walk = 2,
+        BeingHit = 3,
+        Attack1 = 4,
+        Attack2 = 5,
+        Block = 6,
+        Cast = 7,
+        UseSkill1 = 8,
+        UseSkill2 = 9,
+        UseSkill3 = 10,
+        UseSkill4 = 11,
+        Dead = 12,
+        BeingKnockBack = 13,
+        Sequence = 14,
+        Run = 15,
+    }
+
     public enum UnitType : uint
     {
         Player = 0,

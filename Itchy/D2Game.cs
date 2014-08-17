@@ -583,6 +583,9 @@ namespace Itchy
                 AddBreakPoint(new ViewInventoryBp2(this));
                 AddBreakPoint(new ViewInventoryBp3(this));
             }
+
+            if (Settings.Infravision.Enabled)
+                AddBreakPoint(new InfravisionBreakPoint(this));
         }
     }
 }

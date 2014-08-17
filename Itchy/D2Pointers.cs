@@ -23,6 +23,8 @@ namespace Itchy
         public static uint GetItemPrice = 0x48620; // __stdcall, (UnitAny * player, UnitAny * item, DWORD difficulty, void* questinfo, int value, DWORD flag)
         public static uint sgptDataTables = 0x6FDF33F0 - 0x6FD50000;
         public static uint GetObjectTxt = 0x1ADC0; // ObjectTxt * __stdcall, (DWORD objno)
+        public static uint GetFunkUnk_5 = 0x6FDBD1D0 - 0x6FD50000; // __stdcall, (DWORD nLevelNo)
+        public static uint TestFunUnk_6 = 0x6FD67CF0 - 0x6FD50000; // DWORD __stdcall, (UnitAny *unit1, UnitAny *unit2, DWORD arg3)
     }
 
     public static class D2Client    // 0x6FAB0000

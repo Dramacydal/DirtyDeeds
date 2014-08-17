@@ -137,8 +137,8 @@ namespace Itchy
 
         private void SetupControlPositions()
         {
-            RECT rect;
-            GetWindowRect(this.game.Process.MainWindowHandle, out rect);
+            //RECT rect;
+            //GetWindowRect(this.game.Process.MainWindowHandle, out rect);
 
             //translucentPanel1.Size = new Size(400, 40);
             //translucentPanel1.Location = new Point(115, rect.Height - translucentPanel1.Size.Height - 55);
@@ -176,6 +176,10 @@ namespace Itchy
             viewInventoryHackCheckBox.Checked = settings.ViewInventory.Enabled;
             viewInventoryKeybindButton.Key = settings.ViewInventory.ViewInventoryKey;
 
+            infravisionHackCheckBox.Checked = settings.Infravision.Enabled;
+            hideCorpsesCheckBox.Checked = settings.Infravision.HideCorpses;
+            hideItemCheckBox.Checked = settings.Infravision.HideItems;
+
             revealActKeybindButton.Key = settings.RevealAct.Key;
             openStashKeybindButton.Key = settings.OpenStash.Key;
             openCubeKeybindButton.Key = settings.OpenCube.Key;
@@ -211,6 +215,10 @@ namespace Itchy
 
             settings.ViewInventory.Enabled = viewInventoryHackCheckBox.Checked;
             settings.ViewInventory.ViewInventoryKey = viewInventoryKeybindButton.Key;
+
+            settings.Infravision.Enabled = infravisionHackCheckBox.Checked;
+            settings.Infravision.HideCorpses = hideCorpsesCheckBox.Checked;
+            settings.Infravision.HideItems = hideItemCheckBox.Checked;
 
             settings.RevealAct.Key = revealActKeybindButton.Key;
             settings.OpenStash.Key = openStashKeybindButton.Key;
@@ -253,6 +261,8 @@ namespace Itchy
                 cost += ItemNameHackSettings.Cost;
             if (viewInventoryHackCheckBox.Checked)
                 cost += ViewInventorySettings.Cost;
+            if (infravisionHackCheckBox.Checked)
+                cost += InfravisionSettings.Cost;
 
             return cost;
         }
@@ -273,10 +283,10 @@ namespace Itchy
             goToTownCheckBox.Enabled = state;
 
             enableChickenCheckBox.Enabled = state;
-            chickenToTownCheckBox.Enabled = state;
-            chickenOnHostileTextBox.Enabled = state;
-            chickenLifePctTextBox.Enabled = state;
-            chickenManaPctTextBox.Enabled = state;
+            chickenToTownCheckBox.Enabled = state && enableChickenCheckBox.Checked;
+            chickenOnHostileTextBox.Enabled = state && enableChickenCheckBox.Checked;
+            chickenLifePctTextBox.Enabled = state && enableChickenCheckBox.Checked;
+            chickenManaPctTextBox.Enabled = state && enableChickenCheckBox.Checked;
         }
 
         private void itemNameHackCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -296,6 +306,24 @@ namespace Itchy
             var state = viewInventoryHackCheckBox.Checked;
 
             viewInventoryKeybindButton.Enabled = state;
+        }
+
+        private void infravisionHackCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            var state = infravisionHackCheckBox.Checked;
+
+            hideCorpsesCheckBox.Enabled = state;
+            hideItemCheckBox.Enabled = state;
+        }
+
+        private void enableChickenCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            var state = enableChickenCheckBox.Checked;
+
+            chickenToTownCheckBox.Enabled = state && packetReceiveHackCheckBox.Checked;
+            chickenOnHostileTextBox.Enabled = state && packetReceiveHackCheckBox.Checked;
+            chickenLifePctTextBox.Enabled = state && packetReceiveHackCheckBox.Checked;
+            chickenManaPctTextBox.Enabled = state && packetReceiveHackCheckBox.Checked;
         }
 
         private void refreshButton_Click(object sender, EventArgs e)
