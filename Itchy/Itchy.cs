@@ -222,7 +222,9 @@ namespace Itchy
                     if (foregroundWindow != g.Process.MainWindowHandle && foregroundWindow != g.Overlay.Handle)
                         continue;
 
-                    if (!g.HandleMessage(code, wParam, lParam))
+                    var key = (Keys)Marshal.ReadInt32(lParam);
+                    var mEvent = (MessageEvent)wParam.ToInt32();
+                    if (!g.HandleMessage(key, mEvent))
                         return 1;   // block
                 }
             }

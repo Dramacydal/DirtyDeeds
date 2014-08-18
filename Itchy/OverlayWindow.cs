@@ -178,6 +178,7 @@ namespace Itchy
 
             infravisionHackCheckBox.Checked = settings.Infravision.Enabled;
             hideCorpsesCheckBox.Checked = settings.Infravision.HideCorpses;
+            hideDyingCheckBox.Checked = settings.Infravision.HideDying;
             hideItemCheckBox.Checked = settings.Infravision.HideItems;
 
             revealActKeybindButton.Key = settings.RevealAct.Key;
@@ -218,6 +219,7 @@ namespace Itchy
 
             settings.Infravision.Enabled = infravisionHackCheckBox.Checked;
             settings.Infravision.HideCorpses = hideCorpsesCheckBox.Checked;
+            settings.Infravision.HideDying = hideDyingCheckBox.Checked;
             settings.Infravision.HideItems = hideItemCheckBox.Checked;
 
             settings.RevealAct.Key = revealActKeybindButton.Key;
@@ -313,6 +315,7 @@ namespace Itchy
             var state = infravisionHackCheckBox.Checked;
 
             hideCorpsesCheckBox.Enabled = state;
+            hideDyingCheckBox.Enabled = state;
             hideItemCheckBox.Enabled = state;
         }
 
@@ -340,7 +343,7 @@ namespace Itchy
         {
             if (!ValidateSettings())
             {
-                MessageBox.Show("Too many hacks selected", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(this, "Too many hacks selected", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -364,9 +367,10 @@ namespace Itchy
             }
         }
 
-        public bool HandleMessage(int code, IntPtr wParam, IntPtr lParam)
+        public bool HandleMessage(Keys key, MessageEvent mEvent)
         {
-            var vkCode = (Keys)Marshal.ReadInt32(lParam);
+            if (key == Keys.LControlKey || key == Keys.RControlKey)
+                return true;
 
             var t = this.GetType();
 
@@ -380,10 +384,10 @@ namespace Itchy
                 if (b.WaitingKeyPress)
                 {
                     changed = true;
-                    if (vkCode == Keys.Escape)
+                    if (key == Keys.Escape)
                         b.Reset();
                     else
-                        b.Key = vkCode;
+                        b.Key = key;
 
                     foreach (var f2 in t.GetFields())
                     {
@@ -394,7 +398,7 @@ namespace Itchy
                             continue;
 
                         var b2 = (KeybindButton)f2.GetValue(this);
-                        if (b2.Key == vkCode)
+                        if (b2.Key == key)
                             b2.Key = Keys.None;
                     }
                 }

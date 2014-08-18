@@ -361,7 +361,7 @@ namespace Itchy
             var pUnit = ctx.Esi;
             if (pUnit == 0)
                 hide = 1;
-            else if (Game.Settings.Infravision.HideCorpses || Game.Settings.Infravision.HideItems)
+            else if (Game.Settings.Infravision.HideCorpses || Game.Settings.Infravision.HideDying || Game.Settings.Infravision.HideItems)
             {
                 var unit = pd.Read<UnitAny>(pUnit);
                 switch ((UnitType)unit.dwType)
@@ -369,8 +369,9 @@ namespace Itchy
                     case UnitType.Monster:
                     {
                         if (Game.Settings.Infravision.HideCorpses &&
-                            (unit.dwMode == (uint)NpcMode.Dead ||
-                            unit.dwMode == (uint)NpcMode.Death))
+                            unit.dwMode == (uint)NpcMode.Dead ||
+                            Game.Settings.Infravision.HideDying && 
+                            unit.dwMode == (uint)NpcMode.Death)
                             hide = 1;
                         break;
                     }

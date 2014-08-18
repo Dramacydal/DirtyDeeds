@@ -76,6 +76,7 @@
             this.logExpandButton = new ItchyControls.ExpandButton();
             this.logTranslucentPanel = new ItchyControls.TranslucentPanel();
             this.logTextBox = new ItchyControls.TransparentRichTextBox();
+            this.hideDyingCheckBox = new System.Windows.Forms.CheckBox();
             this.optionsTranslucentPanel.SuspendLayout();
             this.settingsTabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -99,7 +100,7 @@
             this.optionsTranslucentPanel.Controls.Add(this.settingsTabControl);
             this.optionsTranslucentPanel.Location = new System.Drawing.Point(19, 25);
             this.optionsTranslucentPanel.Name = "optionsTranslucentPanel";
-            this.optionsTranslucentPanel.Size = new System.Drawing.Size(570, 474);
+            this.optionsTranslucentPanel.Size = new System.Drawing.Size(570, 502);
             this.optionsTranslucentPanel.TabIndex = 6;
             // 
             // settingsTabControl
@@ -109,11 +110,12 @@
             this.settingsTabControl.Location = new System.Drawing.Point(0, 0);
             this.settingsTabControl.Name = "settingsTabControl";
             this.settingsTabControl.SelectedIndex = 0;
-            this.settingsTabControl.Size = new System.Drawing.Size(570, 474);
+            this.settingsTabControl.Size = new System.Drawing.Size(570, 502);
             this.settingsTabControl.TabIndex = 0;
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.hideDyingCheckBox);
             this.tabPage1.Controls.Add(this.hideItemCheckBox);
             this.tabPage1.Controls.Add(this.hideCorpsesCheckBox);
             this.tabPage1.Controls.Add(this.infravisionHackCheckBox);
@@ -157,7 +159,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(562, 448);
+            this.tabPage1.Size = new System.Drawing.Size(562, 476);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -166,7 +168,7 @@
             // 
             this.hideItemCheckBox.AutoSize = true;
             this.hideItemCheckBox.Enabled = false;
-            this.hideItemCheckBox.Location = new System.Drawing.Point(32, 425);
+            this.hideItemCheckBox.Location = new System.Drawing.Point(32, 443);
             this.hideItemCheckBox.Name = "hideItemCheckBox";
             this.hideItemCheckBox.Size = new System.Drawing.Size(76, 17);
             this.hideItemCheckBox.TabIndex = 41;
@@ -197,7 +199,7 @@
             // 
             // closeButton
             // 
-            this.closeButton.Location = new System.Drawing.Point(463, 421);
+            this.closeButton.Location = new System.Drawing.Point(463, 441);
             this.closeButton.Name = "closeButton";
             this.closeButton.Size = new System.Drawing.Size(75, 23);
             this.closeButton.TabIndex = 38;
@@ -207,7 +209,7 @@
             // 
             // applyButton
             // 
-            this.applyButton.Location = new System.Drawing.Point(382, 421);
+            this.applyButton.Location = new System.Drawing.Point(382, 441);
             this.applyButton.Name = "applyButton";
             this.applyButton.Size = new System.Drawing.Size(75, 23);
             this.applyButton.TabIndex = 37;
@@ -217,7 +219,7 @@
             // 
             // refreshButton
             // 
-            this.refreshButton.Location = new System.Drawing.Point(233, 420);
+            this.refreshButton.Location = new System.Drawing.Point(233, 440);
             this.refreshButton.Name = "refreshButton";
             this.refreshButton.Size = new System.Drawing.Size(75, 23);
             this.refreshButton.TabIndex = 36;
@@ -628,6 +630,16 @@
             this.logTextBox.Text = "";
             this.logTextBox.WordWrap = false;
             // 
+            // hideDyingCheckBox
+            // 
+            this.hideDyingCheckBox.AutoSize = true;
+            this.hideDyingCheckBox.Location = new System.Drawing.Point(32, 422);
+            this.hideDyingCheckBox.Name = "hideDyingCheckBox";
+            this.hideDyingCheckBox.Size = new System.Drawing.Size(107, 17);
+            this.hideDyingCheckBox.TabIndex = 42;
+            this.hideDyingCheckBox.Text = "Hide Dying Mobs";
+            this.hideDyingCheckBox.UseVisualStyleBackColor = true;
+            // 
             // OverlayWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -707,5 +719,6 @@
         private System.Windows.Forms.CheckBox infravisionHackCheckBox;
         private System.Windows.Forms.CheckBox hideItemCheckBox;
         private System.Windows.Forms.CheckBox hideCorpsesCheckBox;
+        private System.Windows.Forms.CheckBox hideDyingCheckBox;
     }
 }

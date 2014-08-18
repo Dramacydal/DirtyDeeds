@@ -16,31 +16,24 @@ namespace Itchy
 
         public void RevealAct()
         {
-            SuspendThreads();
-
             UnitAny unit;
-            if (!GetPlayerUnit(out unit))
+            if (!GameReady() || !GetPlayerUnit(out unit))
             {
-                ResumeThreads();
                 Log("Failed to reveal act");
                 return;
             }
 
             if (revealedActs.Contains(unit.dwAct))
             {
-                ResumeThreads();
                 Log("Act {0} is already revealed", unit.dwAct + 1);
                 return;
             }
 
             if (unit.pAct == 0)
             {
-                ResumeThreads();
                 Log("Failed to reveal act {0}", unit.dwAct + 1);
                 return;
             }
-
-            ResumeStormThread();
 
             var act = pd.Read<Act>(unit.pAct);
             var expCharFlag = pd.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pExpCharFlag);
@@ -60,7 +53,6 @@ namespace Itchy
 
             if (pAct == 0)
             {
-                ResumeThreads();
                 Log("Failed to reveal act");
                 return;
             }
@@ -68,7 +60,6 @@ namespace Itchy
             act = pd.Read<Act>(pAct);
             if (act.pMisc == 0)
             {
-                ResumeThreads();
                 Log("Failed to reveal act");
                 return;
             }
@@ -76,7 +67,6 @@ namespace Itchy
             var actMisc = pd.Read<ActMisc>(act.pMisc);
             if (actMisc.pLevelFirst == 0)
             {
-                ResumeThreads();
                 Log("Failed to reveal act");
                 return;
             }
@@ -159,8 +149,6 @@ namespace Itchy
                 CallingConventionEx.StdCall,
                 pAct);
 
-            ResumeThreads();
-
             //PrintGameString("Revealed act", D2Color.Red);
 
             revealedActs.Add(unit.dwAct);
@@ -212,17 +200,17 @@ namespace Itchy
                         default:
                             break;
                     }
-                }
 
-                if (cellNo == -1 && preset.dwTxtFileNo <= 572)
-                {
-                    var pTxt = pd.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetObjectTxt,
-                        CallingConventionEx.StdCall,
-                        preset.dwTxtFileNo);
-                    if (pTxt != 0)
+                    if (cellNo == -1 && preset.dwTxtFileNo <= 572)
                     {
-                        var txt = pd.Read<ObjectTxt>(pTxt);
-                        cellNo = (int)txt.nAutoMap;
+                        var pTxt = pd.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetObjectTxt,
+                            CallingConventionEx.StdCall,
+                            preset.dwTxtFileNo);
+                        if (pTxt != 0)
+                        {
+                            var txt = pd.Read<ObjectTxt>(pTxt);
+                            cellNo = (int)txt.nAutoMap;
+                        }
                     }
                 }
 
@@ -237,7 +225,7 @@ namespace Itchy
                     var y = preset.dwPosY + room.dwPosY * 5;
 
                     cell.nCellNo = (ushort)cellNo;
-                    cell.xPixel = (ushort)((x - y) * 1.6 + 1);
+                    cell.xPixel = (ushort)(((short)x - (short)y) * 1.6 + 1);
                     cell.yPixel = (ushort)((y + x) * 0.8 - 3);
 
                     pd.Write<AutomapCell>(pCell, cell);

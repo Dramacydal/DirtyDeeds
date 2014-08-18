@@ -16,6 +16,15 @@ using System.Xml.Serialization;
 
 namespace Itchy
 {
+    public enum MessageEvent : int
+    {
+        WM_KEYDOWN = 0x100,
+        WM_KEYUP = 0x101,
+        WM_LBUTTONDOWN = 0x201,
+        WM_LBUTTONUP = 0x202,
+        WM_HOTKEY = 0x312,
+    }
+
     public partial class D2Game : IDisposable
     {
         public Process Process { get { return process; } }
@@ -352,27 +361,25 @@ namespace Itchy
 
         public void OpenStash()
         {
-            SuspendThreads();
+            if (!GameReady())
+                return;
 
             var packet = new byte[] { 0x77, 0x10 };
             ReceivePacket(packet);
-
-            ResumeThreads();
         }
 
         public void OpenCube()
         {
-            SuspendThreads();
+            if (!GameReady())
+                return;
 
             var packet = new byte[] { 0x77, 0x15 };
             ReceivePacket(packet);
-
-            ResumeThreads();
         }
 
         public void ExitGame()
         {
-            if (GetPlayerUnit() == 0)
+            if (!GameReady())
                 return;
 
             pd.Call(pd.GetModuleAddress("d2client.dll") + D2Client.ExitGame,
@@ -478,24 +485,12 @@ namespace Itchy
             return pd.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pMouseY);
         }
 
-        enum MessageEvent : int
+        public bool HandleMessage(Keys key, MessageEvent mEvent)
         {
-            WM_KEYDOWN = 0x100,
-            WM_KEYUP = 0x101,
-            WM_LBUTTONDOWN = 0x201,
-            WM_LBUTTONUP = 0x202,
-            WM_HOTKEY = 0x312,
-        }
-
-        public bool HandleMessage(int code, IntPtr wParam, IntPtr lParam)
-        {
-            var mEvent = (MessageEvent)wParam.ToInt32();
-            var vkCode = (Keys)Marshal.ReadInt32(lParam);
-
             //Console.WriteLine(mEvent.ToString() + " " + vkCode.ToString());
-            Log(mEvent.ToString() + " " + vkCode.ToString());
+            Log(mEvent.ToString() + " " + key.ToString());
 
-            if (vkCode == Keys.LControlKey || vkCode == Keys.RControlKey)
+            if (key == Keys.LControlKey || key == Keys.RControlKey)
             {
                 if (mEvent == MessageEvent.WM_KEYUP && !overlay.ClickThrough && !overlay.propertiesExpandButton.Expanded)
                         overlay.MakeNonInteractive(true);
@@ -504,30 +499,37 @@ namespace Itchy
             }
 
             if (mEvent == MessageEvent.WM_KEYUP && overlay.propertiesExpandButton.Expanded)
-                if (!overlay.HandleMessage(code, wParam, lParam))
+                if (!overlay.HandleMessage(key, mEvent))
                     return false;
 
             if (mEvent == MessageEvent.WM_KEYUP && GetUIVar(UIVars.ChatInput) == 0)
             {
-                if (vkCode == Settings.FastExit.Key)
+                if (key == Settings.FastExit.Key)
                 {
                     SuspendThreads();
                     ExitGame();
                     ResumeThreads();
                 }
-                if (vkCode == Settings.OpenCube.Key)
+                if (key == Settings.OpenCube.Key)
                 {
+                    SuspendThreads();
                     OpenCube();
+                    ResumeThreads();
                 }
-                if (vkCode == Settings.OpenStash.Key)
+                if (key == Settings.OpenStash.Key)
                 {
+                    SuspendThreads();
                     OpenStash();
+                    ResumeThreads();
                 }
-                if (vkCode == Settings.RevealAct.Key)
+                if (key == Settings.RevealAct.Key)
                 {
+                    SuspendThreads();
+                    ResumeStormThread();
                     RevealAct();
+                    ResumeThreads();
                 }
-                if (vkCode == Settings.FastPortal.Key)
+                if (key == Settings.FastPortal.Key)
                 {
                     SuspendThreads();
                     if (OpenPortal() && Settings.FastPortal.GoToTown && Settings.ReceivePacketHack.Enabled)
@@ -535,7 +537,7 @@ namespace Itchy
                     ResumeThreads();
                 }
 
-                if (vkCode == Settings.ViewInventory.ViewInventoryKey && Settings.ViewInventory.Enabled)
+                if (key == Settings.ViewInventory.ViewInventoryKey && Settings.ViewInventory.Enabled)
                 {
                     SuspendThreads();
                     OnViewInventoryKey();
@@ -555,6 +557,9 @@ namespace Itchy
 
         private void AddBreakPoint(D2BreakPoint bp)
         {
+            if (pd.Breakpoints.Count >= 4)
+                return;
+
             pd.AddBreakPoint(bp, pd.GetModuleAddress(bp.ModuleName));
         }
 
