@@ -54,7 +54,7 @@ namespace Itchy
             mouseHookId = SetMouseHook(hookProc);
 
             ItemStorage = new ItemStorage();
-            ItemSettings = new ItemDisplaySettings(ItemConfigFileName);
+            ItemSettings = new ItemDisplaySettings(ItemConfigFileName, ItemStorage);
             LoadSettings();
 
             clientsToolStripMenuItem.DropDown.Closing += RestrictClosing;

@@ -67,14 +67,9 @@
     <Compile Include="Controls\ExpandButton.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="D2ItemActionHandler.cs" />
     <Compile Include="D2Tasks.cs" />
     <Compile Include="Extensions.cs" />
-    <Compile Include="Form1.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </Compile>
     <Compile Include="Functions.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -89,7 +84,7 @@
     </Compile>
     <Compile Include="D2Pointers.cs" />
     <Compile Include="ItemStorage.cs" />
-    <Compile Include="Maphack.cs" />
+    <Compile Include="D2Maphack.cs" />
     <Compile Include="Misc.cs" />
     <Compile Include="OverlayWindow.cs">
       <SubType>Form</SubType>
@@ -109,9 +104,6 @@
     <Compile Include="Controls\TransparentRichTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Itchy.resx">
       <DependentUpon>Itchy.cs</DependentUpon>
       <SubType>Designer</SubType>

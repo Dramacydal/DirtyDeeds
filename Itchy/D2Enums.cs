@@ -192,5 +192,16 @@ namespace Itchy
         Craft = 8,
     }
 
-    //public enum Item
+    public enum GameServerPacket : byte
+    {
+        GameObjectModeChange = 0x0E,
+        PlayerReassign = 0x15,
+        Unknown18 = 0x18,
+        GameObjectAssignment = 0x51,
+        PlayerInfomation = 0x5A,
+        PlayerLifeManaChange = 0x95,
+        WorldItemAction = 0x9C,
+        OwnedItemAction = 0x9D,
+        DelayedState = 0xA7,
+    }
 }

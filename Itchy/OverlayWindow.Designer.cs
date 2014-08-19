@@ -32,6 +32,7 @@
             this.optionsTranslucentPanel = new ItchyControls.TranslucentPanel();
             this.settingsTabControl = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.hideDyingCheckBox = new System.Windows.Forms.CheckBox();
             this.hideItemCheckBox = new System.Windows.Forms.CheckBox();
             this.hideCorpsesCheckBox = new System.Windows.Forms.CheckBox();
             this.infravisionHackCheckBox = new System.Windows.Forms.CheckBox();
@@ -76,7 +77,6 @@
             this.logExpandButton = new ItchyControls.ExpandButton();
             this.logTranslucentPanel = new ItchyControls.TranslucentPanel();
             this.logTextBox = new ItchyControls.TransparentRichTextBox();
-            this.hideDyingCheckBox = new System.Windows.Forms.CheckBox();
             this.optionsTranslucentPanel.SuspendLayout();
             this.settingsTabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -163,6 +163,17 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // hideDyingCheckBox
+            // 
+            this.hideDyingCheckBox.AutoSize = true;
+            this.hideDyingCheckBox.Enabled = false;
+            this.hideDyingCheckBox.Location = new System.Drawing.Point(32, 422);
+            this.hideDyingCheckBox.Name = "hideDyingCheckBox";
+            this.hideDyingCheckBox.Size = new System.Drawing.Size(107, 17);
+            this.hideDyingCheckBox.TabIndex = 42;
+            this.hideDyingCheckBox.Text = "Hide Dying Mobs";
+            this.hideDyingCheckBox.UseVisualStyleBackColor = true;
             // 
             // hideItemCheckBox
             // 
@@ -629,16 +640,6 @@
             this.logTextBox.TabIndex = 1;
             this.logTextBox.Text = "";
             this.logTextBox.WordWrap = false;
-            // 
-            // hideDyingCheckBox
-            // 
-            this.hideDyingCheckBox.AutoSize = true;
-            this.hideDyingCheckBox.Location = new System.Drawing.Point(32, 422);
-            this.hideDyingCheckBox.Name = "hideDyingCheckBox";
-            this.hideDyingCheckBox.Size = new System.Drawing.Size(107, 17);
-            this.hideDyingCheckBox.TabIndex = 42;
-            this.hideDyingCheckBox.Text = "Hide Dying Mobs";
-            this.hideDyingCheckBox.UseVisualStyleBackColor = true;
             // 
             // OverlayWindow
             // 

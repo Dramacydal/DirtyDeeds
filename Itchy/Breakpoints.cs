@@ -69,9 +69,9 @@ namespace Itchy
 
             //MessageBox.Show(packet.ToString());
 
-            switch (packet[0])
+            switch ((GameServerPacket)packet[0])
             {
-                case 0xE:
+                case GameServerPacket.GameObjectModeChange:
                 {
                     if (!Game.Settings.ReceivePacketHack.FastPortal)
                         break;
@@ -87,7 +87,7 @@ namespace Itchy
 
                     break;
                 }
-                case 0x15:
+                case GameServerPacket.PlayerReassign:
                 {
                     if (!Game.Settings.ReceivePacketHack.BlockFlash &&
                         !Game.Settings.ReceivePacketHack.FastTele)
@@ -113,8 +113,8 @@ namespace Itchy
                     }
                     break;
                 }
-                case 0x18:
-                case 0x95:
+                case GameServerPacket.Unknown18:
+                case GameServerPacket.PlayerLifeManaChange:
                 {
                     if (!Game.Settings.Chicken.Enabled || Game.chickening)
                         break;
@@ -124,7 +124,7 @@ namespace Itchy
                     Task.Factory.StartNew(() => Game.ChickenTask(life, mana, false));
                     break;
                 }
-                case 0x51:
+                case GameServerPacket.GameObjectAssignment:
                 {
                     if ((UnitType)packet[1] == UnitType.Object && BitConverter.ToUInt16(packet, 6) == 0x3B)
                     {
@@ -146,7 +146,7 @@ namespace Itchy
                     }
                     break;
                 }
-                case 0x5A:  // event message
+                case GameServerPacket.PlayerInfomation:  // event message
                 {
                     var mode = packet[1];
                     if (mode == 0x7)    // player relation
@@ -169,7 +169,13 @@ namespace Itchy
                     }
                     break;
                 }
-                case 0xA7:
+                case GameServerPacket.WorldItemAction:
+                case GameServerPacket.OwnedItemAction:
+                {
+                    skip = !Game.ItemActionHandler(packet);
+                    break;
+                }
+                case GameServerPacket.DelayedState:
                 {
                     // skip delay between entering portals
                     if (Game.Settings.ReceivePacketHack.FastPortal && packet[6] == 102)
@@ -278,13 +284,14 @@ namespace Itchy
                 if (itemInfo != null)
                 {
                     var sock = Game.GetItemSockets(pItem, item.dwUnitId);
-                    var configEntry = Game.ItemSettings.GetMatch(itemInfo, txt.GetCode(), sock,
+                    var configEntries = Game.ItemSettings.GetMatch(itemInfo, sock,
                         (itemData.dwFlags & 0x400000) != 0, (ItemQuality)itemData.dwQuality);
-                    if (configEntry != null)
+                    if (configEntries.Count != 0)
                     {
-                        if (configEntry.Color != D2Color.Default)
+                        var entry = configEntries.First();
+                        if (entry.Color != D2Color.Default)
                         {
-                            str = "ÿc" + configEntry.Color.GetCode() + str;
+                            str = "ÿc" + entry.Color.GetCode() + str;
                             changed = true;
                         }
                     }
@@ -388,13 +395,10 @@ namespace Itchy
                             var txt = pd.Read<ItemTxt>(pTxt);
 
                             var sock = Game.GetItemSockets(pUnit, unit.dwUnitId);
-                            var configEntry = Game.ItemSettings.GetMatch(itemInfo, txt.GetCode(), sock,
-                                (itemData.dwFlags & 0x400000) != 0, (ItemQuality)itemData.dwQuality);
-                            if (configEntry != null)
-                            {
-                                if (configEntry.Hide)
-                                    hide = 1;
-                            }
+                            var configEntries = Game.ItemSettings.GetMatch(itemInfo, sock,
+                                (itemData.dwFlags & 0x400000) != 0, (ItemQuality)itemData.dwQuality).Where(it => it.Hide);
+                            if (configEntries.Count() != 0)
+                                hide = 1;
                         }
                         break;
                     }

@@ -115,7 +115,7 @@ namespace Itchy
         // visualization
         public D2Color Color = D2Color.Default;
         public bool Hide = false;
-        public bool ShowOnMap = false;
+        public bool Track = false;
         public uint MapColor = 0;
 
         public bool Empty()
@@ -131,7 +131,7 @@ namespace Itchy
     {
         private List<ItemDisplayInfo> Info = new List<ItemDisplayInfo>();
 
-        public ItemDisplaySettings(string path)
+        public ItemDisplaySettings(string path, ItemStorage itemStorage)
         {
             var ini = new IniReader(path);
             ini.Parse();
@@ -152,6 +152,9 @@ namespace Itchy
                             var args = value.Split('|');
                             foreach (var code in args)
                                 info.Codes.Add(code.ToLower());
+
+                            foreach (var code in info.Codes)
+                                info.TxtIds.Add(itemStorage.GetIdByCode(code));
                             break;
                         }
                         case "color":
@@ -167,9 +170,9 @@ namespace Itchy
                             info.Hide = IsTrue(value);
                             break;
                         }
-                        case "showonmap":
+                        case "track":
                         {
-                            info.ShowOnMap = IsTrue(value);
+                            info.Track = IsTrue(value);
                             break;
                         }
                         case "mapcolor":
@@ -268,11 +271,10 @@ namespace Itchy
             return value.ToLower() != "0" && value.ToLower() != "false";
         }
 
-        public ItemDisplayInfo GetMatch(ItemInfo info, string code, uint sock, bool isEth, ItemQuality quality)
+        public List<ItemDisplayInfo> GetMatch(ItemInfo info, uint sock, bool isEth, ItemQuality quality)
         {
-            return Info.Find(e => !e.Empty() &&
-                //(e.TxtIds.Count == 0 || e.TxtIds.Contains(info.Id)) &&
-                (e.Codes.Count == 0 || e.Codes.Contains(code)) &&
+            return Info.FindAll(e => !e.Empty() &&
+                (e.TxtIds.Count == 0 || e.TxtIds.Contains(info.Id)) &&
                 (e.SocketNum.Count == 0 || e.SocketNum.Contains(sock)) &&
                 (e.IsEth.Count == 0 || e.IsEth.Contains(isEth)) &&
                 (e.Rarity.Count == 0 || e.Rarity.Contains(info.Rarity)) &&

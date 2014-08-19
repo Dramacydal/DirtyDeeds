@@ -402,14 +402,19 @@ namespace Itchy
             pd.ResumeAllThreads();
         }
 
+        public void Log(Color color, string message, params object[] args)
+        {
+            this.overlay.logTextBox.LogLine(message, color, args);
+        }
+
         public void Log(string message, params object[] args)
         {
-            this.overlay.logTextBox.LogLine(message, Color.Empty, args);
+            Log(Color.Empty, message, args);
         }
 
         public void LogWarning(string message, params object[] args)
         {
-            this.overlay.logTextBox.LogLine(message, Color.OrangeRed, args);
+            Log(Color.Red, message, args);
         }
 
         public void ExitedGame()
@@ -488,7 +493,7 @@ namespace Itchy
         public bool HandleMessage(Keys key, MessageEvent mEvent)
         {
             //Console.WriteLine(mEvent.ToString() + " " + vkCode.ToString());
-            Log(mEvent.ToString() + " " + key.ToString());
+            //Log(mEvent.ToString() + " " + key.ToString());
 
             if (key == Keys.LControlKey || key == Keys.RControlKey)
             {
@@ -527,6 +532,7 @@ namespace Itchy
                     SuspendThreads();
                     ResumeStormThread();
                     RevealAct();
+                    //ItemStorage.LoadCodes(this);
                     ResumeThreads();
                 }
                 if (key == Settings.FastPortal.Key)

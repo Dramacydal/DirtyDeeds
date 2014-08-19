@@ -30,7 +30,7 @@ namespace IniParser
 
         public void Add(string key, string value)
         {
-            keys.Add(key, value);
+            keys[key] = value;
         }
 
         protected IniKeyDictionary keys = new IniKeyDictionary();

@@ -171,6 +171,7 @@ namespace Itchy
             showItemLevelCheckBox.Checked = settings.ItemNameHack.ShowItemLevel;
             showItemPriceCheckBox.Checked = settings.ItemNameHack.ShowItemPrice;
             showRuneNumberCheckBox.Checked = settings.ItemNameHack.ShowRuneNumber;
+            showSocketsCheckBox.Checked = settings.ItemNameHack.ShowSockets;
             changeColorCheckBox.Checked = settings.ItemNameHack.ChangeItemColor;
 
             viewInventoryHackCheckBox.Checked = settings.ViewInventory.Enabled;
@@ -212,6 +213,7 @@ namespace Itchy
             settings.ItemNameHack.ShowItemLevel = showItemLevelCheckBox.Checked;
             settings.ItemNameHack.ShowItemPrice = showItemPriceCheckBox.Checked;
             settings.ItemNameHack.ShowRuneNumber = showRuneNumberCheckBox.Checked;
+            settings.ItemNameHack.ShowSockets = showSocketsCheckBox.Checked;
             settings.ItemNameHack.ChangeItemColor = changeColorCheckBox.Checked;
 
             settings.ViewInventory.Enabled = viewInventoryHackCheckBox.Checked;
@@ -369,9 +371,6 @@ namespace Itchy
 
         public bool HandleMessage(Keys key, MessageEvent mEvent)
         {
-            if (key == Keys.LControlKey || key == Keys.RControlKey)
-                return true;
-
             var t = this.GetType();
 
             var changed = false;
@@ -404,7 +403,7 @@ namespace Itchy
                 }
             }
 
-            return changed;
+            return !changed;
         }
     }
 }

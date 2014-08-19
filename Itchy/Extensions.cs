@@ -86,5 +86,31 @@ namespace Itchy
         {
             return (DateTime.Now.Ticks - date.Ticks) / TimeSpan.TicksPerMillisecond;
         }
+
+        public static Color GetColor(this ItemQuality quality)
+        {
+            switch (quality)
+            {
+                case ItemQuality.Inferior:
+                    return Color.Gray;
+                case ItemQuality.Normal:
+                case ItemQuality.Superior:
+                    return Color.White;
+                case ItemQuality.Magic:
+                    return Color.Blue;
+                case ItemQuality.Rare:
+                    return Color.Yellow;
+                case ItemQuality.Set:
+                    return Color.LimeGreen;
+                case ItemQuality.Unique:
+                    return Color.DarkGoldenrod;
+                case ItemQuality.Craft:
+                    return Color.Orange;
+                default:
+                    break;
+            }
+
+            return Color.White;
+        }
     }
 }

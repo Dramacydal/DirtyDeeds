@@ -1,15 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using WhiteMagic;
 
 namespace Itchy
 {
     using ItemDictionary = ConcurrentDictionary<uint, ItemInfo>;
-    using CodeDictionary = ConcurrentDictionary<string, uint>;
+    using CodeByIdDictionary = ConcurrentDictionary<uint, string>;
+    using IdByCodeDictionary = ConcurrentDictionary<string, uint>;
+
+    using NameList = List<string>;
 
     public enum ItemBodyLocation
     {
@@ -83,35 +88,126 @@ namespace Itchy
     public class ItemInfo
     {
         public uint Id;
+        public string Code;
+
         public ItemBodyLocation BodyLocation = ItemBodyLocation.Other;
         public ItemRarity Rarity = ItemRarity.Misc;
 
         public ItemWeaponType WeaponType = ItemWeaponType.WeaponOther;
         public ItemArmorType ArmorType = ItemArmorType.ArmorOther;
         public ItemMiscType MiscType = ItemMiscType.MiscOther;
+
+        public string Name = "";
+        public NameList PossibleUniques = new NameList();
+        public NameList PossibleSets = new NameList();
+
+        public bool IsBijou()
+        {
+            return BodyLocation == ItemBodyLocation.Armor &&
+                (ArmorType == ItemArmorType.Ring || ArmorType == ItemArmorType.Amulet);
+        }
     }
 
     public class ItemStorage
     {
-        public bool CodesLoaded { get { return codesLoaded; } }
+        //public bool CodesLoaded { get { return codesLoaded; } }
 
         public ItemDictionary ItemInfos { get { return itemInfos; } }
-        public CodeDictionary ItemCodes { get { return itemCodes; } }
 
         public ItemInfo GetInfo(uint dwTxtFileNo) { return itemInfos[dwTxtFileNo]; }
+        public ItemInfo GetInfo(string code) { return itemInfos[GetIdByCode(code)]; }
+
+        public string GetCodeById(uint dwTxtFileNo) { return codeByIds[dwTxtFileNo]; }
+        public uint GetIdByCode(string code) { return idByCodes[code]; }
 
         protected static uint maxTxtCode = 658;
         protected ItemDictionary itemInfos = new ItemDictionary();
-        protected CodeDictionary itemCodes = new CodeDictionary();
-        protected volatile bool codesLoaded = false;
+        protected CodeByIdDictionary codeByIds = new CodeByIdDictionary();
+        protected IdByCodeDictionary idByCodes = new IdByCodeDictionary();
+
+        //protected volatile bool codesLoaded = false;
+
+        private static string armorFile = @"data\armor.txt";
+        private static string codesFile = @"data\Itemcodes.txt";
+        private static string miscFile = @"data\misc.txt";
+        private static string setFile = @"data\SetItems.txt";
+        private static string uniqueFile = @"data\UniqueItems.txt";
+        private static string weaponsFile = @"data\weapons.txt";
 
         public ItemStorage()
         {
             Initialize();
         }
 
+        protected void LoadItemCodes()
+        {
+            var r = new StreamReader(codesFile);
+
+            var hasErrors = false;
+            while (!r.EndOfStream)
+            {
+                var a = r.ReadLine().Split(' ');
+
+                try
+                {
+                    while (!codeByIds.TryAdd(Convert.ToUInt32(a[0]), a[1])) { }
+                    while (!idByCodes.TryAdd(a[1], Convert.ToUInt32(a[0]))) { }
+                }
+                catch (Exception)
+                {
+                    hasErrors = true;
+                }
+            }
+
+            r.Close();
+
+            if (hasErrors)
+                MessageBox.Show("Bad " + codesFile + " file format", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        protected List<KeyValuePair<string, string>> LoadDictionary(string fileName)
+        {
+            var l = new List<KeyValuePair<string, string>>();
+            var r = new StreamReader(fileName);
+
+            while (!r.EndOfStream)
+            {
+                var a = r.ReadLine().Split('\t');
+                l.Add(new KeyValuePair<string, string>(a[1], a[0]));
+            }
+
+            r.Close();
+
+            return l;
+        }
+
+        protected List<KeyValuePair<string, string>> LoadSets()
+        {
+            return LoadDictionary(setFile);
+        }
+
+        protected List<KeyValuePair<string, string>> LoadUniques()
+        {
+            return LoadDictionary(uniqueFile);
+        }
+
+        protected List<KeyValuePair<string, string>> LoadItemNames()
+        {
+            var l = new List<KeyValuePair<string, string>>();
+            l.AddRange(LoadDictionary(armorFile));
+            l.AddRange(LoadDictionary(miscFile));
+            l.AddRange(LoadDictionary(weaponsFile));
+
+            return l;
+        }
+
         private void Initialize()
         {
+            LoadItemCodes();
+            var sets = LoadSets();
+            var uniques = LoadUniques();
+            var names = LoadItemNames();
+
             for (uint i = 1; i <= maxTxtCode + 1; ++i)
             {
                 var itemInfo = new ItemInfo();
@@ -133,7 +229,7 @@ namespace Itchy
                     i >= 419 && i <= 422 || //circlets
                     i >= 423 && i <= 468 || //elite armors
                     i >= 469 && i <= 508 || //exc and elite dudu baba pala necro class-specific
-                    i == 521 || i == 522) //amulet and ring
+                    i == 521 || i == 523) //amulet and ring
                     itemInfo.BodyLocation = ItemBodyLocation.Armor;
                 else
                     itemInfo.BodyLocation = ItemBodyLocation.Other;
@@ -313,13 +409,27 @@ namespace Itchy
                 else
                     itemInfo.MiscType = ItemMiscType.Misc;
 
+                itemInfo.Code = codeByIds[i - 1];
+
+                var tempSets = sets.FindAll(it => it.Key == itemInfo.Code);
+                foreach (var tmp in tempSets)
+                    itemInfo.PossibleSets.Add(tmp.Value);
+
+                var tempUniques = uniques.FindAll(it => it.Key == itemInfo.Code);
+                foreach (var tmp in tempUniques)
+                    itemInfo.PossibleUniques.Add(tmp.Value);
+
+                var tempName = names.Find(it => it.Key == itemInfo.Code);
+                if (tempName.Value != "")
+                    itemInfo.Name = tempName.Value;
+
                 while (!itemInfos.TryAdd(i - 1, itemInfo)) { }
             }
         }
 
-        public void LoadCodes(D2Game game)
+        /*public void LoadCodes(D2Game game)
         {
-            itemCodes.Clear();
+            var itemCodes = new ConcurrentDictionary<uint, string>();
 
             game.SuspendThreads();
 
@@ -338,12 +448,16 @@ namespace Itchy
 
                 var txt = game.Debugger.Read<ItemTxt>(pText);
 
-                while (!itemCodes.TryAdd(txt.GetCode(), i)) { }
+                while (!itemCodes.TryAdd(i, txt.GetCode())) { }
             }
 
             game.ResumeThreads();
 
-            codesLoaded = true;
-        }
+            var w = new StreamWriter("itemcodes.txt");
+            for (uint i = 0; i <= maxTxtCode; ++i)
+                w.WriteLine("{0} {1}", i, itemCodes[i]);
+
+            w.Close();
+        }*/
     }
 }
