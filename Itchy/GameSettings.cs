@@ -27,11 +27,23 @@ namespace Itchy
     }
 
     [Serializable]
+    public class ItemTrackerSettings : HackSettings
+    {
+        public bool EnablePickit = false;
+        public bool EnableTelepick = false;
+
+        public bool LogSets = false;
+        public bool LogUniques = false;
+        public bool LogItems = false;
+    }
+
+    [Serializable]
     public class PacketReceivedHackSettings : HackSettings
     {
         public bool BlockFlash = false;
         public bool FastTele = false;
         public bool FastPortal = false;
+        public ItemTrackerSettings ItemTracker = new ItemTrackerSettings();
     }
 
     [Serializable]
@@ -116,7 +128,7 @@ namespace Itchy
         public D2Color Color = D2Color.Default;
         public bool Hide = false;
         public bool Track = false;
-        public uint MapColor = 0;
+        public bool Pick = false;
 
         public bool Empty()
         {
@@ -175,14 +187,9 @@ namespace Itchy
                             info.Track = IsTrue(value);
                             break;
                         }
-                        case "mapcolor":
+                        case "pick":
                         {
-                            try
-                            {
-                                var val = Convert.ToUInt32(value);
-                                info.MapColor = val;
-                            }
-                            catch (Exception) { }
+                            info.Pick = IsTrue(value);
                             break;
                         }
                         case "sock":

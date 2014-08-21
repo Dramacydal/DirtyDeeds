@@ -1,68 +1,140 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using WhiteMagic;
 
 namespace Itchy
 {
-    /*
-    public struct Bit
+    using PickitDictionary = ConcurrentDictionary<uint, ItemActionInfo>;
+
+    public class Pickit
     {
-        private readonly bool _value;
+        public PickitDictionary ItemsToPick { get { return itemsToPick; } }
 
-        Bit(bool value) { _value = value; }
-        Bit(byte value) { _value = value != 0; }
-        public bool Value { get { return _value; } }
-        public static implicit operator byte(Bit b) { return (byte)(b.Value ? 1 : 0); }
-        public static implicit operator bool(Bit b) { return b.Value; }
-        public static implicit operator Bit(bool b) { return new Bit(b); }
-        public static implicit operator Bit(byte b) { return new Bit(b); }
-    }
+        internal static double pickupRadius = 10;
+        internal static int maxPickTries = 5;
+        internal static int pickDelay = 500;
 
-    public class BinaryPacket : BinaryReader
-    {
-        private byte _bitpos = 8;
-        private byte _curbitval;
+        protected D2Game game;
+        protected PickitDictionary itemsToPick = new PickitDictionary();
+        protected Thread th = null;
+        protected volatile bool needStop = false;
 
-        public BinaryPacket(byte[] packet) :
-            base(new MemoryStream(packet), Encoding.ASCII)
+        public Pickit(D2Game game)
         {
+            this.game = game;
+
+            th = new Thread(() =>
+            {
+                while (!needStop)
+                {
+                    Process(false);
+                    Thread.Sleep(150);
+                }
+            });
+
+            th.Start();
         }
 
-        public Bit ReadBit()
+        public void Reset()
         {
-            ++_bitpos;
+            itemsToPick.Clear();
+        }
 
-            if (_bitpos > 7)
+        public void Stop()
+        {
+            needStop = true;
+            if (th != null)
+                th.Join();
+        }
+
+        public void AddPendingItem(ItemActionInfo item)
+        {
+            item.pickTryCount = 0;
+            itemsToPick[item.uid] = item;
+
+            Task.Factory.StartNew(() =>
             {
-                _bitpos = 0;
-                _curbitval = ReadByte();
+                Thread.Sleep(500);
+                Process(true);
+            });
+        }
+
+        public void RemoveItem(uint uid)
+        {
+            itemsToPick.Remove(uid);
+        }
+
+        public void Process(bool firstTry)
+        {
+            if (!game.InGame || !game.Settings.ReceivePacketHack.ItemTracker.EnablePickit || !game.Settings.ReceivePacketHack.ItemTracker.Enabled)
+                return;
+
+            var items = itemsToPick.ToArray().Where(it => (firstTry ? it.Value.pickTryCount == 0 : it.Value.pickTryCount != 0));
+
+            foreach (var item in items)
+            {
+                var i = item.Value;
+                if (i.DistanceSq(game.CurrentX, game.CurrentY) <= pickupRadius * pickupRadius)
+                {
+                    if (i.pickTryCount == 0)
+                    {
+                        ++i.pickTryCount;
+                        i.pickDate = DateTime.Now;
+                        if (!Pick(i.uid))
+                            return;
+                    }
+                    else if (i.pickDate.MSecToNow() >= pickDelay)
+                    {
+                        if (++i.pickTryCount > maxPickTries)
+                        {
+                            game.Log("Failed to pick {0} after {1} tries", i.uid, i.pickTryCount - 1);
+                            itemsToPick.Remove(i.uid);
+                            continue;
+                        }
+
+                        game.Log("Retrying to pick {0} #{1}", i.uid, i.pickTryCount);
+                        i.pickDate = DateTime.Now;
+                        if (!Pick(i.uid))
+                            return;
+                    }
+                }
+                else
+                {
+                    i.pickTryCount = 0;
+                }
+            }
+        }
+
+        public bool Pick(uint uid)
+        {
+            game.SuspendThreads();
+
+            if (!game.GameReady())
+            {
+                game.ResumeThreads();
+                return false;
             }
 
-            var bit = ((_curbitval >> (7 - _bitpos)) & 1) != 0;
-            return bit;
-        }
+            var packet = new List<byte>();
 
-        public void ResetBitReader()
-        {
-            _bitpos = 8;
-        }
+            packet.Add((byte)GameClientPacket.PickItem);
+            packet.Add(0x4);
+            packet.AddRange(new byte[] { 0, 0, 0 });
+            packet.AddRange(BitConverter.GetBytes(uid));
+            packet.AddRange(new byte[] { 0, 0, 0, 0 });
 
-        public uint ReadBits(int bits)
-        {
-            uint value = 0;
-            for (var i = bits - 1; i >= 0; --i)
-                if (ReadBit())
-                    value |= (uint)(1 << i);
-
-            return value;
+            game.SendPacket(packet.ToArray());
+            game.ResumeThreads();
+            return true;
         }
     }
-    */
 
     //TODO: 2 unknowns left... are there imbue and craft / transmute action types ?
     public enum ItemActionType
@@ -206,52 +278,6 @@ namespace Itchy
         LeftHandSwitch = 12,
     }
 
-    /*public enum ItemType : byte
-    {
-        Helm = 0,
-        Armor = 1,
-        Weapon = 5,
-        Bow = 6,
-        Shield = 7,
-        Expansion = 0xA,
-        Other = 0x10
-    }
-
-    public class ItemSniffInfoOld
-    {
-        public byte messageId;
-        public ItemAction action;
-
-        public ItemType itemType;
-        public uint itemId;
-        public bool isSocketsFull;
-        public bool isIdentified;
-        public bool isSwitchIn;
-        public bool isSwitchOut;
-        public bool isBroken;
-        public bool fromBelt;
-        public bool hasSockets;
-        public bool isJustGenerated;
-        public bool isEar;
-        public bool isStartItem;
-        public bool isMiscItem;
-        public bool isEth;
-        public bool isPersonalized;
-        public bool isGamble;
-        public bool isRuneword;
-        public ushort mpqVersionField;
-        public byte location;
-        public ushort positionX;
-        public ushort positionY;
-        public string itemCode;
-        public uint goldAmount;
-        public ItemQuality quality;
-        public byte usedSockets;
-        public byte ilvl;
-        public bool graphicBool;
-        public bool classBool;
-    }*/
-
     public class ByteConverter
     {
         public static int GetBits(byte[] bytes, ref int offset, int length)
@@ -304,6 +330,7 @@ namespace Itchy
 
         public ItemFlag flags = ItemFlag.None;
 
+        public uint uid = 0;
         public string code = "";
         public ItemQuality quality = ItemQuality.Normal;
 
@@ -314,18 +341,30 @@ namespace Itchy
 
         public int goldCount = 0;
 
-        public bool IsEth { get { return (flags & ItemFlag.Ethereal) != 0; } }
+        public bool IsEth { get { return flags.HasFlag(ItemFlag.Ethereal); } }
+
+        public double DistanceSq(double x, double y)
+        {
+            return Math.Pow(this.x - x, 2) + Math.Pow(this.y - y, 2);
+        }
+
+        //
+        public ItemInfo info = null;
+        public DateTime pickDate;
+        public uint pickTryCount = 0;
     }
 
     public partial class D2Game
     {
+        Pickit pickit = null;
+
         public ItemActionInfo ReadItemAction(byte[] data)
         {
             var i = new ItemActionInfo();
 
             i.action = (ItemActionType)data[1];
             var category = (ItemCategory)data[3];
-            var uid = BitConverter.ToUInt32(data, 4);
+            i.uid = BitConverter.ToUInt32(data, 4);
 
             var pOffset = data[0] == 0x9D ? 13 : 8;
 
@@ -340,17 +379,26 @@ namespace Itchy
                 i.action != ItemActionType.OnGround)
                 return null;
 
-            i.x = (BitConverter.ToUInt16(data, pOffset) + 131072) / 32;
-            i.y = (BitConverter.ToUInt16(data, pOffset += 2) + 131072) / 32;
+            i.x = BitConverter.ToUInt16(data, pOffset);
+            i.y = BitConverter.ToUInt16(data, pOffset += 2);
+
+            i.x = (i.x + 131072) / 32;
+            i.y = (i.y + 131072) / 32;
             pOffset += 2;
 
             //TODO: Unknown bit
-            pOffset = pOffset * 8 + 1;
+            //pOffset = pOffset * 8 + 1;
 
-            var container = (ItemContainer)ByteConverter.GetBits(data, ref pOffset, 4);
+            pOffset = pOffset * 8 - 32 + 5;
+            i.x = ByteConverter.GetBits(data, ref pOffset, 16);
+            i.y = ByteConverter.GetBits(data, ref pOffset, 16);
 
-            if ((i.flags & ItemFlag.Ear) != 0)
+            //var tmp = ByteConverter.GetBits(data, ref pOffset, 4);
+            var container = ItemContainer.Ground;
+
+            if (i.flags.HasFlag(ItemFlag.Ear))
             {
+                return null;
                 var charClass = ByteConverter.GetBits(data, ref pOffset, 3);
                 var level = (ushort)ByteConverter.GetBits(data, ref pOffset, 7);
                 var builder = new System.Text.StringBuilder();
@@ -362,9 +410,9 @@ namespace Itchy
             }
 
             i.code =  String.Concat(
-                (char) ByteConverter.GetBits(data, ref pOffset, 8),
-                (char) ByteConverter.GetBits(data, ref pOffset, 8),
-                (char) ByteConverter.GetBits(data, ref pOffset, 8));
+                (char)ByteConverter.GetBits(data, ref pOffset, 8),
+                (char)ByteConverter.GetBits(data, ref pOffset, 8),
+                (char)ByteConverter.GetBits(data, ref pOffset, 8));
 
             pOffset += 4;
 
@@ -383,7 +431,7 @@ namespace Itchy
             var location = EquipmentLocation.NotApplicable;
 
             // Buffer to container mapping (sanitize NPC tabs IDs and coords, changed belt location to X, Y, etc.)
-            if ((i.flags & ItemFlag.InStore) == ItemFlag.InStore // Flag is not always set for shop items !?!
+            if (i.flags.HasFlag(ItemFlag.InStore) // Flag is not always set for shop items !?!
                 || i.action == ItemActionType.AddToShop || i.action == ItemActionType.RemoveFromShop)
             {
                 int buff = (int)container | 0x80;
@@ -420,7 +468,7 @@ namespace Itchy
 
             // Used Sockets : 3
             byte usedSockets = 0;
-            if ((i.flags & ItemFlag.Socketed) == ItemFlag.Socketed)
+            if (i.flags.HasFlag(ItemFlag.Socketed))
                 usedSockets = (byte)ByteConverter.GetBits(data, pOffset, 3);
             pOffset += 3;
 
@@ -446,7 +494,7 @@ namespace Itchy
                 ByteConverter.GetBits(data, ref pOffset, 11);
 
             // Quality information
-            if ((i.flags & ItemFlag.Identified) != 0)
+            if (i.flags.HasFlag(ItemFlag.Identified))
             {
                 switch (i.quality)
                 {
@@ -455,7 +503,6 @@ namespace Itchy
                             ByteConverter.GetBits(data, ref pOffset, 3));*/
                         ByteConverter.GetBits(data, ref pOffset, 3);
                         break;
-
                     case ItemQuality.Superior:
                         //this.prefix = new ItemAffix(ItemAffixType.SuperiorPrefix, 0);
                         //TODO: quality type	
@@ -469,7 +516,6 @@ namespace Itchy
                         //	07 = Durability + AC 
                         pOffset += 3;
                         break;
-
                     case ItemQuality.Magic:
                         /*this.prefix = new ItemAffix(ItemAffixType.MagicPrefix,
                             ByteConverter.GetBits(data, ref pOffset, 11));
@@ -478,7 +524,6 @@ namespace Itchy
                         ByteConverter.GetBits(data, ref pOffset, 11);
                         ByteConverter.GetBits(data, ref pOffset, 11);
                         break;
-
                     case ItemQuality.Rare:
                     case ItemQuality.Craft:
                         /*this.prefix = new ItemAffix(ItemAffixType.RarePrefix,
@@ -499,7 +544,6 @@ namespace Itchy
                                     //ByteConverter.GetBits(data, ref pOffset, 11));
                         }
                         break;
-
                     case ItemQuality.Set:
                         //this.setItem = BaseSetItem.Get(ByteConverter.GetBits(data, ref pOffset, 12));
                         ByteConverter.GetBits(data, ref pOffset, 12);
@@ -514,7 +558,7 @@ namespace Itchy
             }
 
             // Personalized Name : 7 * (NULLSTRING Length)
-            if ((i.flags & ItemFlag.Personalized) != 0)
+            if (i.flags.HasFlag(ItemFlag.Personalized))
             {
                 System.Text.StringBuilder builder = new System.Text.StringBuilder();
                 int mChar;
@@ -524,7 +568,7 @@ namespace Itchy
             }
 
             // Runeword Info : 16
-            if ((i.flags & ItemFlag.Runeword) != 0)
+            if (i.flags.HasFlag(ItemFlag.Runeword))
             {
                 //HACK: this is probably wrong, but works for all the runewords I tested so far...
                 //TODO: Need to test cases where runewordUnknown != 5 and where ID is around 100
@@ -564,142 +608,23 @@ namespace Itchy
             }
 
             // Total Sockets : 4
-            if ((i.flags & ItemFlag.Socketed) == ItemFlag.Socketed)
+            if (i.flags.HasFlag(ItemFlag.Socketed))
                 i.sockets = ByteConverter.GetBits(data, ref pOffset, 4);
 
             return i;
         }
 
-        /*public ItemSniffInfoOld ReadItemOld(BinaryPacket p)
+        public bool ItemActionHandler(byte[] data)
         {
-            var i = new ItemSniffInfoOld();
-
-            i.messageId = (byte)p.ReadBits(8);
-            //if (messageId != 0x9C)
-            //return true;
-
-            i.action = (ItemAction)p.ReadBits(8);
-
-            if (i.action != ItemAction.NewGround &&
-                i.action != ItemAction.OldGround &&
-                i.action != ItemAction.Drop)
-                return null;
-
-            var messageSize = p.ReadBits(8);
-            i.itemType = (ItemType)p.ReadBits(8);
-            i.itemId = p.ReadBits(32);
-
-            i.isSocketsFull = p.ReadBit();
-            p.ReadBits(3);
-            i.isIdentified = p.ReadBit();
-            p.ReadBit();
-            i.isSwitchIn = p.ReadBit();
-            i.isSwitchOut = p.ReadBit();
-            i.isBroken = p.ReadBit();
-            p.ReadBit();
-            i.fromBelt = p.ReadBit();
-            i.hasSockets = p.ReadBit();
-            p.ReadBit();
-            i.isJustGenerated = p.ReadBit();
-            p.ReadBits(2);
-            i.isEar = p.ReadBit();
-            i.isStartItem = p.ReadBit();
-            p.ReadBits(3);
-            i.isMiscItem = p.ReadBit();
-            i.isEth = p.ReadBit();
-            p.ReadBit();
-            i.isPersonalized = p.ReadBit();
-            i.isGamble = p.ReadBit();
-            i.isRuneword = p.ReadBit();
-            p.ReadBits(4);
-            p.ReadBit();
-
-            i.location = (byte)p.ReadBits(3);
-            i.positionX = (ushort)p.ReadBits(16);
-            i.positionY = (ushort)p.ReadBits(16);
-
-            if (i.isEar)
-                return i;
-
-            var arr = new byte[4];
-            arr[0] = (byte)p.ReadBits(8);
-            arr[1] = (byte)p.ReadBits(8);
-            arr[2] = (byte)p.ReadBits(8);
-            arr[3] = (byte)p.ReadBits(8);
-
-            i.itemCode = Encoding.ASCII.GetString(arr).Replace(" ", "");
-
-            if (i.itemCode == "gld")
-            {
-                if (!p.ReadBit())
-                    i.goldAmount = p.ReadBits(12);
-                else
-                    i.goldAmount = p.ReadBits(32);
-                i.quality = ItemQuality.Normal;
-
-                return i;
-            }
-
-            if (i.itemCode == "ibk" || i.itemCode == "tbk" || i.itemCode == "key")
-            {
-                i.quality = ItemQuality.Normal;
-                return i;
-            }
-
-            i.usedSockets = (byte)p.ReadBits(3);
-            i.ilvl = (byte)p.ReadBits(7);
-            i.quality = (ItemQuality)p.ReadBits(4);
-
-            i.graphicBool = p.ReadBit();
-            if (i.graphicBool)
-                p.ReadBits(3);
-            i.classBool = p.ReadBit();
-            if (i.classBool)
-                p.ReadBits(7);
-
-            if (i.isIdentified)
-            {
-                if (i.quality == ItemQuality.Inferior || i.quality == ItemQuality.Superior)
-                    p.ReadBits(3);
-                else if (i.quality == ItemQuality.Magic)
-                    p.ReadBits(22);
-                else if (i.quality == ItemQuality.Rare || i.quality == ItemQuality.Craft)
-                {
-                    p.ReadBits(16);
-                    for (var j = 0; j < 3; ++j)
-                    {
-                        if (p.ReadBit())
-                            p.ReadBits(11);
-                        if (p.ReadBit())
-                            p.ReadBits(11);
-                    }
-                }
-                else if (i.quality == ItemQuality.Set || i.quality == ItemQuality.Unique)
-                    p.ReadBits(12);
-            }
-
-            if (i.isPersonalized)
-            {
-                var tmp = 0u;
-                do
-                {
-                    tmp = p.ReadBits(7);
-                }
-                while (tmp != 0);
-            }
-
-            return i;
-        }*/
-
-        public bool ItemActionHandler(byte[] packet)
-        {
-            var i = ReadItemAction(packet);
+            var i = ReadItemAction(data);
             if (i == null)
                 return true;
 
             var itemInfo = ItemStorage.GetInfo(i.code);
             if (itemInfo == null)
                 return true;
+
+            i.info = itemInfo;
 
             var configEntries = ItemSettings.GetMatch(itemInfo, (uint)i.sockets, i.IsEth, i.quality).Where(it => it.Track);
 
@@ -730,58 +655,29 @@ namespace Itchy
                 Log(i.quality.GetColor(), s);
             }
 
-
-            //Log("Action: {0}", i.action);
+            if (i.code == "gld" || i.code == "mp5")
+            {
+                pickit.AddPendingItem(i);
+                Log("Added {0} {1} to pickit", i.code, i.uid);
+            }
 
             return true;
         }
 
-        /*public bool ItemActionHandlerOld(byte[] packet)
+        public void ItemGoneHandler(byte[] data)
         {
-            var global = packet[0] == 0x9D;
+            var unitType = (UnitType)data[1];
+            if (unitType != UnitType.Item)
+                return;
 
-            var mode = packet[1];
-            var gid = BitConverter.ToUInt32(packet, 4);
-            var dest = (packet[13] & 0x1C) >> 2;
+            var uid = BitConverter.ToUInt32(data, 2);
+            pickit.RemoveItem(uid);
+            Log("Removing uid {0} from pickit", uid);
+        }
 
-            ulong icode = 0;
-
-            switch (dest)
-            {
-                case 0:
-                case 2:
-                {
-                    icode = BitConverter.ToUInt64(packet, 15) >> 0x4;
-                    break;
-                }
-                case 3:
-                case 4:
-                case 6:
-                {
-                    if (!((mode == 0 || mode == 2) && dest == 3))
-                    {
-                        if (mode != 0xF && mode != 1 && mode != 12)
-                            icode = BitConverter.ToUInt64(packet, 17) >> 0x1C;
-                        else
-                            icode = BitConverter.ToUInt64(packet, 15) >> 0x4;
-                    }
-                    else
-                        icode = BitConverter.ToUInt64(packet, 17) >> 0x5;
-                    break;
-                }
-            }
-
-            var code = Encoding.ASCII.GetString(BitConverter.GetBytes(icode));
-            code = code.Replace(" ", "");
-
-            Log("Item {0} action. Code: {1} Gid: {2} Mode: {3} Dest: {4}",
-                global ? "global" : "local",
-                code,
-                gid,
-                mode,
-                dest);
-
-            return true;
-        }*/
+        public void OnRelocaton(ushort x, ushort y)
+        {
+            pickit.Process(true);
+        }
     }
 }

@@ -29,9 +29,15 @@
         private void InitializeComponent()
         {
             this.itchyLabel = new System.Windows.Forms.Label();
-            this.optionsTranslucentPanel = new ItchyControls.TranslucentPanel();
+            this.settingsTranslucentPanel = new ItchyControls.TranslucentPanel();
             this.settingsTabControl = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.settingsTab = new System.Windows.Forms.TabPage();
+            this.enableTelepickCheckBox = new System.Windows.Forms.CheckBox();
+            this.enablePickitCheckBox = new System.Windows.Forms.CheckBox();
+            this.logItemsCheckBox = new System.Windows.Forms.CheckBox();
+            this.logUniquesCheckBox = new System.Windows.Forms.CheckBox();
+            this.logSetsCheckBox = new System.Windows.Forms.CheckBox();
+            this.itemTrackerCheckBox = new System.Windows.Forms.CheckBox();
             this.hideDyingCheckBox = new System.Windows.Forms.CheckBox();
             this.hideItemCheckBox = new System.Windows.Forms.CheckBox();
             this.hideCorpsesCheckBox = new System.Windows.Forms.CheckBox();
@@ -73,13 +79,14 @@
             this.packetReceiveHackCheckBox = new System.Windows.Forms.CheckBox();
             this.weatherHackCheckBox = new System.Windows.Forms.CheckBox();
             this.lightHackCheckBox = new System.Windows.Forms.CheckBox();
+            this.trackerSettingsTab = new System.Windows.Forms.TabPage();
             this.propertiesExpandButton = new ItchyControls.ExpandButton();
             this.logExpandButton = new ItchyControls.ExpandButton();
             this.logTranslucentPanel = new ItchyControls.TranslucentPanel();
             this.logTextBox = new ItchyControls.TransparentRichTextBox();
-            this.optionsTranslucentPanel.SuspendLayout();
+            this.settingsTranslucentPanel.SuspendLayout();
             this.settingsTabControl.SuspendLayout();
-            this.tabPage1.SuspendLayout();
+            this.settingsTab.SuspendLayout();
             this.logTranslucentPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -94,81 +101,156 @@
             this.itchyLabel.TabIndex = 3;
             this.itchyLabel.Text = "ITCHY";
             // 
-            // optionsTranslucentPanel
+            // settingsTranslucentPanel
             // 
-            this.optionsTranslucentPanel.BackColor = System.Drawing.Color.Transparent;
-            this.optionsTranslucentPanel.Controls.Add(this.settingsTabControl);
-            this.optionsTranslucentPanel.Location = new System.Drawing.Point(19, 25);
-            this.optionsTranslucentPanel.Name = "optionsTranslucentPanel";
-            this.optionsTranslucentPanel.Size = new System.Drawing.Size(570, 502);
-            this.optionsTranslucentPanel.TabIndex = 6;
+            this.settingsTranslucentPanel.BackColor = System.Drawing.Color.Transparent;
+            this.settingsTranslucentPanel.Controls.Add(this.settingsTabControl);
+            this.settingsTranslucentPanel.Location = new System.Drawing.Point(19, 25);
+            this.settingsTranslucentPanel.Name = "settingsTranslucentPanel";
+            this.settingsTranslucentPanel.Size = new System.Drawing.Size(570, 526);
+            this.settingsTranslucentPanel.TabIndex = 6;
             // 
             // settingsTabControl
             // 
-            this.settingsTabControl.Controls.Add(this.tabPage1);
+            this.settingsTabControl.Controls.Add(this.settingsTab);
+            this.settingsTabControl.Controls.Add(this.trackerSettingsTab);
             this.settingsTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.settingsTabControl.Location = new System.Drawing.Point(0, 0);
             this.settingsTabControl.Name = "settingsTabControl";
             this.settingsTabControl.SelectedIndex = 0;
-            this.settingsTabControl.Size = new System.Drawing.Size(570, 502);
+            this.settingsTabControl.Size = new System.Drawing.Size(570, 526);
             this.settingsTabControl.TabIndex = 0;
             // 
-            // tabPage1
+            // settingsTab
             // 
-            this.tabPage1.Controls.Add(this.hideDyingCheckBox);
-            this.tabPage1.Controls.Add(this.hideItemCheckBox);
-            this.tabPage1.Controls.Add(this.hideCorpsesCheckBox);
-            this.tabPage1.Controls.Add(this.infravisionHackCheckBox);
-            this.tabPage1.Controls.Add(this.closeButton);
-            this.tabPage1.Controls.Add(this.applyButton);
-            this.tabPage1.Controls.Add(this.refreshButton);
-            this.tabPage1.Controls.Add(this.chickenManaPctLabel);
-            this.tabPage1.Controls.Add(this.chickenLifePctLabel);
-            this.tabPage1.Controls.Add(this.chickenManaPctTextBox);
-            this.tabPage1.Controls.Add(this.chickenLifePctTextBox);
-            this.tabPage1.Controls.Add(this.chickenOnHostileTextBox);
-            this.tabPage1.Controls.Add(this.chickenToTownCheckBox);
-            this.tabPage1.Controls.Add(this.enableChickenCheckBox);
-            this.tabPage1.Controls.Add(this.goToTownCheckBox);
-            this.tabPage1.Controls.Add(this.label3);
-            this.tabPage1.Controls.Add(this.fastExitLabel);
-            this.tabPage1.Controls.Add(this.openCubeLabel);
-            this.tabPage1.Controls.Add(this.townPortalKeybindButton);
-            this.tabPage1.Controls.Add(this.fastExitKeybindButton);
-            this.tabPage1.Controls.Add(this.openCubeKeybindButton);
-            this.tabPage1.Controls.Add(this.openStashLabel);
-            this.tabPage1.Controls.Add(this.openStashKeybindButton);
-            this.tabPage1.Controls.Add(this.revealActLabel);
-            this.tabPage1.Controls.Add(this.revealActKeybindButton);
-            this.tabPage1.Controls.Add(this.viewInventoryKeyLabel);
-            this.tabPage1.Controls.Add(this.viewInventoryKeybindButton);
-            this.tabPage1.Controls.Add(this.changeColorCheckBox);
-            this.tabPage1.Controls.Add(this.showSocketsCheckBox);
-            this.tabPage1.Controls.Add(this.showRuneNumberCheckBox);
-            this.tabPage1.Controls.Add(this.showItemPriceCheckBox);
-            this.tabPage1.Controls.Add(this.showItemLevelCheckBox);
-            this.tabPage1.Controls.Add(this.showEthCheckBox);
-            this.tabPage1.Controls.Add(this.fastPortalCheckBox);
-            this.tabPage1.Controls.Add(this.fastTeleCheckBox);
-            this.tabPage1.Controls.Add(this.blockFlashCheckBox);
-            this.tabPage1.Controls.Add(this.viewInventoryHackCheckBox);
-            this.tabPage1.Controls.Add(this.itemNameHackCheckBox);
-            this.tabPage1.Controls.Add(this.packetReceiveHackCheckBox);
-            this.tabPage1.Controls.Add(this.weatherHackCheckBox);
-            this.tabPage1.Controls.Add(this.lightHackCheckBox);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(562, 476);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "tabPage1";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.settingsTab.Controls.Add(this.enableTelepickCheckBox);
+            this.settingsTab.Controls.Add(this.enablePickitCheckBox);
+            this.settingsTab.Controls.Add(this.logItemsCheckBox);
+            this.settingsTab.Controls.Add(this.logUniquesCheckBox);
+            this.settingsTab.Controls.Add(this.logSetsCheckBox);
+            this.settingsTab.Controls.Add(this.itemTrackerCheckBox);
+            this.settingsTab.Controls.Add(this.hideDyingCheckBox);
+            this.settingsTab.Controls.Add(this.hideItemCheckBox);
+            this.settingsTab.Controls.Add(this.hideCorpsesCheckBox);
+            this.settingsTab.Controls.Add(this.infravisionHackCheckBox);
+            this.settingsTab.Controls.Add(this.closeButton);
+            this.settingsTab.Controls.Add(this.applyButton);
+            this.settingsTab.Controls.Add(this.refreshButton);
+            this.settingsTab.Controls.Add(this.chickenManaPctLabel);
+            this.settingsTab.Controls.Add(this.chickenLifePctLabel);
+            this.settingsTab.Controls.Add(this.chickenManaPctTextBox);
+            this.settingsTab.Controls.Add(this.chickenLifePctTextBox);
+            this.settingsTab.Controls.Add(this.chickenOnHostileTextBox);
+            this.settingsTab.Controls.Add(this.chickenToTownCheckBox);
+            this.settingsTab.Controls.Add(this.enableChickenCheckBox);
+            this.settingsTab.Controls.Add(this.goToTownCheckBox);
+            this.settingsTab.Controls.Add(this.label3);
+            this.settingsTab.Controls.Add(this.fastExitLabel);
+            this.settingsTab.Controls.Add(this.openCubeLabel);
+            this.settingsTab.Controls.Add(this.townPortalKeybindButton);
+            this.settingsTab.Controls.Add(this.fastExitKeybindButton);
+            this.settingsTab.Controls.Add(this.openCubeKeybindButton);
+            this.settingsTab.Controls.Add(this.openStashLabel);
+            this.settingsTab.Controls.Add(this.openStashKeybindButton);
+            this.settingsTab.Controls.Add(this.revealActLabel);
+            this.settingsTab.Controls.Add(this.revealActKeybindButton);
+            this.settingsTab.Controls.Add(this.viewInventoryKeyLabel);
+            this.settingsTab.Controls.Add(this.viewInventoryKeybindButton);
+            this.settingsTab.Controls.Add(this.changeColorCheckBox);
+            this.settingsTab.Controls.Add(this.showSocketsCheckBox);
+            this.settingsTab.Controls.Add(this.showRuneNumberCheckBox);
+            this.settingsTab.Controls.Add(this.showItemPriceCheckBox);
+            this.settingsTab.Controls.Add(this.showItemLevelCheckBox);
+            this.settingsTab.Controls.Add(this.showEthCheckBox);
+            this.settingsTab.Controls.Add(this.fastPortalCheckBox);
+            this.settingsTab.Controls.Add(this.fastTeleCheckBox);
+            this.settingsTab.Controls.Add(this.blockFlashCheckBox);
+            this.settingsTab.Controls.Add(this.viewInventoryHackCheckBox);
+            this.settingsTab.Controls.Add(this.itemNameHackCheckBox);
+            this.settingsTab.Controls.Add(this.packetReceiveHackCheckBox);
+            this.settingsTab.Controls.Add(this.weatherHackCheckBox);
+            this.settingsTab.Controls.Add(this.lightHackCheckBox);
+            this.settingsTab.Location = new System.Drawing.Point(4, 22);
+            this.settingsTab.Name = "settingsTab";
+            this.settingsTab.Padding = new System.Windows.Forms.Padding(3);
+            this.settingsTab.Size = new System.Drawing.Size(562, 500);
+            this.settingsTab.TabIndex = 0;
+            this.settingsTab.Text = "Settings";
+            this.settingsTab.UseVisualStyleBackColor = true;
+            // 
+            // enableTelepickCheckBox
+            // 
+            this.enableTelepickCheckBox.AutoSize = true;
+            this.enableTelepickCheckBox.Enabled = false;
+            this.enableTelepickCheckBox.Location = new System.Drawing.Point(396, 210);
+            this.enableTelepickCheckBox.Name = "enableTelepickCheckBox";
+            this.enableTelepickCheckBox.Size = new System.Drawing.Size(103, 17);
+            this.enableTelepickCheckBox.TabIndex = 56;
+            this.enableTelepickCheckBox.Text = "Enable Telepick";
+            this.enableTelepickCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // enablePickitCheckBox
+            // 
+            this.enablePickitCheckBox.AutoSize = true;
+            this.enablePickitCheckBox.Enabled = false;
+            this.enablePickitCheckBox.Location = new System.Drawing.Point(396, 186);
+            this.enablePickitCheckBox.Name = "enablePickitCheckBox";
+            this.enablePickitCheckBox.Size = new System.Drawing.Size(88, 17);
+            this.enablePickitCheckBox.TabIndex = 55;
+            this.enablePickitCheckBox.Text = "Enable Pickit";
+            this.enablePickitCheckBox.UseVisualStyleBackColor = true;
+            this.enablePickitCheckBox.CheckedChanged += new System.EventHandler(this.enablePickitCheckBox_CheckedChanged);
+            // 
+            // logItemsCheckBox
+            // 
+            this.logItemsCheckBox.AutoSize = true;
+            this.logItemsCheckBox.Enabled = false;
+            this.logItemsCheckBox.Location = new System.Drawing.Point(396, 304);
+            this.logItemsCheckBox.Name = "logItemsCheckBox";
+            this.logItemsCheckBox.Size = new System.Drawing.Size(135, 17);
+            this.logItemsCheckBox.TabIndex = 54;
+            this.logItemsCheckBox.Text = "Log items from Items.ini";
+            this.logItemsCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // logUniquesCheckBox
+            // 
+            this.logUniquesCheckBox.AutoSize = true;
+            this.logUniquesCheckBox.Enabled = false;
+            this.logUniquesCheckBox.Location = new System.Drawing.Point(396, 281);
+            this.logUniquesCheckBox.Name = "logUniquesCheckBox";
+            this.logUniquesCheckBox.Size = new System.Drawing.Size(109, 17);
+            this.logUniquesCheckBox.TabIndex = 53;
+            this.logUniquesCheckBox.Text = "Log Unique Items";
+            this.logUniquesCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // logSetsCheckBox
+            // 
+            this.logSetsCheckBox.AutoSize = true;
+            this.logSetsCheckBox.Enabled = false;
+            this.logSetsCheckBox.Location = new System.Drawing.Point(396, 258);
+            this.logSetsCheckBox.Name = "logSetsCheckBox";
+            this.logSetsCheckBox.Size = new System.Drawing.Size(91, 17);
+            this.logSetsCheckBox.TabIndex = 52;
+            this.logSetsCheckBox.Text = "Log Set Items";
+            this.logSetsCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // itemTrackerCheckBox
+            // 
+            this.itemTrackerCheckBox.AutoSize = true;
+            this.itemTrackerCheckBox.Enabled = false;
+            this.itemTrackerCheckBox.Location = new System.Drawing.Point(32, 160);
+            this.itemTrackerCheckBox.Name = "itemTrackerCheckBox";
+            this.itemTrackerCheckBox.Size = new System.Drawing.Size(86, 17);
+            this.itemTrackerCheckBox.TabIndex = 43;
+            this.itemTrackerCheckBox.Text = "Item Tracker";
+            this.itemTrackerCheckBox.UseVisualStyleBackColor = true;
+            this.itemTrackerCheckBox.CheckedChanged += new System.EventHandler(this.itemNotificationsCheckBox_CheckedChanged);
             // 
             // hideDyingCheckBox
             // 
             this.hideDyingCheckBox.AutoSize = true;
             this.hideDyingCheckBox.Enabled = false;
-            this.hideDyingCheckBox.Location = new System.Drawing.Point(32, 422);
+            this.hideDyingCheckBox.Location = new System.Drawing.Point(32, 448);
             this.hideDyingCheckBox.Name = "hideDyingCheckBox";
             this.hideDyingCheckBox.Size = new System.Drawing.Size(107, 17);
             this.hideDyingCheckBox.TabIndex = 42;
@@ -179,7 +261,7 @@
             // 
             this.hideItemCheckBox.AutoSize = true;
             this.hideItemCheckBox.Enabled = false;
-            this.hideItemCheckBox.Location = new System.Drawing.Point(32, 443);
+            this.hideItemCheckBox.Location = new System.Drawing.Point(32, 469);
             this.hideItemCheckBox.Name = "hideItemCheckBox";
             this.hideItemCheckBox.Size = new System.Drawing.Size(76, 17);
             this.hideItemCheckBox.TabIndex = 41;
@@ -190,7 +272,7 @@
             // 
             this.hideCorpsesCheckBox.AutoSize = true;
             this.hideCorpsesCheckBox.Enabled = false;
-            this.hideCorpsesCheckBox.Location = new System.Drawing.Point(32, 401);
+            this.hideCorpsesCheckBox.Location = new System.Drawing.Point(32, 427);
             this.hideCorpsesCheckBox.Name = "hideCorpsesCheckBox";
             this.hideCorpsesCheckBox.Size = new System.Drawing.Size(89, 17);
             this.hideCorpsesCheckBox.TabIndex = 40;
@@ -200,7 +282,7 @@
             // infravisionHackCheckBox
             // 
             this.infravisionHackCheckBox.AutoSize = true;
-            this.infravisionHackCheckBox.Location = new System.Drawing.Point(16, 377);
+            this.infravisionHackCheckBox.Location = new System.Drawing.Point(16, 403);
             this.infravisionHackCheckBox.Name = "infravisionHackCheckBox";
             this.infravisionHackCheckBox.Size = new System.Drawing.Size(115, 17);
             this.infravisionHackCheckBox.TabIndex = 39;
@@ -210,7 +292,7 @@
             // 
             // closeButton
             // 
-            this.closeButton.Location = new System.Drawing.Point(463, 441);
+            this.closeButton.Location = new System.Drawing.Point(463, 454);
             this.closeButton.Name = "closeButton";
             this.closeButton.Size = new System.Drawing.Size(75, 23);
             this.closeButton.TabIndex = 38;
@@ -220,7 +302,7 @@
             // 
             // applyButton
             // 
-            this.applyButton.Location = new System.Drawing.Point(382, 441);
+            this.applyButton.Location = new System.Drawing.Point(382, 454);
             this.applyButton.Name = "applyButton";
             this.applyButton.Size = new System.Drawing.Size(75, 23);
             this.applyButton.TabIndex = 37;
@@ -230,7 +312,7 @@
             // 
             // refreshButton
             // 
-            this.refreshButton.Location = new System.Drawing.Point(233, 440);
+            this.refreshButton.Location = new System.Drawing.Point(233, 453);
             this.refreshButton.Name = "refreshButton";
             this.refreshButton.Size = new System.Drawing.Size(75, 23);
             this.refreshButton.TabIndex = 36;
@@ -420,7 +502,7 @@
             // viewInventoryKeyLabel
             // 
             this.viewInventoryKeyLabel.AutoSize = true;
-            this.viewInventoryKeyLabel.Location = new System.Drawing.Point(89, 356);
+            this.viewInventoryKeyLabel.Location = new System.Drawing.Point(89, 382);
             this.viewInventoryKeyLabel.Name = "viewInventoryKeyLabel";
             this.viewInventoryKeyLabel.Size = new System.Drawing.Size(98, 13);
             this.viewInventoryKeyLabel.TabIndex = 16;
@@ -429,7 +511,7 @@
             // viewInventoryKeybindButton
             // 
             this.viewInventoryKeybindButton.Key = System.Windows.Forms.Keys.None;
-            this.viewInventoryKeybindButton.Location = new System.Drawing.Point(32, 350);
+            this.viewInventoryKeybindButton.Location = new System.Drawing.Point(32, 376);
             this.viewInventoryKeybindButton.Name = "viewInventoryKeybindButton";
             this.viewInventoryKeybindButton.Size = new System.Drawing.Size(50, 20);
             this.viewInventoryKeybindButton.TabIndex = 14;
@@ -441,7 +523,7 @@
             // 
             this.changeColorCheckBox.AutoSize = true;
             this.changeColorCheckBox.Enabled = false;
-            this.changeColorCheckBox.Location = new System.Drawing.Point(32, 304);
+            this.changeColorCheckBox.Location = new System.Drawing.Point(32, 330);
             this.changeColorCheckBox.Name = "changeColorCheckBox";
             this.changeColorCheckBox.Size = new System.Drawing.Size(90, 17);
             this.changeColorCheckBox.TabIndex = 13;
@@ -452,7 +534,7 @@
             // 
             this.showSocketsCheckBox.AutoSize = true;
             this.showSocketsCheckBox.Enabled = false;
-            this.showSocketsCheckBox.Location = new System.Drawing.Point(32, 280);
+            this.showSocketsCheckBox.Location = new System.Drawing.Point(32, 306);
             this.showSocketsCheckBox.Name = "showSocketsCheckBox";
             this.showSocketsCheckBox.Size = new System.Drawing.Size(95, 17);
             this.showSocketsCheckBox.TabIndex = 12;
@@ -463,7 +545,7 @@
             // 
             this.showRuneNumberCheckBox.AutoSize = true;
             this.showRuneNumberCheckBox.Enabled = false;
-            this.showRuneNumberCheckBox.Location = new System.Drawing.Point(32, 256);
+            this.showRuneNumberCheckBox.Location = new System.Drawing.Point(32, 282);
             this.showRuneNumberCheckBox.Name = "showRuneNumberCheckBox";
             this.showRuneNumberCheckBox.Size = new System.Drawing.Size(122, 17);
             this.showRuneNumberCheckBox.TabIndex = 11;
@@ -474,7 +556,7 @@
             // 
             this.showItemPriceCheckBox.AutoSize = true;
             this.showItemPriceCheckBox.Enabled = false;
-            this.showItemPriceCheckBox.Location = new System.Drawing.Point(32, 232);
+            this.showItemPriceCheckBox.Location = new System.Drawing.Point(32, 258);
             this.showItemPriceCheckBox.Name = "showItemPriceCheckBox";
             this.showItemPriceCheckBox.Size = new System.Drawing.Size(103, 17);
             this.showItemPriceCheckBox.TabIndex = 10;
@@ -485,7 +567,7 @@
             // 
             this.showItemLevelCheckBox.AutoSize = true;
             this.showItemLevelCheckBox.Enabled = false;
-            this.showItemLevelCheckBox.Location = new System.Drawing.Point(32, 208);
+            this.showItemLevelCheckBox.Location = new System.Drawing.Point(32, 234);
             this.showItemLevelCheckBox.Name = "showItemLevelCheckBox";
             this.showItemLevelCheckBox.Size = new System.Drawing.Size(105, 17);
             this.showItemLevelCheckBox.TabIndex = 9;
@@ -496,7 +578,7 @@
             // 
             this.showEthCheckBox.AutoSize = true;
             this.showEthCheckBox.Enabled = false;
-            this.showEthCheckBox.Location = new System.Drawing.Point(32, 184);
+            this.showEthCheckBox.Location = new System.Drawing.Point(32, 210);
             this.showEthCheckBox.Name = "showEthCheckBox";
             this.showEthCheckBox.Size = new System.Drawing.Size(95, 17);
             this.showEthCheckBox.TabIndex = 8;
@@ -539,7 +621,7 @@
             // viewInventoryHackCheckBox
             // 
             this.viewInventoryHackCheckBox.AutoSize = true;
-            this.viewInventoryHackCheckBox.Location = new System.Drawing.Point(16, 327);
+            this.viewInventoryHackCheckBox.Location = new System.Drawing.Point(16, 353);
             this.viewInventoryHackCheckBox.Name = "viewInventoryHackCheckBox";
             this.viewInventoryHackCheckBox.Size = new System.Drawing.Size(137, 17);
             this.viewInventoryHackCheckBox.TabIndex = 4;
@@ -550,7 +632,7 @@
             // itemNameHackCheckBox
             // 
             this.itemNameHackCheckBox.AutoSize = true;
-            this.itemNameHackCheckBox.Location = new System.Drawing.Point(16, 160);
+            this.itemNameHackCheckBox.Location = new System.Drawing.Point(16, 186);
             this.itemNameHackCheckBox.Name = "itemNameHackCheckBox";
             this.itemNameHackCheckBox.Size = new System.Drawing.Size(118, 17);
             this.itemNameHackCheckBox.TabIndex = 3;
@@ -589,9 +671,19 @@
             this.lightHackCheckBox.Text = "Light Hack: 1";
             this.lightHackCheckBox.UseVisualStyleBackColor = true;
             // 
+            // trackerSettingsTab
+            // 
+            this.trackerSettingsTab.Location = new System.Drawing.Point(4, 22);
+            this.trackerSettingsTab.Name = "trackerSettingsTab";
+            this.trackerSettingsTab.Padding = new System.Windows.Forms.Padding(3);
+            this.trackerSettingsTab.Size = new System.Drawing.Size(562, 500);
+            this.trackerSettingsTab.TabIndex = 1;
+            this.trackerSettingsTab.Text = "Tracker Settings";
+            this.trackerSettingsTab.UseVisualStyleBackColor = true;
+            // 
             // propertiesExpandButton
             // 
-            this.propertiesExpandButton.ChildPanel = this.optionsTranslucentPanel;
+            this.propertiesExpandButton.ChildPanel = this.settingsTranslucentPanel;
             this.propertiesExpandButton.Expanded = true;
             this.propertiesExpandButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.propertiesExpandButton.Location = new System.Drawing.Point(2, 49);
@@ -631,7 +723,7 @@
             this.logTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.logTextBox.Enabled = false;
             this.logTextBox.Font = new System.Drawing.Font("Tahoma", 8.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.logTextBox.ForeColor = System.Drawing.Color.SandyBrown;
+            this.logTextBox.ForeColor = System.Drawing.Color.White;
             this.logTextBox.Location = new System.Drawing.Point(0, 0);
             this.logTextBox.Name = "logTextBox";
             this.logTextBox.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
@@ -647,7 +739,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.MidnightBlue;
             this.ClientSize = new System.Drawing.Size(800, 647);
-            this.Controls.Add(this.optionsTranslucentPanel);
+            this.Controls.Add(this.settingsTranslucentPanel);
             this.Controls.Add(this.propertiesExpandButton);
             this.Controls.Add(this.logExpandButton);
             this.Controls.Add(this.itchyLabel);
@@ -660,10 +752,10 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OverlayWindow_FormClosing);
             this.Load += new System.EventHandler(this.OverlayWindow_Load);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.OverlayWindow_Paint);
-            this.optionsTranslucentPanel.ResumeLayout(false);
+            this.settingsTranslucentPanel.ResumeLayout(false);
             this.settingsTabControl.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
+            this.settingsTab.ResumeLayout(false);
+            this.settingsTab.PerformLayout();
             this.logTranslucentPanel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -677,9 +769,9 @@
         private System.Windows.Forms.Label itchyLabel;
         private ItchyControls.ExpandButton logExpandButton;
         public ItchyControls.ExpandButton propertiesExpandButton;
-        private ItchyControls.TranslucentPanel optionsTranslucentPanel;
+        private ItchyControls.TranslucentPanel settingsTranslucentPanel;
         private System.Windows.Forms.TabControl settingsTabControl;
-        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage settingsTab;
         private System.Windows.Forms.CheckBox lightHackCheckBox;
         private System.Windows.Forms.CheckBox weatherHackCheckBox;
         private System.Windows.Forms.CheckBox packetReceiveHackCheckBox;
@@ -721,5 +813,12 @@
         private System.Windows.Forms.CheckBox hideItemCheckBox;
         private System.Windows.Forms.CheckBox hideCorpsesCheckBox;
         private System.Windows.Forms.CheckBox hideDyingCheckBox;
+        private System.Windows.Forms.CheckBox itemTrackerCheckBox;
+        private System.Windows.Forms.CheckBox enableTelepickCheckBox;
+        private System.Windows.Forms.CheckBox enablePickitCheckBox;
+        private System.Windows.Forms.CheckBox logItemsCheckBox;
+        private System.Windows.Forms.CheckBox logUniquesCheckBox;
+        private System.Windows.Forms.CheckBox logSetsCheckBox;
+        private System.Windows.Forms.TabPage trackerSettingsTab;
     }
 }

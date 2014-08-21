@@ -71,6 +71,14 @@ namespace Itchy
 
             switch ((GameServerPacket)packet[0])
             {
+                case GameServerPacket.RemoveGroundUnit:
+                {
+                    if (!Game.Settings.ReceivePacketHack.ItemTracker.Enabled)
+                        break;
+
+                    Game.ItemGoneHandler(packet);
+                    break;
+                }
                 case GameServerPacket.GameObjectModeChange:
                 {
                     if (!Game.Settings.ReceivePacketHack.FastPortal)
@@ -90,16 +98,24 @@ namespace Itchy
                 case GameServerPacket.PlayerReassign:
                 {
                     if (!Game.Settings.ReceivePacketHack.BlockFlash &&
-                        !Game.Settings.ReceivePacketHack.FastTele)
+                        !Game.Settings.ReceivePacketHack.FastTele &&
+                        !Game.Settings.ReceivePacketHack.ItemTracker.EnablePickit)
                         break;
-                    
-                    var pPlayer = pd.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pPlayerUnit);
+
+                    var unitType = (UnitType)packet[1];
+                    if (unitType != UnitType.Player)
+                        break;
+
+                    var pPlayer = Game.GetPlayerUnit();
                     if (pPlayer == 0)
                         break;
 
                     var unit = pd.Read<UnitAny>(pPlayer);
                     if (BitConverter.ToUInt32(packet, 2) == unit.dwUnitId)
                     {
+                        if (Game.Settings.ReceivePacketHack.ItemTracker.EnablePickit)
+                            Game.OnRelocaton(BitConverter.ToUInt16(packet, 6), BitConverter.ToUInt16(packet, 8));
+
                         // no flash
                         if (Game.Settings.ReceivePacketHack.BlockFlash)
                             pd.WriteByte(pPacket + 10, 0);
@@ -172,6 +188,9 @@ namespace Itchy
                 case GameServerPacket.WorldItemAction:
                 case GameServerPacket.OwnedItemAction:
                 {
+                    if (!Game.Settings.ReceivePacketHack.ItemTracker.Enabled)
+                        break;
+
                     skip = !Game.ItemActionHandler(packet);
                     break;
                 }
@@ -222,7 +241,6 @@ namespace Itchy
 
             var pTxt = Game.GetItemText(item.dwTxtFileNo);
             var txt = pd.Read<ItemTxt>(pTxt);
-            var dwCode = txt.GetDwCode();
             var code = txt.GetCode();
 
             bool changed = false;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -97,20 +98,33 @@ namespace Itchy
                 case ItemQuality.Superior:
                     return Color.White;
                 case ItemQuality.Magic:
-                    return Color.Blue;
+                    return Color.DodgerBlue;
                 case ItemQuality.Rare:
-                    return Color.Yellow;
+                    return Color.Gold;
                 case ItemQuality.Set:
                     return Color.LimeGreen;
                 case ItemQuality.Unique:
-                    return Color.DarkGoldenrod;
                 case ItemQuality.Craft:
-                    return Color.Orange;
+                    return Color.DarkOrange;
                 default:
                     break;
             }
 
             return Color.White;
+        }
+
+        public static void Add<TKey, TValue>(this ConcurrentDictionary<TKey, TValue> dict, TKey key, TValue value)
+        {
+            while (!dict.TryAdd(key, value)) { }
+        }
+
+        public static void Remove<TKey, TValue>(this ConcurrentDictionary<TKey, TValue> dict, TKey key)
+        {
+            if (!dict.ContainsKey(key))
+                return;
+
+            TValue value;
+            while (!dict.TryRemove(key, out value)) { }
         }
     }
 }

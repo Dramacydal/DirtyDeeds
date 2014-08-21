@@ -192,8 +192,14 @@ namespace Itchy
         Craft = 8,
     }
 
+    public enum GameClientPacket : byte
+    {
+        PickItem = 0x16,
+    }
+
     public enum GameServerPacket : byte
     {
+        RemoveGroundUnit = 0x0A,
         GameObjectModeChange = 0x0E,
         PlayerReassign = 0x15,
         Unknown18 = 0x18,

@@ -200,7 +200,6 @@ namespace Itchy
                 }
                 case StorageType.Belt:
                 {
-                    var path = pd.Read<Path>(player.pPath);
                     var bytes = new List<byte>();
 
                     bytes.Add(0x26);

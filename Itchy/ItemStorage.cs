@@ -106,6 +106,19 @@ namespace Itchy
             return BodyLocation == ItemBodyLocation.Armor &&
                 (ArmorType == ItemArmorType.Ring || ArmorType == ItemArmorType.Amulet);
         }
+
+        public bool IsRune()
+        {
+            return Id >= 610 && Id <= 642;
+        }
+
+        public uint RuneNumber()
+        {
+            if (!IsRune())
+                return 0;
+
+            return Id - 610 + 1;
+        }
     }
 
     public class ItemStorage
@@ -150,8 +163,8 @@ namespace Itchy
 
                 try
                 {
-                    while (!codeByIds.TryAdd(Convert.ToUInt32(a[0]), a[1])) { }
-                    while (!idByCodes.TryAdd(a[1], Convert.ToUInt32(a[0]))) { }
+                    codeByIds.Add(Convert.ToUInt32(a[0]), a[1]);
+                    idByCodes.Add(a[1], Convert.ToUInt32(a[0]));
                 }
                 catch (Exception)
                 {
@@ -423,7 +436,7 @@ namespace Itchy
                 if (tempName.Value != "")
                     itemInfo.Name = tempName.Value;
 
-                while (!itemInfos.TryAdd(i - 1, itemInfo)) { }
+                itemInfos.Add(i - 1, itemInfo);
             }
         }
 
@@ -448,7 +461,7 @@ namespace Itchy
 
                 var txt = game.Debugger.Read<ItemTxt>(pText);
 
-                while (!itemCodes.TryAdd(i, txt.GetCode())) { }
+                itemCodes.Add(i, txt.GetCode());
             }
 
             game.ResumeThreads();

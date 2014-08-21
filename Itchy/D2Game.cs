@@ -61,7 +61,9 @@ namespace Itchy
 
         private int threadSuspendCount = 0;
 
-        public D2Game() { }
+        public D2Game()
+        {
+        }
 
         public void Dispose()
         {
@@ -135,6 +137,8 @@ namespace Itchy
             overlay.PostCreate();
             //overlay.Show();
 
+            pickit = new Pickit(this);
+
             return true;
         }
 
@@ -155,6 +159,12 @@ namespace Itchy
             {
                 gameCheckThread.Abort();
                 gameCheckThread = null;
+            }
+
+            if (pickit != null)
+            {
+                pickit.Stop();
+                pickit = null;
             }
 
             if (Installed)
@@ -218,11 +228,33 @@ namespace Itchy
             }
         }
 
-        volatile bool inGame;
+        public volatile bool InGame = false;
+        public volatile ushort CurrentX = 0;
+        public volatile ushort CurrentY = 0;
+
         private void CheckInGame(bool first = false)
         {
-            var check = GetPlayerUnit() != 0;
-            if (check == inGame && !first)
+            var pPlayer = GetPlayerUnit();
+            var check = pPlayer != 0;
+            if (check && Settings.ReceivePacketHack.Enabled && Settings.ReceivePacketHack.ItemTracker.EnablePickit)
+            {
+                try
+                {
+                    var unit = pd.Read<UnitAny>(pPlayer);
+                    if (unit.pPath != 0)
+                    {
+                        var path = pd.Read<Path>(unit.pPath);
+                        if (path.xPos != CurrentX || path.yPos != CurrentY)
+                            OnRelocaton(path.xPos, path.yPos);
+
+                        CurrentX = path.xPos;
+                        CurrentY = path.yPos;
+                    }
+                }
+                catch (Exception) { }
+            }
+
+            if (check == InGame && !first)
                 return;
 
             if (check)
@@ -230,9 +262,9 @@ namespace Itchy
             else
                 PlayerName = "";
 
-            inGame = check;
+            InGame = check;
 
-            if (inGame)
+            if (InGame)
                 EnteredGame();
             else
                 ExitedGame();
@@ -241,7 +273,7 @@ namespace Itchy
             {
                 overlay.Invoke((MethodInvoker)delegate
                 {
-                    overlay.InGameStateChanged(inGame);
+                    overlay.InGameStateChanged(InGame);
                 });
             }
             catch (Exception)
@@ -424,6 +456,9 @@ namespace Itchy
             pricePerItem.Clear();
             socketsPerItem.Clear();
             viewingUnit = 0;
+
+            if (pickit != null)
+                pickit.Reset();
         }
 
         public void EnteredGame()
