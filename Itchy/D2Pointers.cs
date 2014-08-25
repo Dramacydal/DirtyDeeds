@@ -53,6 +53,7 @@ namespace Itchy
         public static uint pMouseY = 0x11C94C;  // DWORD
         public static uint NewAutomapCell = 0x703C0; // AutomapCell * __fastcall, (void)
         public static uint AddAutomapCell = 0x71EA0; // void __fastcall, (AutomapCell *aCell, AutomapCell **node)
+        public static uint TestPvpFlag_I = 0x6A720;
     }
 
     public static class D2Net       // 0x6FBF0000

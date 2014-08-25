@@ -40,7 +40,7 @@ namespace Itchy
             set { itchy.Settings = value; }
         }
 
-        public ItemDisplaySettings ItemSettings { get { return itchy.ItemSettings; } }
+        public ItemProcessingSettings ItemProcessingSettings { get { return itchy.ItemProcessingSettings; } }
 
         protected Process process = null;
         protected ProcessDebugger pd = null;
@@ -58,8 +58,6 @@ namespace Itchy
 
         protected Thread syncThread = null;
         protected Thread gameCheckThread = null;
-
-        private int threadSuspendCount = 0;
 
         public D2Game()
         {
@@ -236,50 +234,53 @@ namespace Itchy
         {
             var pPlayer = GetPlayerUnit();
             var check = pPlayer != 0;
-            if (check && Settings.ReceivePacketHack.Enabled && Settings.ReceivePacketHack.ItemTracker.EnablePickit)
+
+            try
             {
-                try
+                if (check && Settings.ReceivePacketHack.Enabled && Settings.ReceivePacketHack.ItemTracker.Enabled &&
+                    Settings.ReceivePacketHack.ItemTracker.EnablePickit)
                 {
                     var unit = pd.Read<UnitAny>(pPlayer);
                     if (unit.pPath != 0)
                     {
                         var path = pd.Read<Path>(unit.pPath);
                         if (path.xPos != CurrentX || path.yPos != CurrentY)
-                            OnRelocaton(path.xPos, path.yPos);
-
-                        CurrentX = path.xPos;
-                        CurrentY = path.yPos;
+                        {
+                            CurrentX = path.xPos;
+                            CurrentY = path.yPos;
+                            OnRelocaton();
+                        }
                     }
+                }
+
+                if (check == InGame && !first)
+                    return;
+
+                if (check)
+                {
+
+                    PlayerName = GetPlayerName();
+                }
+                else
+                    PlayerName = "";
+
+                InGame = check;
+
+                if (InGame)
+                    EnteredGame();
+                else
+                    ExitedGame();
+
+                try
+                {
+                    overlay.Invoke((MethodInvoker)delegate
+                    {
+                        overlay.InGameStateChanged(InGame);
+                    });
                 }
                 catch (Exception) { }
             }
-
-            if (check == InGame && !first)
-                return;
-
-            if (check)
-                PlayerName = GetPlayerName();
-            else
-                PlayerName = "";
-
-            InGame = check;
-
-            if (InGame)
-                EnteredGame();
-            else
-                ExitedGame();
-
-            try
-            {
-                overlay.Invoke((MethodInvoker)delegate
-                {
-                    overlay.InGameStateChanged(InGame);
-                });
-            }
-            catch (Exception)
-            {
-                //MessageBox.Show(e.ToString());
-            }
+            catch (Exception) { }
         }
 
         public uint GetPlayerUnit()
@@ -322,7 +323,7 @@ namespace Itchy
             return true;
         }
 
-        public string PlayerName { get; set; }
+        public volatile string PlayerName = "";
 
         public string GetPlayerName()
         {
@@ -420,17 +421,11 @@ namespace Itchy
 
         public void SuspendThreads(params int[] except)
         {
-            if (++threadSuspendCount > 1)
-                return;
-
             pd.SuspendAllThreads(except);
         }
 
         public void ResumeThreads()
         {
-            if (--threadSuspendCount > 0)
-                return;
-
             pd.ResumeAllThreads();
         }
 
@@ -584,6 +579,14 @@ namespace Itchy
                     OnViewInventoryKey();
                     ResumeThreads();
                 }
+
+                if (key == Settings.ReceivePacketHack.ItemTracker.ReactivatePickit.Key &&
+                    Settings.ReceivePacketHack.ItemTracker.Enabled &&
+                    Settings.ReceivePacketHack.ItemTracker.EnablePickit)
+                {
+                    if (pickit != null)
+                        pickit.Reset(true);
+                }
             }
 
             if (mEvent == MessageEvent.WM_LBUTTONDOWN && Settings.ViewInventory.Enabled)
@@ -601,7 +604,14 @@ namespace Itchy
             if (pd.Breakpoints.Count >= 4)
                 return;
 
-            pd.AddBreakPoint(bp, pd.GetModuleAddress(bp.ModuleName));
+            try
+            {
+                pd.AddBreakPoint(bp, pd.GetModuleAddress(bp.ModuleName));
+            }
+            catch (Exception)
+            {
+                LogWarning("Failed to apply hacks. Try again");
+            }
         }
 
         public void ApplySettings()
@@ -632,6 +642,33 @@ namespace Itchy
 
             if (Settings.Infravision.Enabled)
                 AddBreakPoint(new InfravisionBreakPoint(this));
+        }
+
+        public bool HasSkill(SkillType skillId)
+        {
+            UnitAny unit;
+            if (!GetPlayerUnit(out unit) || unit.pInfo == 0)
+                return false;
+
+            var info = pd.Read<Info>(unit.pInfo);
+
+            for (var pSkill = info.pFirstSkill; pSkill != 0; )
+            {
+                var skill = pd.Read<Skill>(pSkill);
+                if (skill.pSkillInfo == 0)
+                {
+                    pSkill = skill.pNextSkill;
+                    continue;
+                }
+
+                var skillInfo = pd.Read<SkillInfo>(skill.pSkillInfo);
+                if (skillInfo.wSkillId == (ushort)skillId)
+                    return true;
+
+                pSkill = skill.pNextSkill;
+            }
+
+            return false;
         }
     }
 }

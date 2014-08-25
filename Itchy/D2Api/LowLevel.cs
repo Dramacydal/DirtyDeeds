@@ -87,16 +87,17 @@ namespace Itchy
             {
                 var item = pd.Read<UnitAny>(pItem);
                 var itemData = pd.Read<ItemData>(item.pItemData);
+
+                var pItemTxt = pd.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetItemText,
+                    CallingConventionEx.StdCall,
+                    item.dwTxtFileNo);
+                var txt = pd.Read<ItemTxt>(pItemTxt);
                 if ((uint)storage != itemData.ItemLocation && storage != StorageType.Null)
                 {
                     pItem = itemData.pNextInvItem;
                     continue;
                 }
 
-                var pItemTxt = pd.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetItemText,
-                    CallingConventionEx.StdCall,
-                    item.dwTxtFileNo);
-                var txt = pd.Read<ItemTxt>(pItemTxt);
                 if (txt.GetCode() == code)
                     break;
 

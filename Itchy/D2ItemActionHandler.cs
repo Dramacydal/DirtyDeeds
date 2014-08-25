@@ -7,135 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using WhiteMagic;
 
 namespace Itchy
 {
-    using PickitDictionary = ConcurrentDictionary<uint, ItemActionInfo>;
-
-    public class Pickit
-    {
-        public PickitDictionary ItemsToPick { get { return itemsToPick; } }
-
-        internal static double pickupRadius = 10;
-        internal static int maxPickTries = 5;
-        internal static int pickDelay = 500;
-
-        protected D2Game game;
-        protected PickitDictionary itemsToPick = new PickitDictionary();
-        protected Thread th = null;
-        protected volatile bool needStop = false;
-
-        public Pickit(D2Game game)
-        {
-            this.game = game;
-
-            th = new Thread(() =>
-            {
-                while (!needStop)
-                {
-                    Process(false);
-                    Thread.Sleep(150);
-                }
-            });
-
-            th.Start();
-        }
-
-        public void Reset()
-        {
-            itemsToPick.Clear();
-        }
-
-        public void Stop()
-        {
-            needStop = true;
-            if (th != null)
-                th.Join();
-        }
-
-        public void AddPendingItem(ItemActionInfo item)
-        {
-            item.pickTryCount = 0;
-            itemsToPick[item.uid] = item;
-
-            Task.Factory.StartNew(() =>
-            {
-                Thread.Sleep(500);
-                Process(true);
-            });
-        }
-
-        public void RemoveItem(uint uid)
-        {
-            itemsToPick.Remove(uid);
-        }
-
-        public void Process(bool firstTry)
-        {
-            if (!game.InGame || !game.Settings.ReceivePacketHack.ItemTracker.EnablePickit || !game.Settings.ReceivePacketHack.ItemTracker.Enabled)
-                return;
-
-            var items = itemsToPick.ToArray().Where(it => (firstTry ? it.Value.pickTryCount == 0 : it.Value.pickTryCount != 0));
-
-            foreach (var item in items)
-            {
-                var i = item.Value;
-                if (i.DistanceSq(game.CurrentX, game.CurrentY) <= pickupRadius * pickupRadius)
-                {
-                    if (i.pickTryCount == 0)
-                    {
-                        ++i.pickTryCount;
-                        i.pickDate = DateTime.Now;
-                        if (!Pick(i.uid))
-                            return;
-                    }
-                    else if (i.pickDate.MSecToNow() >= pickDelay)
-                    {
-                        if (++i.pickTryCount > maxPickTries)
-                        {
-                            game.Log("Failed to pick {0} after {1} tries", i.uid, i.pickTryCount - 1);
-                            itemsToPick.Remove(i.uid);
-                            continue;
-                        }
-
-                        game.Log("Retrying to pick {0} #{1}", i.uid, i.pickTryCount);
-                        i.pickDate = DateTime.Now;
-                        if (!Pick(i.uid))
-                            return;
-                    }
-                }
-                else
-                {
-                    i.pickTryCount = 0;
-                }
-            }
-        }
-
-        public bool Pick(uint uid)
-        {
-            game.SuspendThreads();
-
-            if (!game.GameReady())
-            {
-                game.ResumeThreads();
-                return false;
-            }
-
-            var packet = new List<byte>();
-
-            packet.Add((byte)GameClientPacket.PickItem);
-            packet.Add(0x4);
-            packet.AddRange(new byte[] { 0, 0, 0 });
-            packet.AddRange(BitConverter.GetBytes(uid));
-            packet.AddRange(new byte[] { 0, 0, 0, 0 });
-
-            game.SendPacket(packet.ToArray());
-            game.ResumeThreads();
-            return true;
-        }
-    }
-
     //TODO: 2 unknowns left... are there imbue and craft / transmute action types ?
     public enum ItemActionType
     {
@@ -348,15 +224,17 @@ namespace Itchy
             return Math.Pow(this.x - x, 2) + Math.Pow(this.y - y, 2);
         }
 
-        //
         public ItemInfo info = null;
+        public List<ItemProcessingInfo> processingInfo = null;
+
         public DateTime pickDate;
         public uint pickTryCount = 0;
     }
 
     public partial class D2Game
     {
-        Pickit pickit = null;
+        public Pickit Pickit { get { return pickit; } }
+        protected Pickit pickit = null;
 
         public ItemActionInfo ReadItemAction(byte[] data)
         {
@@ -373,6 +251,8 @@ namespace Itchy
             var version = data[pOffset += 4];
 
             ++pOffset;
+
+            //Log("Uid {0} action {1}", i.uid, i.action);
 
             if (i.action != ItemActionType.AddToGround &&
                 i.action != ItemActionType.DropToGround &&
@@ -399,14 +279,14 @@ namespace Itchy
             if (i.flags.HasFlag(ItemFlag.Ear))
             {
                 return null;
-                var charClass = ByteConverter.GetBits(data, ref pOffset, 3);
+                /*var charClass = ByteConverter.GetBits(data, ref pOffset, 3);
                 var level = (ushort)ByteConverter.GetBits(data, ref pOffset, 7);
                 var builder = new System.Text.StringBuilder();
                 int mChar;
                 while ((mChar = ByteConverter.GetBits(data, ref pOffset, 7)) != 0)
                     builder.Append((char)mChar);
                 var name = builder.ToString();
-                return i;
+                return i;*/
             }
 
             i.code =  String.Concat(
@@ -616,6 +496,9 @@ namespace Itchy
 
         public bool ItemActionHandler(byte[] data)
         {
+            if (pickit == null/* || pickit.fullInventory*/)
+                return true;
+
             var i = ReadItemAction(data);
             if (i == null)
                 return true;
@@ -624,41 +507,108 @@ namespace Itchy
             if (itemInfo == null)
                 return true;
 
+            var matchingEntries = ItemProcessingSettings.GetMatches(itemInfo, (uint)i.sockets, i.IsEth, i.quality);
+
             i.info = itemInfo;
+            i.processingInfo = matchingEntries.Where(it => it.Pick).ToList();
 
-            var configEntries = ItemSettings.GetMatch(itemInfo, (uint)i.sockets, i.IsEth, i.quality).Where(it => it.Track);
+            var log = matchingEntries.Where(it => it.Log).Count() != 0;
+            var pick = Settings.ReceivePacketHack.ItemTracker.EnablePickit && (!IsInTown() || Settings.ReceivePacketHack.ItemTracker.TownPick) ? i.processingInfo.Count != 0 : false;
 
-            if (i.quality == ItemQuality.Set || i.quality == ItemQuality.Unique || configEntries.Count() != 0)
+            if (i.quality == ItemQuality.Set && Settings.ReceivePacketHack.ItemTracker.LogSets
+                || i.quality == ItemQuality.Unique && Settings.ReceivePacketHack.ItemTracker.LogUniques
+                || itemInfo.IsRune() && Settings.ReceivePacketHack.ItemTracker.LogRunes
+                || log && Settings.ReceivePacketHack.ItemTracker.LogItems)
             {
-                var s = "Dropped " + itemInfo.Name;
+                var message = "Dropped ";
 
-                if (!itemInfo.IsBijou() && (i.quality == ItemQuality.Unique || i.quality == ItemQuality.Set))
+                var addsocks = false;
+                var addilvl = false;
+
+                var color = i.quality.GetColor();
+                switch (i.quality)
                 {
-                    s += " (";
-                    if (i.quality == ItemQuality.Unique)
-                        for (int j = 0; j < itemInfo.PossibleUniques.Count; ++j)
+                    case ItemQuality.Unique:
+                    {
+                        if (itemInfo.PossibleUniques.Count == 1)
+                            message += itemInfo.PossibleUniques[0];
+                        else if (itemInfo.IsBijou())
+                            message += itemInfo.Name;
+                        else
                         {
-                            s += itemInfo.PossibleUniques[j];
-                            if (j != itemInfo.PossibleUniques.Count - 1)
-                                s += ", ";
+                            message += itemInfo.Name + " (";
+                            for (int j = 0; j < itemInfo.PossibleUniques.Count; ++j)
+                            {
+                                message += itemInfo.PossibleUniques[j];
+                                if (j != itemInfo.PossibleUniques.Count - 1)
+                                    message += ", ";
+                            }
+                            message += ")";
                         }
-                    if (i.quality == ItemQuality.Set)
-                        for (int j = 0; j < itemInfo.PossibleSets.Count; ++j)
+                        break;
+                    }
+                    case ItemQuality.Set:
+                    {
+                        if (itemInfo.PossibleSets.Count == 1)
+                            message += itemInfo.PossibleSets[0];
+                        else if (itemInfo.IsBijou())
+                            message += itemInfo.Name;
+                        else
                         {
-                            s += itemInfo.PossibleSets[j];
-                            if (j != itemInfo.PossibleSets.Count - 1)
-                                s += ", ";
+                            message += itemInfo.Name + " (";
+                            for (int j = 0; j < itemInfo.PossibleSets.Count; ++j)
+                            {
+                                message += itemInfo.PossibleSets[j];
+                                if (j != itemInfo.PossibleSets.Count - 1)
+                                    message += ", ";
+                            }
+                            message += ")";
                         }
-                    s += ")";
+                        break;
+                    }
+                    case ItemQuality.Normal:
+                    {
+                        message += itemInfo.Name;
+                        if (itemInfo.IsRune())
+                        {
+                            color = Color.MediumPurple;
+                            message += " (" + itemInfo.RuneNumber().ToString() + ")";
+                        }
+                        else
+                        {
+                            addsocks = true;
+                            addilvl = true;
+                        }
+                        break;
+                    }
+                    case ItemQuality.Superior:
+                    {
+                        message += "Superior " + itemInfo.Name;
+                        addsocks = true;
+                        addilvl = true;
+                        break;
+                    }
+                    default:
+                    {
+                        message += itemInfo.Name;
+                        break;
+                    }
                 }
 
-                Log(i.quality.GetColor(), s);
+                if (addsocks && i.sockets != 0)
+                    message += " (" + i.sockets.ToString() + ")";
+                if (addilvl && i.iLvl > 1)
+                    message += " (L" + i.iLvl.ToString() + ")";
+                if (i.IsEth)
+                    message += " (Eth)";
+
+                Log(color, message);
             }
 
-            if (i.code == "gld" || i.code == "mp5")
+            if (pick)
             {
-                pickit.AddPendingItem(i);
-                Log("Added {0} {1} to pickit", i.code, i.uid);
+                Task.Factory.StartNew(() => pickit.AddPendingItem(i));
+                //Log("Added {0} {1} to pickit", i.code, i.uid);
             }
 
             return true;
@@ -666,18 +616,24 @@ namespace Itchy
 
         public void ItemGoneHandler(byte[] data)
         {
+            if (pickit == null/* || pickit.fullInventory*/)
+                return;
+
             var unitType = (UnitType)data[1];
             if (unitType != UnitType.Item)
                 return;
 
             var uid = BitConverter.ToUInt32(data, 2);
-            pickit.RemoveItem(uid);
-            Log("Removing uid {0} from pickit", uid);
+            Task.Factory.StartNew(() => pickit.RemoveItem(uid));
+            //Log("Removing uid {0} from pickit", uid);
         }
 
-        public void OnRelocaton(ushort x, ushort y)
+        public void OnRelocaton()
         {
-            pickit.Process(true);
+            if (pickit == null || pickit.fullInventory)
+                return;
+
+            pickit.ProcessPicks(true);
         }
     }
 }

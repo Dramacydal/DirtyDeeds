@@ -65,7 +65,7 @@ namespace Itchy
     {
         White = 0,
         Red = 1,
-        Greed = 2,
+        Green = 2,
         Blue = 3,
         Tan = 4,
         Gray = 5,
@@ -194,7 +194,10 @@ namespace Itchy
 
     public enum GameClientPacket : byte
     {
+        CastRightSkill = 0x0C,
+        CastRightSkillOnTarget = 0x0D,
         PickItem = 0x16,
+        SelectSkill = 0x3C,
     }
 
     public enum GameServerPacket : byte
@@ -202,6 +205,7 @@ namespace Itchy
         RemoveGroundUnit = 0x0A,
         GameObjectModeChange = 0x0E,
         PlayerReassign = 0x15,
+        TriggerSound = 0x2C,
         Unknown18 = 0x18,
         GameObjectAssignment = 0x51,
         PlayerInfomation = 0x5A,
@@ -209,5 +213,11 @@ namespace Itchy
         WorldItemAction = 0x9C,
         OwnedItemAction = 0x9D,
         DelayedState = 0xA7,
+    }
+
+    public enum SkillType
+    {
+        Telekinesis = 0x2B,
+        Teleport = 0x36,
     }
 }

@@ -109,7 +109,7 @@ namespace Itchy
 
         public bool IsRune()
         {
-            return Id >= 610 && Id <= 642;
+            return MiscType == ItemMiscType.Rune;
         }
 
         public uint RuneNumber()
@@ -118,6 +118,14 @@ namespace Itchy
                 return 0;
 
             return Id - 610 + 1;
+        }
+
+        public bool CanBeTelekinesised()
+        {
+            return MiscType == ItemMiscType.Potion ||
+                Id == 523 ||    // gold
+                Id == 529 ||    // scroll of town portal
+                Id == 530;      // scroll of itentify
         }
     }
 

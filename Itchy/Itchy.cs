@@ -27,7 +27,7 @@ namespace Itchy
         static extern IntPtr GetForegroundWindow();
 
         public volatile GameSettings Settings = null;
-        public volatile ItemDisplaySettings ItemSettings = null;
+        public volatile ItemProcessingSettings ItemProcessingSettings = null;
         public volatile ItemStorage ItemStorage = null;
 
         private static string ConfigFileName = "Settings.xml";
@@ -54,7 +54,9 @@ namespace Itchy
             mouseHookId = SetMouseHook(hookProc);
 
             ItemStorage = new ItemStorage();
-            ItemSettings = new ItemDisplaySettings(ItemConfigFileName, ItemStorage);
+            ItemProcessingSettings = new ItemProcessingSettings(ItemConfigFileName, ItemStorage);
+            ItemProcessingSettings.Load();
+
             LoadSettings();
 
             clientsToolStripMenuItem.DropDown.Closing += RestrictClosing;

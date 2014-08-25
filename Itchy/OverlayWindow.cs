@@ -167,10 +167,15 @@ namespace Itchy
             fastPortalCheckBox.Checked = settings.ReceivePacketHack.FastPortal;
             itemTrackerCheckBox.Checked = settings.ReceivePacketHack.ItemTracker.Enabled;
             enablePickitCheckBox.Checked = settings.ReceivePacketHack.ItemTracker.EnablePickit;
+            useTelekinesisCheckBox.Checked = settings.ReceivePacketHack.ItemTracker.UseTelekinesis;
             enableTelepickCheckBox.Checked = settings.ReceivePacketHack.ItemTracker.EnableTelepick;
+            teleBackCheckBox.Checked = settings.ReceivePacketHack.ItemTracker.TeleBack;
+            pickInTownCheckBox.Checked = settings.ReceivePacketHack.ItemTracker.TownPick;
+            logRunesCheckBox.Checked = settings.ReceivePacketHack.ItemTracker.LogRunes;
             logSetsCheckBox.Checked = settings.ReceivePacketHack.ItemTracker.LogSets;
             logUniquesCheckBox.Checked = settings.ReceivePacketHack.ItemTracker.LogUniques;
             logItemsCheckBox.Checked = settings.ReceivePacketHack.ItemTracker.LogItems;
+            resetPickitKeyBindButton.Key = settings.ReceivePacketHack.ItemTracker.ReactivatePickit.Key;
 
             itemNameHackCheckBox.Checked = settings.ItemNameHack.Enabled;
             showEthCheckBox.Checked = settings.ItemNameHack.ShowEth;
@@ -215,10 +220,15 @@ namespace Itchy
             settings.ReceivePacketHack.FastPortal = fastPortalCheckBox.Checked;
             settings.ReceivePacketHack.ItemTracker.Enabled = itemTrackerCheckBox.Checked;
             settings.ReceivePacketHack.ItemTracker.EnablePickit = enablePickitCheckBox.Checked;
+            settings.ReceivePacketHack.ItemTracker.UseTelekinesis = useTelekinesisCheckBox.Checked;
             settings.ReceivePacketHack.ItemTracker.EnableTelepick = enableTelepickCheckBox.Checked;
+            settings.ReceivePacketHack.ItemTracker.TownPick = pickInTownCheckBox.Checked;
+            settings.ReceivePacketHack.ItemTracker.TeleBack = teleBackCheckBox.Checked;
+            settings.ReceivePacketHack.ItemTracker.LogRunes = logRunesCheckBox.Checked;
             settings.ReceivePacketHack.ItemTracker.LogSets = logSetsCheckBox.Checked;
             settings.ReceivePacketHack.ItemTracker.LogUniques = logUniquesCheckBox.Checked;
             settings.ReceivePacketHack.ItemTracker.LogItems = logItemsCheckBox.Checked;
+            settings.ReceivePacketHack.ItemTracker.ReactivatePickit.Key = resetPickitKeyBindButton.Key;
 
             settings.ItemNameHack.Enabled = itemNameHackCheckBox.Checked;
             settings.ItemNameHack.ShowEth = showEthCheckBox.Checked;
@@ -305,11 +315,16 @@ namespace Itchy
             chickenLifePctTextBox.Enabled = state && enableChickenCheckBox.Checked;
             chickenManaPctTextBox.Enabled = state && enableChickenCheckBox.Checked;
 
+            logRunesCheckBox.Enabled = state && itemTrackerCheckBox.Checked;
             logSetsCheckBox.Enabled = state && itemTrackerCheckBox.Checked;
             logUniquesCheckBox.Enabled = state && itemTrackerCheckBox.Checked;
             logItemsCheckBox.Enabled = state && itemTrackerCheckBox.Checked;
             enablePickitCheckBox.Enabled = state && itemTrackerCheckBox.Checked;
+            useTelekinesisCheckBox.Enabled = state && itemTrackerCheckBox.Checked && enablePickitCheckBox.Checked;
             enableTelepickCheckBox.Enabled = state && itemTrackerCheckBox.Checked && enablePickitCheckBox.Checked;
+            teleBackCheckBox.Enabled = state && itemTrackerCheckBox.Checked && enablePickitCheckBox.Checked && enableTelepickCheckBox.Checked;
+            pickInTownCheckBox.Enabled = state && itemTrackerCheckBox.Checked && enablePickitCheckBox.Checked;
+            resetPickitKeyBindButton.Enabled = state && itemTrackerCheckBox.Checked && enablePickitCheckBox.Checked;
         }
 
         private void itemNameHackCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -355,18 +370,34 @@ namespace Itchy
         {
             var state = itemTrackerCheckBox.Checked;
 
+            logRunesCheckBox.Enabled = state && packetReceiveHackCheckBox.Checked;
             logSetsCheckBox.Enabled = state && packetReceiveHackCheckBox.Checked;
             logUniquesCheckBox.Enabled = state && packetReceiveHackCheckBox.Checked;
             logItemsCheckBox.Enabled = state && packetReceiveHackCheckBox.Checked;
             enablePickitCheckBox.Enabled = state && packetReceiveHackCheckBox.Checked;
+            useTelekinesisCheckBox.Enabled = state && packetReceiveHackCheckBox.Checked && enablePickitCheckBox.Checked;
             enableTelepickCheckBox.Enabled = state && packetReceiveHackCheckBox.Checked && enablePickitCheckBox.Checked;
+            pickInTownCheckBox.Enabled = state && packetReceiveHackCheckBox.Checked && enablePickitCheckBox.Checked;
+            teleBackCheckBox.Enabled = state && packetReceiveHackCheckBox.Checked && enablePickitCheckBox.Checked && enableTelepickCheckBox.Checked;
+            resetPickitKeyBindButton.Enabled = state && packetReceiveHackCheckBox.Checked && enablePickitCheckBox.Checked;
         }
 
         private void enablePickitCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             var state = enablePickitCheckBox.Checked;
 
+            useTelekinesisCheckBox.Enabled = state && packetReceiveHackCheckBox.Checked && itemTrackerCheckBox.Checked;
             enableTelepickCheckBox.Enabled = state && packetReceiveHackCheckBox.Checked && itemTrackerCheckBox.Checked;
+            pickInTownCheckBox.Enabled = state && packetReceiveHackCheckBox.Checked && itemTrackerCheckBox.Checked;
+            teleBackCheckBox.Enabled = state && packetReceiveHackCheckBox.Checked && itemTrackerCheckBox.Checked && enableTelepickCheckBox.Checked;
+            resetPickitKeyBindButton.Enabled = state && packetReceiveHackCheckBox.Checked && itemTrackerCheckBox.Checked;
+        }
+
+        private void enableTelepickCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            var state = enableTelepickCheckBox.Checked;
+
+            teleBackCheckBox.Enabled = state && packetReceiveHackCheckBox.Checked && itemTrackerCheckBox.Checked && enablePickitCheckBox.Checked;
         }
 
         private void refreshButton_Click(object sender, EventArgs e)
@@ -443,5 +474,19 @@ namespace Itchy
 
             return !changed;
         }
+
+        private void reloadItemIniButton_Click(object sender, EventArgs e)
+        {
+            game.ItemProcessingSettings.Load();
+        }
+
+        protected override void OnClick(EventArgs e) { }
+        protected override void OnMouseEnter(EventArgs e) { }
+        protected override void OnMouseLeave(EventArgs e) { }
+        protected override void OnMouseDoubleClick(MouseEventArgs e) { }
+        protected override void OnMouseHover(EventArgs e) { }
+        protected override void OnMouseMove(MouseEventArgs e) { }
+        protected override void OnMouseDown(MouseEventArgs e) { }
+        protected override void OnMouseUp(MouseEventArgs e) { }
     }
 }

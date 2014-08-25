@@ -56,6 +56,8 @@ namespace IniParser
 
         public void Parse()
         {
+            sections.Clear();
+
             var res = new byte[0x4000];
             var ret = GetPrivateProfileString(null, null, "", res, res.Length, path);
             var str = Encoding.ASCII.GetString(res);

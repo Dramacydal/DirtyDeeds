@@ -30,11 +30,16 @@ namespace Itchy
     public class ItemTrackerSettings : HackSettings
     {
         public bool EnablePickit = false;
+        public bool UseTelekinesis = false;
         public bool EnableTelepick = false;
+        public bool TeleBack = false;
+        public bool TownPick = false;
 
+        public bool LogRunes = false;
         public bool LogSets = false;
         public bool LogUniques = false;
         public bool LogItems = false;
+        public KeySettings ReactivatePickit = new KeySettings();
     }
 
     [Serializable]
@@ -108,7 +113,7 @@ namespace Itchy
         public ChickenSettings Chicken = new ChickenSettings();
     }
 
-    public class ItemDisplayInfo
+    public class ItemProcessingInfo
     {
         // parameters
         public List<uint> TxtIds = new List<uint>();
@@ -127,8 +132,12 @@ namespace Itchy
         // visualization
         public D2Color Color = D2Color.Default;
         public bool Hide = false;
-        public bool Track = false;
+
+        // tracker settings
+        public bool Log = false;
         public bool Pick = false;
+        public bool NoTele = false;
+        public int PickRadius = 0;
 
         public bool Empty()
         {
@@ -139,18 +148,29 @@ namespace Itchy
         }
     }
 
-    public class ItemDisplaySettings
+    public class ItemProcessingSettings
     {
-        private List<ItemDisplayInfo> Info = new List<ItemDisplayInfo>();
+        private List<ItemProcessingInfo> infoList = new List<ItemProcessingInfo>();
+        private readonly ItemStorage itemStorage;
+        private readonly IniReader ini;
 
-        public ItemDisplaySettings(string path, ItemStorage itemStorage)
+        private static readonly char configSeparator = ',';
+
+        public ItemProcessingSettings(string path, ItemStorage itemStorage)
         {
-            var ini = new IniReader(path);
+            this.itemStorage = itemStorage;
+            ini = new IniReader(path);
+        }
+
+        public void Load()
+        {
+            infoList.Clear();
             ini.Parse();
 
             foreach (var sect in ini.Sections)
             {
-                var info = new ItemDisplayInfo();
+                var info = new ItemProcessingInfo();
+                var disabled = false;
                 foreach (var key in sect.Keys)
                 {
                     var value = key.Value.ToLower();
@@ -159,9 +179,14 @@ namespace Itchy
 
                     switch (key.Key.ToLower())
                     {
+                        case "disabled":
+                        {
+                            disabled = IsTrue(value);
+                            break;
+                        }
                         case "code":
                         {
-                            var args = value.Split('|');
+                            var args = value.Split(configSeparator);
                             foreach (var code in args)
                                 info.Codes.Add(code.ToLower());
 
@@ -182,9 +207,9 @@ namespace Itchy
                             info.Hide = IsTrue(value);
                             break;
                         }
-                        case "track":
+                        case "log":
                         {
-                            info.Track = IsTrue(value);
+                            info.Log = IsTrue(value);
                             break;
                         }
                         case "pick":
@@ -192,9 +217,25 @@ namespace Itchy
                             info.Pick = IsTrue(value);
                             break;
                         }
+                        case "notele":
+                        {
+                            info.NoTele = IsTrue(value);
+                            break;
+                        }
+                        case "pickradius":
+                        {
+                            try
+                            {
+                                var val = Convert.ToInt32(value);
+                                if (val > 0)
+                                    info.PickRadius = val;
+                            }
+                            catch (Exception) { }
+                            break;
+                        }
                         case "sock":
                         {
-                            var args = value.Split('|');
+                            var args = value.Split(configSeparator);
                             foreach (var arg in args)
                             {
                                 try
@@ -215,7 +256,7 @@ namespace Itchy
                         }
                         case "rarity":
                         {
-                            var args = value.Split('|');
+                            var args = value.Split(configSeparator);
                             foreach (var arg in args)
                             {
                                 ItemRarity rarity;
@@ -228,7 +269,7 @@ namespace Itchy
                         }
                         case "type":
                         {
-                            var args = value.Split('|');
+                            var args = value.Split(configSeparator);
                             foreach (var arg in args)
                             {
                                 ItemArmorType arm;
@@ -254,7 +295,7 @@ namespace Itchy
                         }
                         case "quality":
                         {
-                            var args = value.Split('|');
+                            var args = value.Split(configSeparator);
                             foreach (var arg in args)
                             {
                                 ItemQuality quality;
@@ -266,10 +307,13 @@ namespace Itchy
                             break;
                         }
                     }
+
+                    if (disabled)
+                        break;
                 }
 
-                if (!info.Empty())
-                    Info.Add(info);
+                if (!disabled && !info.Empty())
+                    infoList.Add(info);
             }
         }
 
@@ -278,9 +322,9 @@ namespace Itchy
             return value.ToLower() != "0" && value.ToLower() != "false";
         }
 
-        public List<ItemDisplayInfo> GetMatch(ItemInfo info, uint sock, bool isEth, ItemQuality quality)
+        public List<ItemProcessingInfo> GetMatches(ItemInfo info, uint sock, bool isEth, ItemQuality quality)
         {
-            return Info.FindAll(e => !e.Empty() &&
+            return infoList.FindAll(e => !e.Empty() &&
                 (e.TxtIds.Count == 0 || e.TxtIds.Contains(info.Id)) &&
                 (e.SocketNum.Count == 0 || e.SocketNum.Contains(sock)) &&
                 (e.IsEth.Count == 0 || e.IsEth.Contains(isEth)) &&

@@ -52,7 +52,7 @@ namespace Itchy
                     return '0';
                 case D2Color.Red:
                     return '1';
-                case D2Color.Greed:
+                case D2Color.Green:
                     return '2';
                 case D2Color.Blue:
                     return '3';

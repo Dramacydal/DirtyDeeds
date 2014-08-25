@@ -154,6 +154,15 @@ namespace Itchy
         public uint pHellWaypoint;      // Waypoint*
     }
 
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct Info
+    {
+        public uint pGame1C;            // 0x00 BYTE*
+        public uint pFirstSkill;        // 0x04 Skill*
+        public uint pLeftSkill;         // 0x08 Skill*
+        public uint pRightSkill;        // 0x0C Skill*
+    }
+
     [StructLayout(LayoutKind.Explicit)]
     public struct Inventory
     {
@@ -180,83 +189,6 @@ namespace Itchy
         public uint dwItemCount;
     }
 
-    /*[StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct ItemData
-    {
-        public uint dwQuality;          // 0x00
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2, ArraySubType = UnmanagedType.U4)]
-        public uint[] dwSeed;           // 0x04
-        public uint dwItemFlags;        // 0x0C 1 = Owned by player, 0xFFFFFFFF = Not owned
-        public uint dwFingerPrint;      // 0x10 Initial seed
-        public uint _1;                 // 0x14 CommandFlags?
-        public uint dwFlags;            // 0x18
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2, ArraySubType = UnmanagedType.U4)]
-        public uint[] _2;               // 0x1C
-        public uint dwActionStamp;      // 0x24 Changes when an item is changed
-        public uint dwFileIndex;        // 0x28 Data file index UniqueItems.txt etc.
-        public uint dwItemLevel;        // 0x2C
-        public ushort wItemFormat;      // 0x30
-        public ushort wRarePrefix;      // 0x32
-        public ushort wRareSuffix;      // 0x34
-        public ushort wAutoPrefix;      // 0x36
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3, ArraySubType = UnmanagedType.U2)]
-        public ushort[] wMagicPrefix;   // 0x38
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3, ArraySubType = UnmanagedType.U2)]
-        public ushort[] wMagicSuffix;   // 0x3E
-        public byte BodyLocation;       // 0x44 Not always cleared
-        public byte ItemLocation;       // 0x45 Non-body/belt location (Body/Belt == 0xFF)
-        public ushort _4;               // 0x46
-        public byte bEarLevel;          // 0x48
-        public byte bInvGfxIdx;         // 0x49
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 18, ArraySubType=UnmanagedType.U1)]
-        public char[] szPlayerName;     // 0x4A Personalized / Ear name
-        public uint pOwnerInventory;    // Inventory* 0x5C Socketed Items owner Inv 0x5A
-        public uint _10;                // 0x60
-        public uint pNextInvItem;       // UnitAny 0x64 Next item in socketed item if OwnerInventory is set
-        public byte GameLocation;       // 0x68 Location per docs.d2bs.org (unit.location)
-        public byte NodePage;           // 0x69 Actual location, this is the most reliable by far
-        public ushort _12;              // 0x6A
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 12, ArraySubType = UnmanagedType.U2)]
-        public ushort[] _13;            // 0x6C
-        public uint pOwner;             // UnitAny* 0x84
-    }*/
-
-    /*[StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct ItemData
-    {
-        public uint dwQuality;				//0x00
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2, ArraySubType = UnmanagedType.U4)]
-        public uint[] _1;					//0x04
-        public uint dwItemFlags;				//0x0C 1 = Owned by player, 0xFFFFFFFF = Not owned
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2, ArraySubType = UnmanagedType.U4)]
-        public uint[] _2;					//0x10
-        public uint dwFlags;					//0x18
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3, ArraySubType = UnmanagedType.U4)]
-        public uint[] _3;					//0x1C
-        public uint dwQuality2;				//0x28
-        public uint dwItemLevel;				//0x2C
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2, ArraySubType = UnmanagedType.U4)]
-        public uint[] _4;					//0x30
-        public ushort wPrefix;					//0x38
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2, ArraySubType = UnmanagedType.U2)]
-        public ushort[] _5;						//0x3A
-        public ushort wSuffix;					//0x3E
-        public uint _6;						//0x40
-        public byte BodyLocation;				//0x44
-        public byte ItemLocation;				//0x45 Non-body/belt location (Body/Belt == 0xFF)
-        public byte _7;						//0x46
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x15, ArraySubType = UnmanagedType.U2)]
-        public byte[] _8;
-        public uint pOwnerInventory;		// Inventory 0x5C +
-        public uint _10;						//0x60
-        public uint pNextInvItem;			// UnitAny 0x64
-        public byte GameLocation;			//0x68
-        public byte NodePage;					//0x69 Actual location, this is the most reliable by far
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x9A, ArraySubType = UnmanagedType.U1)]
-        public byte[] _12;						//0x6A
-        public uint pOwner;				// UnitAny 0x84 0x104
-    }*/
-
     [StructLayout(LayoutKind.Explicit)]
     public struct ItemData
     {
@@ -272,34 +204,13 @@ namespace Itchy
         public uint ItemLocation;
         [FieldOffset(0x69)]
         public byte NodePage;
-        [FieldOffset(0x70)]
+        //[FieldOffset(0x70)]
+        [FieldOffset(0x64)]
         public uint pNextInvItem;
         //[FieldOffset(0x104)]
         //public uint pOwner;
     }
 
-
-    /*[StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct ItemTxt
-    {
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x40, ArraySubType=UnmanagedType.U1)]
-        public byte[] szName2;          // 0x00
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4, ArraySubType=UnmanagedType.U1)]
-        public byte[] szCode;           // 0x40
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x70, ArraySubType=UnmanagedType.U1)]
-        public byte[] _2;               // 0x84
-        public ushort nLocaleTxtNo;     // 0xF4
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x19, ArraySubType=UnmanagedType.U1)]
-        public byte[] _2a;              // 0xF7
-        public byte xSize;              // 0xFC
-        public byte ySize;              // 0xFD
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 13, ArraySubType=UnmanagedType.U1)]
-        public byte[] _2b;              // 0xFE
-        public byte nType;              // 0x11E
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0xD, ArraySubType=UnmanagedType.U1)]
-        public byte[] _3;               // 0x11F
-        public byte fQuest;             // 0x12A
-    }*/
 
     [StructLayout(LayoutKind.Explicit)]
     public struct ItemTxt
@@ -687,5 +598,25 @@ namespace Itchy
         public ushort wWeight;          // 0x0A
         public uint pLess;              // 0x0C AutomapCell*
         public uint pMore;              // 0x10 AutomapCell*
-    };
+    }
+
+    public struct Skill
+    {
+        public uint pSkillInfo;         // 0x00 SkillInfo*
+        public uint pNextSkill;         // 0x04 Skill*
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8, ArraySubType = UnmanagedType.U4)]
+        public uint[] _1;               // 0x08
+        public uint dwSkillLevel;       // 0x28
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2, ArraySubType = UnmanagedType.U4)]
+        public uint[] _2;               // 0x2C
+        public uint ItemId;             // 0x34 0xFFFFFFFF if not a charge
+        public uint ChargesLeft;        // 0x38 
+        public uint IsCharge;           // 0x3C 1 for charge, else 0
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack=1)]
+    public struct SkillInfo
+    {
+        public ushort wSkillId;         // 0x00
+    }
 }

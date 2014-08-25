@@ -10,9 +10,26 @@ namespace Itchy
 {
     public partial class D2Game
     {
-        public volatile bool chickening;
+        public volatile bool chickening = false;
 
-        public void ChickenTask(ushort hp, ushort mana, bool hostile)
+        protected bool TestPvPFlag(uint dwUnitId1, uint dwUnitId2, uint flag)
+        {
+            return false;
+            using (var asm = new Fasm.ManagedFasm())
+            {
+
+                asm.AddLine("push {0}", flag);
+                asm.AddLine("mov esi, {0}", dwUnitId2);
+                asm.AddLine("mov edx, {0}", dwUnitId1);
+                asm.AddLine("call {0}", pd.GetModuleAddress("d2client.dll") + D2Client.TestPvpFlag_I);
+                asm.AddLine("ret");
+
+                var ret = pd.ExecuteRemoteCode(asm.Assemble());
+                return ret != 0;
+            }
+        }
+
+        public void ChickenTask(ushort hp, ushort mana, uint relationUnitId)
         {
             if (chickening)
                 return;
@@ -23,9 +40,16 @@ namespace Itchy
             if (IsInTown())
                 return;
 
-            if (hostile)
+            if (relationUnitId != 0)
             {
                 if (!Settings.Chicken.ChickenOnHostile)
+                    return;
+
+                UnitAny player;
+                if (!GetPlayerUnit(out player))
+                    return;
+
+                if (!TestPvPFlag(relationUnitId, player.dwUnitId, 8))
                     return;
 
                 if (Settings.Chicken.ChickenToTown)

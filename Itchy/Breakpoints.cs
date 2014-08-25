@@ -73,7 +73,8 @@ namespace Itchy
             {
                 case GameServerPacket.RemoveGroundUnit:
                 {
-                    if (!Game.Settings.ReceivePacketHack.ItemTracker.Enabled)
+                    if (!Game.Settings.ReceivePacketHack.ItemTracker.Enabled ||
+                        !Game.Settings.ReceivePacketHack.ItemTracker.EnablePickit)
                         break;
 
                     Game.ItemGoneHandler(packet);
@@ -99,7 +100,8 @@ namespace Itchy
                 {
                     if (!Game.Settings.ReceivePacketHack.BlockFlash &&
                         !Game.Settings.ReceivePacketHack.FastTele &&
-                        !Game.Settings.ReceivePacketHack.ItemTracker.EnablePickit)
+                        !(Game.Settings.ReceivePacketHack.ItemTracker.Enabled &&
+                        Game.Settings.ReceivePacketHack.ItemTracker.EnablePickit))
                         break;
 
                     var unitType = (UnitType)packet[1];
@@ -113,8 +115,12 @@ namespace Itchy
                     var unit = pd.Read<UnitAny>(pPlayer);
                     if (BitConverter.ToUInt32(packet, 2) == unit.dwUnitId)
                     {
-                        if (Game.Settings.ReceivePacketHack.ItemTracker.EnablePickit)
-                            Game.OnRelocaton(BitConverter.ToUInt16(packet, 6), BitConverter.ToUInt16(packet, 8));
+                        if (Game.Settings.ReceivePacketHack.ItemTracker.Enabled && Game.Settings.ReceivePacketHack.ItemTracker.EnablePickit)
+                        {
+                            Game.CurrentX = BitConverter.ToUInt16(packet, 6);
+                            Game.CurrentY = BitConverter.ToUInt16(packet, 8);
+                            Task.Factory.StartNew(() => Game.OnRelocaton());
+                        }
 
                         // no flash
                         if (Game.Settings.ReceivePacketHack.BlockFlash)
@@ -137,7 +143,7 @@ namespace Itchy
 
                     var life = BitConverter.ToUInt16(packet, 1);
                     var mana = BitConverter.ToUInt16(packet, 3);
-                    Task.Factory.StartNew(() => Game.ChickenTask(life, mana, false));
+                    Task.Factory.StartNew(() => Game.ChickenTask(life, mana, 0));
                     break;
                 }
                 case GameServerPacket.GameObjectAssignment:
@@ -177,7 +183,7 @@ namespace Itchy
                             var rUnit = pd.Read<RosterUnit>(pRosterUnit);
                             if (rUnit.dwUnitId == dwUnitId)
                             {
-                                Task.Factory.StartNew(() => Game.ChickenTask(0, 0, true));
+                                Task.Factory.StartNew(() => Game.ChickenTask(0, 0, dwUnitId));
                                 break;
                             }
                             pRosterUnit = rUnit.pNext;
@@ -199,6 +205,16 @@ namespace Itchy
                     // skip delay between entering portals
                     if (Game.Settings.ReceivePacketHack.FastPortal && packet[6] == 102)
                         skip = true;
+                    break;
+                }
+                case GameServerPacket.TriggerSound:
+                {
+                    if (Game.Settings.ReceivePacketHack.ItemTracker.Enabled &&
+                        Game.Settings.ReceivePacketHack.ItemTracker.EnablePickit)
+                    {
+                        if (packet[1] == 0 && packet[6] == 0x17)
+                            Game.Pickit.FullIntentory();
+                    }
                     break;
                 }
             }
@@ -302,9 +318,9 @@ namespace Itchy
                 if (itemInfo != null)
                 {
                     var sock = Game.GetItemSockets(pItem, item.dwUnitId);
-                    var configEntries = Game.ItemSettings.GetMatch(itemInfo, sock,
-                        (itemData.dwFlags & 0x400000) != 0, (ItemQuality)itemData.dwQuality);
-                    if (configEntries.Count != 0)
+                    var configEntries = Game.ItemProcessingSettings.GetMatches(itemInfo, sock,
+                        (itemData.dwFlags & 0x400000) != 0, (ItemQuality)itemData.dwQuality).Where(it => it.Color != D2Color.Default);
+                    if (configEntries.Count() != 0)
                     {
                         var entry = configEntries.First();
                         if (entry.Color != D2Color.Default)
@@ -413,7 +429,7 @@ namespace Itchy
                             var txt = pd.Read<ItemTxt>(pTxt);
 
                             var sock = Game.GetItemSockets(pUnit, unit.dwUnitId);
-                            var configEntries = Game.ItemSettings.GetMatch(itemInfo, sock,
+                            var configEntries = Game.ItemProcessingSettings.GetMatches(itemInfo, sock,
                                 (itemData.dwFlags & 0x400000) != 0, (ItemQuality)itemData.dwQuality).Where(it => it.Hide);
                             if (configEntries.Count() != 0)
                                 hide = 1;

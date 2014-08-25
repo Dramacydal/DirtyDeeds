@@ -140,11 +140,11 @@ namespace Itchy
             return true;
         }
 
-        public uint GetUnitStat(uint pItem, Stat stat)
+        public uint GetUnitStat(uint pUnit, Stat stat)
         {
             return pd.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetUnitStat,
                 CallingConventionEx.StdCall,
-                pItem, (uint)stat, 0);
+                pUnit, (uint)stat, 0);
         }
     }
 }

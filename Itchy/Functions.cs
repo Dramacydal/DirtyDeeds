@@ -31,17 +31,7 @@ namespace Itchy
                     if (!g.Exists())
                         g.Dispose();
                 });
-            games.RemoveAll((g) => !g.Exists());
-
-            for (var i = 0; i < games.Count; ++i)
-            {
-                var g = games[i];
-                if (!g.Exists())
-                {
-                    games.RemoveAt(i);
-                    i = 0;
-                }
-            }
+            games.RemoveAll(g => !g.Exists());
 
             var processes = Process.GetProcesses();
             foreach (var process in processes)
@@ -101,7 +91,6 @@ namespace Itchy
                             continue;
 
                         var item = (D2ToolstripMenuItem)obj;
-
                         if (item.Type != D2ToolstripType.Game)
                             continue;
 
@@ -118,7 +107,6 @@ namespace Itchy
                             continue;
 
                         var item = (D2ToolstripMenuItem)obj;
-
                         if (item.Type != D2ToolstripType.Game)
                             continue;
 
