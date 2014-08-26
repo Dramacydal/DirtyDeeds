@@ -496,11 +496,23 @@ namespace Itchy
 
         public bool ItemActionHandler(byte[] data)
         {
-            if (pickit == null/* || pickit.fullInventory*/)
-                return true;
-
             var i = ReadItemAction(data);
             if (i == null)
+                return true;
+
+            switch (i.action)
+            {
+                case ItemActionType.Equip:
+                case ItemActionType.IndirectlySwapBodyItem:
+                case ItemActionType.Unequip:
+                case ItemActionType.SwapBodyItem:
+                    break;
+            }
+
+            if (!Settings.ReceivePacketHack.ItemTracker.Enabled)
+                return true;
+
+            if (pickit == null/* || pickit.fullInventory*/)
                 return true;
 
             var itemInfo = ItemStorage.GetInfo(i.code);

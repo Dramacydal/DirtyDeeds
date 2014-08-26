@@ -12,24 +12,7 @@ namespace Itchy
     {
         public volatile bool chickening = false;
 
-        protected bool TestPvPFlag(uint dwUnitId1, uint dwUnitId2, uint flag)
-        {
-            return false;
-            using (var asm = new Fasm.ManagedFasm())
-            {
-
-                asm.AddLine("push {0}", flag);
-                asm.AddLine("mov esi, {0}", dwUnitId2);
-                asm.AddLine("mov edx, {0}", dwUnitId1);
-                asm.AddLine("call {0}", pd.GetModuleAddress("d2client.dll") + D2Client.TestPvpFlag_I);
-                asm.AddLine("ret");
-
-                var ret = pd.ExecuteRemoteCode(asm.Assemble());
-                return ret != 0;
-            }
-        }
-
-        public void ChickenTask(ushort hp, ushort mana, uint relationUnitId)
+        public void TryChicken(ushort hp, ushort mana, bool hostile)
         {
             if (chickening)
                 return;
@@ -40,16 +23,9 @@ namespace Itchy
             if (IsInTown())
                 return;
 
-            if (relationUnitId != 0)
+            if (hostile)
             {
                 if (!Settings.Chicken.ChickenOnHostile)
-                    return;
-
-                UnitAny player;
-                if (!GetPlayerUnit(out player))
-                    return;
-
-                if (!TestPvPFlag(relationUnitId, player.dwUnitId, 8))
                     return;
 
                 if (Settings.Chicken.ChickenToTown)
@@ -59,19 +35,20 @@ namespace Itchy
             {
                 if ((hp & 0x8000) != 0)
                     hp ^= 0x8000;
+
+                // dead case
+                if (hp == 0)
+                    return;
+
                 if ((mana & 0x8000) != 0)
                     mana ^= 0x8000;
                 mana <<= 1;
 
                 var unit = GetPlayerUnit();
-                var maxLife = GetUnitStat(unit, Stat.MaxHealth);
-                var maxMana = GetUnitStat(unit, Stat.MaxMana);
+                var maxLife = llGetUnitStat(unit, StatType.MaxHealth);
+                var maxMana = llGetUnitStat(unit, StatType.MaxMana);
                 maxLife >>= 8;
                 maxMana >>= 8;
-
-                // dead case
-                if (hp == 0)
-                    return;
 
                 var hpPct = hp * 100f / maxLife;
                 var manaPct = mana * 100f / maxMana;
@@ -91,29 +68,44 @@ namespace Itchy
 
             chickening = true;
 
+            Task.Factory.StartNew(() => ChickenTask());
+        }
+
+        public void ChickenTask()
+        {
+            SuspendThreads();
             if (!Settings.Chicken.ChickenToTown)
             {
                 ExitGame();
+                ResumeThreads();
                 return;
             }
 
             backToTown = true;
+
             if (!OpenPortal())
             {
                 backToTown = false;
                 ExitGame();
+                ResumeThreads();
                 return;
             }
 
+            ResumeThreads();
+
             var now = DateTime.Now;
-            while (now.MSecToNow() < 2000 && !IsInTown())
+            while (now.MSecToNow() < 2000)
             {
+                if (IsInTown())
+                    break;
                 Thread.Sleep(300);
             }
 
             if (!IsInTown())
             {
+                SuspendThreads();
                 ExitGame();
+                ResumeThreads();
                 return;
             }
 
@@ -136,7 +128,7 @@ namespace Itchy
                         SuspendThreads();
                         try
                         {
-                            socketsPerItem[dwItemId] = GetUnitStat(pItem, Stat.Sockets);
+                            socketsPerItem[dwItemId] = GetUnitStat(pItem, StatType.Sockets);
                         }
                         catch (Exception) { }
 

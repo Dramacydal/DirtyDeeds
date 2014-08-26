@@ -60,6 +60,8 @@
     <Compile Include="Controls\KeybindButton.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="GameSuspender.cs" />
+    <Compile Include="PlayerInfo.cs" />
     <Compile Include="D2Api\D2Api.cs" />
     <Compile Include="D2Api\LowLevel.cs" />
     <Compile Include="D2Game.cs" />
@@ -69,6 +71,9 @@
     </Compile>
     <Compile Include="D2ItemActionHandler.cs" />
     <Compile Include="D2Tasks.cs" />
+    <Compile Include="Controls\DraggablePanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Extensions.cs" />
     <Compile Include="Functions.cs">
       <SubType>Form</SubType>
@@ -106,6 +111,7 @@
     <Compile Include="Controls\TransparentRichTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="UnitFrames.cs" />
     <EmbeddedResource Include="Itchy.resx">
       <DependentUpon>Itchy.cs</DependentUpon>
       <SubType>Designer</SubType>

@@ -143,7 +143,7 @@ namespace Itchy
 
                     var life = BitConverter.ToUInt16(packet, 1);
                     var mana = BitConverter.ToUInt16(packet, 3);
-                    Task.Factory.StartNew(() => Game.ChickenTask(life, mana, 0));
+                    Task.Factory.StartNew(() => Game.TryChicken(life, mana, false));
                     break;
                 }
                 case GameServerPacket.GameObjectAssignment:
@@ -170,33 +170,21 @@ namespace Itchy
                 }
                 case GameServerPacket.PlayerInfomation:  // event message
                 {
-                    var mode = packet[1];
-                    if (mode == 0x7)    // player relation
+                    var type = packet[1];
+                    var infoType = packet[2];
+                    var relationType = packet[7];
+                    if (type == 0x7 && infoType == 8 && relationType == 3)
                     {
-                        if (!Game.Settings.Chicken.Enabled || Game.chickening)
+                        if (!Game.Settings.Chicken.Enabled || !Game.Settings.Chicken.ChickenOnHostile || Game.chickening)
                             break;
 
-                        var dwUnitId = BitConverter.ToUInt32(packet, 3);
-                        var pRosterUnit = pd.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pPlayerUnitList);
-                        for (; pRosterUnit != 0; )
-                        {
-                            var rUnit = pd.Read<RosterUnit>(pRosterUnit);
-                            if (rUnit.dwUnitId == dwUnitId)
-                            {
-                                Task.Factory.StartNew(() => Game.ChickenTask(0, 0, dwUnitId));
-                                break;
-                            }
-                            pRosterUnit = rUnit.pNext;
-                        }
+                        Task.Factory.StartNew(() => Game.TryChicken(0, 0, true));
                     }
                     break;
                 }
                 case GameServerPacket.WorldItemAction:
                 case GameServerPacket.OwnedItemAction:
                 {
-                    if (!Game.Settings.ReceivePacketHack.ItemTracker.Enabled)
-                        break;
-
                     skip = !Game.ItemActionHandler(packet);
                     break;
                 }
@@ -215,6 +203,44 @@ namespace Itchy
                         if (packet[1] == 0 && packet[6] == 0x17)
                             Game.Pickit.FullIntentory();
                     }
+                    break;
+                }
+                case GameServerPacket.AttributeByte:
+                case GameServerPacket.AttributeWord:
+                case GameServerPacket.AttributeDWord:
+                {
+                    var attr = (StatType)packet[1];
+                    uint val = 0;
+                    switch ((GameServerPacket)packet[0])
+                    {
+                        case GameServerPacket.AttributeByte:
+                            val = (uint)packet[2];
+                            break;
+                        case GameServerPacket.AttributeWord:
+                            val = BitConverter.ToUInt16(packet, 2);
+                            break;
+                        case GameServerPacket.AttributeDWord:
+                            val = (uint)((packet[5] << 16) | (packet[4] << 8) | packet[3]);
+                            break;
+                    }
+
+                    Game.PlayerInfo.SetStat(attr, val);
+                    break;
+                }
+                case GameServerPacket.StateNotification:
+                {
+                    var uid = BitConverter.ToUInt32(packet, 1);
+                    var attr = (StatType)packet[5];
+                    var value = BitConverter.ToUInt32(packet, 6);
+
+                    UnitAny player;
+                    if (!Game.GetPlayerUnit(out player))
+                        break;
+
+                    if (player.dwUnitId != uid)
+                        break;
+
+                    Game.PlayerInfo.SetStat(attr, value);
                     break;
                 }
             }

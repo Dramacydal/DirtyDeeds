@@ -60,12 +60,16 @@ namespace Itchy
     {
         public static uint ReceivePacket = 0x6FBF64A0 - 0x6FBF0000;  // stdcall (BYTE *aPacket, DWORD aLen)
         public static uint SendPacket = 0x6F20; // stdcall (size_t aLen, DWORD arg1, BYTE* aPacket)
-
     }
 
     public static class Storm       // 0x6FBF0000
     {
         public static uint pHandle = 0x6FC42A50 - 0x6FBF0000;
+    }
+
+    public static class Fog         // 0x6FF50000
+    {
+        public static uint gdwBitMasks = 0x6FF77020 - 0x6FF50000;
     }
     
 }

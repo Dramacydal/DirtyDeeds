@@ -136,6 +136,7 @@ namespace Itchy
             //overlay.Show();
 
             pickit = new Pickit(this);
+            PlayerInfo = new PlayerInfo(this);
 
             return true;
         }
@@ -164,6 +165,8 @@ namespace Itchy
                 pickit.Stop();
                 pickit = null;
             }
+
+            PlayerInfo = null;
 
             if (Installed)
             {
@@ -229,6 +232,7 @@ namespace Itchy
         public volatile bool InGame = false;
         public volatile ushort CurrentX = 0;
         public volatile ushort CurrentY = 0;
+        public volatile PlayerInfo PlayerInfo;
 
         private void CheckInGame(bool first = false)
         {
@@ -258,7 +262,6 @@ namespace Itchy
 
                 if (check)
                 {
-
                     PlayerName = GetPlayerName();
                 }
                 else
@@ -366,15 +369,15 @@ namespace Itchy
 
         public void Test()
         {
-            //RevealAct();
+            /*var val = llGetUnitStat(GetPlayerUnit(), StatType.MaxHealth);
+            val >>= 8;
+            this.PrintGameString(val.ToString());*/
 
-            UnitAny unit;
-            if (!GetPlayerUnit(out unit))
+            using (var suspender = new GameSuspender(this))
+            {
+                PrintGameString("Asdasasd");
                 return;
-
-            SetUIVar(UIVars.Inventory, 0);
-
-            //OpenPortal();
+            }
         }
 
         public void ResumeStormThread()
@@ -454,6 +457,9 @@ namespace Itchy
 
             if (pickit != null)
                 pickit.Reset();
+
+            if (PlayerInfo != null)
+                PlayerInfo.Reset();
         }
 
         public void EnteredGame()
@@ -561,8 +567,9 @@ namespace Itchy
                 {
                     SuspendThreads();
                     ResumeStormThread();
-                    RevealAct();
+                    //RevealAct();
                     //ItemStorage.LoadCodes(this);
+                    Test();
                     ResumeThreads();
                 }
                 if (key == Settings.FastPortal.Key)

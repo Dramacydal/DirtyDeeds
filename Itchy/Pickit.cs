@@ -130,32 +130,14 @@ namespace Itchy
                     if (pickRadius == 0)
                         pickRadius = pickupRadius;
 
+                    var canPick = dist <= Math.Pow(pickRadius, 2);
                     bool canBeTelekinesised = dist <= Math.Pow(telePickupRadius, 2) && game.Settings.ReceivePacketHack.ItemTracker.UseTelekinesis &&
-                        i.info.CanBeTelekinesised() && dist >= Math.Pow(telePickupRadius, 2);
+                        i.info.CanBeTelekinesised();
 
-                    if (dist <= Math.Pow(pickRadius, 2) || canBeTelekinesised)
+                    if (canPick || canBeTelekinesised)
                     {
-                        if (i.pickTryCount == 0)
-                        {
-                            ++i.pickTryCount;
-                            i.pickDate = DateTime.Now;
-                            if (Pick(i.uid, canBeTelekinesised))
-                                continue;
-                        }
-                        else if (i.pickDate.MSecToNow() >= pickDelay)
-                        {
-                            if (++i.pickTryCount > maxPickTries)
-                            {
-                                game.Log("Failed to pick {0} after {1} tries", i.uid, i.pickTryCount - 1);
-                                itemsToPick.Remove(i.uid);
-                                continue;
-                            }
-
-                            game.Log("Retrying to pick {0} #{1}", i.uid, i.pickTryCount);
-                            i.pickDate = DateTime.Now;
-                            if (Pick(i.uid, canBeTelekinesised))
-                                continue;
-                        }
+                        if (Pick(i, canPick, canBeTelekinesised))
+                            continue;
                     }
 
                     if (dist <= Math.Pow(telePickupRadius, 2) && telepickingUid == 0 && game.Settings.ReceivePacketHack.ItemTracker.EnableTelepick &&
@@ -200,7 +182,7 @@ namespace Itchy
             if (!TeleportTo(x, y))
             {
                 game.ResumeThreads();
-                return true;
+                return false;
             }
 
             preTeleX = game.CurrentX;
@@ -212,31 +194,44 @@ namespace Itchy
             return true;
         }
 
-        public bool Pick(uint uid, bool telekinesis)
+        public bool Pick(ItemActionInfo item, bool pick, bool telekinesis)
         {
-            if (!game.InGame)
-                throw new Exception("Out of game");
-
-            game.SuspendThreads();
-
-            if (!game.GameReady())
+            if (item.pickTryCount == 0)
             {
-                game.ResumeThreads();
-                throw new Exception("Out of game");
+                item.pickDate = DateTime.Now;
+                ++item.pickTryCount;
             }
-
-            if (telekinesis)
+            else if (item.pickDate.MSecToNow() >= pickDelay)
             {
-                if (!DoTelekinesis(uid))
+                if (++item.pickTryCount > maxPickTries)
                 {
-                    game.ResumeThreads();
-                    return false;
+                    game.Log("Failed to pick {0} after {1} tries", item.uid, item.pickTryCount - 1);
+                    itemsToPick.Remove(item.uid);
+                    return true;
                 }
             }
             else
-                game.PickItem(uid);
+                return true;
 
-            game.ResumeThreads();
+            if (!game.InGame)
+                throw new Exception("Out of game");
+
+            using (var suspender = new GameSuspender(game))
+            {
+                if (!game.GameReady())
+                    throw new Exception("Out of game");
+
+                if (telekinesis && DoTelekinesis(item.uid))
+                { }
+                else if (pick)
+                    game.PickItem(item.uid);
+                else
+                {
+                    --item.pickTryCount;
+                    return false;
+                }
+            }
+
             return true;
         }
     }

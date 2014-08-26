@@ -109,7 +109,7 @@ namespace Itchy
 
             bool isBook = false;
             var pItem = FindItem("tbk", StorageType.Inventory);
-            if (pItem == 0 || GetUnitStat(pItem, Stat.AmmoQuantity) == 0)
+            if (pItem == 0 || GetUnitStat(pItem, StatType.AmmoQuantity) == 0)
             {
                 if (pItem != 0)
                 pItem = FindItem("tsc", StorageType.Inventory);
@@ -128,7 +128,7 @@ namespace Itchy
 
             if (isBook)
             {
-                var cnt = GetUnitStat(pItem, Stat.AmmoQuantity);
+                var cnt = GetUnitStat(pItem, StatType.AmmoQuantity);
                 if (cnt <= 5)
                 {
                     LogWarning("Warning: {0} TP's left", cnt - 1);
@@ -140,7 +140,7 @@ namespace Itchy
             return true;
         }
 
-        public uint GetUnitStat(uint pUnit, Stat stat)
+        public uint GetUnitStat(uint pUnit, StatType stat)
         {
             return pd.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetUnitStat,
                 CallingConventionEx.StdCall,
