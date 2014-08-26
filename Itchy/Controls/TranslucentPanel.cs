@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace ItchyControls
 {
-    public partial class TranslucentPanel : Panel
+    public partial class TranslucentPanel : DraggablePanel
     {
         public TranslucentPanel()
         {

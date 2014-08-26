@@ -229,7 +229,7 @@ namespace Itchy
                 }
                 case GameServerPacket.StateNotification:
                 {
-                    var uid = BitConverter.ToUInt32(packet, 1);
+                    /*var uid = BitConverter.ToUInt32(packet, 1);
                     var attr = (StatType)packet[5];
                     var value = BitConverter.ToUInt32(packet, 6);
 
@@ -240,7 +240,7 @@ namespace Itchy
                     if (player.dwUnitId != uid)
                         break;
 
-                    Game.PlayerInfo.SetStat(attr, value);
+                    Game.PlayerInfo.SetStat(attr, value);*/
                     break;
                 }
             }

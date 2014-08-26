@@ -9,12 +9,12 @@ namespace Itchy
         public GameSuspender(D2Game game)
         {
             this.game = game;
-            game.SuspendThreads();
+            game.Debugger.SuspendAllThreads();
         }
 
         public void Dispose()
         {
-            game.ResumeThreads();
+            game.Debugger.ResumeAllThreads();
         }
     }
 }

@@ -73,25 +73,23 @@ namespace Itchy
 
         public void ChickenTask()
         {
-            SuspendThreads();
-            if (!Settings.Chicken.ChickenToTown)
+            using (var suspender = new GameSuspender(this))
             {
-                ExitGame();
-                ResumeThreads();
-                return;
+                if (!Settings.Chicken.ChickenToTown)
+                {
+                    ExitGame();
+                    return;
+                }
+
+                backToTown = true;
+
+                if (!OpenPortal())
+                {
+                    backToTown = false;
+                    ExitGame();
+                    return;
+                }
             }
-
-            backToTown = true;
-
-            if (!OpenPortal())
-            {
-                backToTown = false;
-                ExitGame();
-                ResumeThreads();
-                return;
-            }
-
-            ResumeThreads();
 
             var now = DateTime.Now;
             while (now.MSecToNow() < 2000)
@@ -103,9 +101,10 @@ namespace Itchy
 
             if (!IsInTown())
             {
-                SuspendThreads();
-                ExitGame();
-                ResumeThreads();
+                using (var suspender = new GameSuspender(this))
+                {
+                    ExitGame();
+                }
                 return;
             }
 
@@ -125,14 +124,15 @@ namespace Itchy
                     hasPendingTask = true;
                     Task.Factory.StartNew(() =>
                     {
-                        SuspendThreads();
-                        try
+                        using (var suspender = new GameSuspender(this))
                         {
-                            socketsPerItem[dwItemId] = GetUnitStat(pItem, StatType.Sockets);
+                            try
+                            {
+                                socketsPerItem[dwItemId] = GetUnitStat(pItem, StatType.Sockets);
+                            }
+                            catch (Exception) { }
                         }
-                        catch (Exception) { }
 
-                        ResumeThreads();
                         hasPendingTask = false;
                     });
                 }
@@ -154,24 +154,24 @@ namespace Itchy
                     hasPendingTask = true;
                     Task.Factory.StartNew(() =>
                     {
-                        SuspendThreads();
-
-                        try
+                        using (var suspender = new GameSuspender(this))
                         {
-                            var item = pd.Read<UnitAny>(pItem);
-                            var pUnit = GetPlayerUnit();
-                            var diff = pd.ReadByte(pd.GetModuleAddress("d2client.dll") + D2Client.pDifficulty);
-                            var pItemPriceList = pd.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pItemPriceList);
+                            try
+                            {
+                                var item = pd.Read<UnitAny>(pItem);
+                                var pUnit = GetPlayerUnit();
+                                var diff = pd.ReadByte(pd.GetModuleAddress("d2client.dll") + D2Client.pDifficulty);
+                                var pItemPriceList = pd.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pItemPriceList);
 
-                            var price = pd.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetItemPrice,
-                                CallingConventionEx.StdCall,
-                                pUnit, pItem, diff, pItemPriceList, 0x9A, 1);
+                                var price = pd.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetItemPrice,
+                                    CallingConventionEx.StdCall,
+                                    pUnit, pItem, diff, pItemPriceList, 0x9A, 1);
 
-                            pricePerItem[item.dwUnitId] = price;
+                                pricePerItem[item.dwUnitId] = price;
+                            }
+                            catch (Exception) { }
                         }
-                        catch (Exception) { }
 
-                        ResumeThreads();
                         hasPendingTask = false;
                     });
                 }

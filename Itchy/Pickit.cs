@@ -165,32 +165,24 @@ namespace Itchy
 
         public bool TelePick(uint uid, ushort x, ushort y)
         {
-            game.SuspendThreads();
-
-            if (!game.InGame || !game.GameReady())
+            using (var suspender = new GameSuspender(game))
             {
-                game.ResumeThreads();
-                throw new Exception("Out of game");
+
+                if (!game.InGame || !game.GameReady())
+                    throw new Exception("Out of game");
+
+                if (game.IsInTown())
+                    return true;
+
+                if (!TeleportTo(x, y))
+                    return false;
+
+                preTeleX = game.CurrentX;
+                preTeleY = game.CurrentY;
+
+                telepickingUid = uid;
             }
 
-            if (game.IsInTown())
-            {
-                game.ResumeThreads();
-                return true;
-            }
-
-            if (!TeleportTo(x, y))
-            {
-                game.ResumeThreads();
-                return false;
-            }
-
-            preTeleX = game.CurrentX;
-            preTeleY = game.CurrentY;
-
-            telepickingUid = uid;
-
-            game.ResumeThreads();
             return true;
         }
 

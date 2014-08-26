@@ -261,9 +261,7 @@ namespace Itchy
                     return;
 
                 if (check)
-                {
                     PlayerName = GetPlayerName();
-                }
                 else
                     PlayerName = "";
 
@@ -333,7 +331,7 @@ namespace Itchy
             try
             {
                 UnitAny unit;
-                if (!GetPlayerUnit(out unit))
+                if (!GetPlayerUnit(out unit) || unit.pPlayerData == 0)
                     return "";
 
                 var data = pd.Read<PlayerData>(unit.pPlayerData);
@@ -346,10 +344,8 @@ namespace Itchy
             return "";
         }
 
-        public void PrintGameString(string str, D2Color color = D2Color.Default, bool suspend = false)
+        public void PrintGameString(string str, D2Color color = D2Color.Default)
         {
-            if (suspend)
-                SuspendThreads();
             try
             {
                 var addr = pd.AllocateUTF16String(str);
@@ -362,9 +358,6 @@ namespace Itchy
             catch (Exception)
             {
             }
-
-            if (suspend)
-                ResumeThreads();
         }
 
         public void Test()
@@ -420,16 +413,6 @@ namespace Itchy
 
             pd.Call(pd.GetModuleAddress("d2client.dll") + D2Client.ExitGame,
                 CallingConventionEx.FastCall);
-        }
-
-        public void SuspendThreads(params int[] except)
-        {
-            pd.SuspendAllThreads(except);
-        }
-
-        public void ResumeThreads()
-        {
-            pd.ResumeAllThreads();
         }
 
         public void Log(Color color, string message, params object[] args)
@@ -547,44 +530,50 @@ namespace Itchy
             {
                 if (key == Settings.FastExit.Key)
                 {
-                    SuspendThreads();
-                    ExitGame();
-                    ResumeThreads();
+                    using (var suspender = new GameSuspender(this))
+                    {
+                        ExitGame();
+                    }
                 }
                 if (key == Settings.OpenCube.Key)
                 {
-                    SuspendThreads();
-                    OpenCube();
-                    ResumeThreads();
+                    using (var suspender = new GameSuspender(this))
+                    {
+                        OpenCube();
+                    }
                 }
                 if (key == Settings.OpenStash.Key)
                 {
-                    SuspendThreads();
-                    OpenStash();
-                    ResumeThreads();
+                    using (var suspender = new GameSuspender(this))
+                    {
+                        OpenStash();
+                    }
                 }
                 if (key == Settings.RevealAct.Key)
                 {
-                    SuspendThreads();
-                    ResumeStormThread();
-                    //RevealAct();
-                    //ItemStorage.LoadCodes(this);
-                    Test();
-                    ResumeThreads();
+                    using (var suspender = new GameSuspender(this))
+                    {
+                        ResumeStormThread();
+                        RevealAct();
+                        //ItemStorage.LoadCodes(this);
+                        //Test();
+                    }
                 }
                 if (key == Settings.FastPortal.Key)
                 {
-                    SuspendThreads();
-                    if (OpenPortal() && Settings.FastPortal.GoToTown && Settings.ReceivePacketHack.Enabled)
-                        backToTown = true;
-                    ResumeThreads();
+                    using (var suspender = new GameSuspender(this))
+                    {
+                        if (OpenPortal() && Settings.FastPortal.GoToTown && Settings.ReceivePacketHack.Enabled)
+                            backToTown = true;
+                    }
                 }
 
                 if (key == Settings.ViewInventory.ViewInventoryKey && Settings.ViewInventory.Enabled)
                 {
-                    SuspendThreads();
-                    OnViewInventoryKey();
-                    ResumeThreads();
+                    using (var suspender = new GameSuspender(this))
+                    {
+                        OnViewInventoryKey();
+                    }
                 }
 
                 if (key == Settings.ReceivePacketHack.ItemTracker.ReactivatePickit.Key &&

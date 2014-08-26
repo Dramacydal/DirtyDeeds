@@ -48,7 +48,6 @@ namespace ItchyControls
         public string ExpandedString = "\\/";
         public string HiddenString = "/\\";
 
-
         public ExpandButton() : base()
         {
         }
@@ -87,7 +86,7 @@ namespace ItchyControls
         protected override void OnClick(EventArgs e)
         {
             if (childPanel != null)
-                Expanded = !ChildPanel.Visible;
+                Expanded = !childPanel.Visible;
         }
     }
 }

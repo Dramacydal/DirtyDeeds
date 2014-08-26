@@ -60,6 +60,9 @@ namespace Itchy
             LoadSettings();
 
             clientsToolStripMenuItem.DropDown.Closing += RestrictClosing;
+
+            var testForm = new TestForm();
+            testForm.Show();
         }
 
         private void RestrictClosing(object sender, ToolStripDropDownClosingEventArgs e)
