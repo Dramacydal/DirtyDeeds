@@ -288,7 +288,7 @@ namespace Itchy
         {
             /*return pd.Call(pd.GetModuleAddress("d2client.dll") + D2Client.GetPlayerUnit,
                 CallingConventionEx.StdCall);*/
-            return pd.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pPlayerUnit);
+            return pd.ReadUInt(D2Client.pPlayerUnit);
         }
 
         public uint GetUIVar(UIVars uiVar)
@@ -296,7 +296,7 @@ namespace Itchy
             if (uiVar > UIVars.Max)
                 return 0;
 
-            return pd.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pUiVars + (uint)uiVar * 4);
+            return pd.ReadUInt(D2Client.pUiVars + (uint)uiVar * 4);
         }
 
         public void SetUIVar(UIVars uiVar, uint value)
@@ -304,7 +304,7 @@ namespace Itchy
             if (uiVar > UIVars.Max)
                 return;
 
-            pd.Call(pd.GetModuleAddress("d2client.dll") + D2Client.SetUiVar,
+            pd.Call(D2Client.SetUiVar,
                 CallingConventionEx.FastCall,
                 (uint)uiVar,
                 value,
@@ -349,7 +349,7 @@ namespace Itchy
             try
             {
                 var addr = pd.AllocateUTF16String(str);
-                pd.Call(pd.GetModuleAddress("d2client.dll") + D2Client.PrintGameString,
+                pd.Call(D2Client.PrintGameString,
                     CallingConventionEx.StdCall,
                     addr, (uint)color);
 
@@ -383,7 +383,7 @@ namespace Itchy
 
             var funcAddress = WinApi.GetProcAddress(hModule, "ResumeThread");
 
-            var handle = pd.ReadUInt(pd.GetModuleAddress("storm.dll") + Storm.pHandle);
+            var handle = pd.ReadUInt(Storm.pHandle);
 
             pd.Call(pd.GetModuleAddress("kernel32.dll") + funcAddress - hModule, CallingConventionEx.StdCall, handle);
         }
@@ -411,7 +411,7 @@ namespace Itchy
             if (!GameReady())
                 return;
 
-            pd.Call(pd.GetModuleAddress("d2client.dll") + D2Client.ExitGame,
+            pd.Call(D2Client.ExitGame,
                 CallingConventionEx.FastCall);
         }
 
@@ -484,7 +484,7 @@ namespace Itchy
             if (!GameReady())
                 return;
 
-            var pSelected = pd.Call(pd.GetModuleAddress("d2client.dll") + D2Client.GetSelectedUnit,
+            var pSelected = pd.Call(D2Client.GetSelectedUnit,
                 CallingConventionEx.StdCall);
 
             if (pSelected == 0)
@@ -501,12 +501,12 @@ namespace Itchy
 
         public uint GetMouseX()
         {
-            return pd.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pMouseX);
+            return pd.ReadUInt(D2Client.pMouseX);
         }
 
         public uint GetMouseY()
         {
-            return pd.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pMouseY);
+            return pd.ReadUInt(D2Client.pMouseY);
         }
 
         public bool HandleMessage(Keys key, MessageEvent mEvent)

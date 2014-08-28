@@ -30,9 +30,7 @@ namespace Itchy
 
         protected uint FindServerSideUnit(uint dwId, uint dwType)
         {
-            var pHashTable = D2Client.pServerUnitTable;
-
-            pHashTable += pd.GetModuleAddress("d2client.dll") + 128 * 4 * dwType;
+            var pHashTable = D2Client.pServerUnitTable + 128 * 4 * dwType;
 
             var result = pd.ReadUInt(pHashTable + 4 * (dwId & 0x7F));
             if (result != 0)
@@ -53,9 +51,7 @@ namespace Itchy
 
         protected uint FindClientSideUnit(uint dwId, uint dwType)
         {
-            var pHashTable = D2Client.pClientUnitTable;
-
-            pHashTable += pd.GetModuleAddress("d2client.dll") + 128 * 4 * dwType;
+            var pHashTable = D2Client.pClientUnitTable + 128 * 4 * dwType;
 
             var result = pd.ReadUInt(pHashTable + 4 * (dwId & 0x7F));
             if (result != 0)
@@ -88,7 +84,7 @@ namespace Itchy
                 var item = pd.Read<UnitAny>(pItem);
                 var itemData = pd.Read<ItemData>(item.pItemData);
 
-                var pItemTxt = pd.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetItemText,
+                var pItemTxt = pd.Call(D2Common.GetItemText,
                     CallingConventionEx.StdCall,
                     item.dwTxtFileNo);
                 var txt = pd.Read<ItemTxt>(pItemTxt);
@@ -147,10 +143,10 @@ namespace Itchy
 
         public uint GetItemText(uint dwTxtFileNo)
         {
-            if (dwTxtFileNo >= pd.ReadUInt(pd.GetModuleAddress("d2common.dll") + D2Common.pMaxItemText))
+            if (dwTxtFileNo >= pd.ReadUInt(D2Common.pMaxItemText))
                 return 0;
 
-            var pData = pd.ReadUInt(pd.GetModuleAddress("d2common.dll") + D2Common.pItemTextData);
+            var pData = pd.ReadUInt(D2Common.pItemTextData);
             if (pData == 0)
                 return 0;
 
@@ -160,18 +156,18 @@ namespace Itchy
         public void ReceivePacket(byte[] packet)
         {
             var addr = pd.AllocateBytes(packet);
-            pd.Call(pd.GetModuleAddress("d2net.dll") + D2Net.ReceivePacket,
+            pd.Call(D2Net.ReceivePacket,
                 CallingConventionEx.StdCall,
-                addr, (uint)packet.Length);
+                addr, packet.Length);
             pd.FreeMemory(addr);
         }
 
         public void SendPacket(byte[] packet)
         {
             var addr = pd.AllocateBytes(packet);
-            pd.Call(pd.GetModuleAddress("d2net.dll") + D2Net.SendPacket,
+            pd.Call(D2Net.SendPacket,
                 CallingConventionEx.StdCall,
-                (uint)packet.Length, 1, addr);
+                packet.Length, 1, addr);
             pd.FreeMemory(addr);
         }
 
@@ -228,7 +224,7 @@ namespace Itchy
             if (unit.pStats == 0)
                 return 0;
 
-            var pTables = pd.ReadUInt(pd.GetModuleAddress("d2common.dll") + D2Common.sgptDataTables);
+            var pTables = pd.ReadUInt(D2Common.sgptDataTables);
             var s755 = pd.ReadUInt(pTables + 755 * 4);
             var s757 = pd.ReadUInt(pTables + 757 * 4);
 
@@ -253,7 +249,7 @@ namespace Itchy
                 result = pd.ReadUInt(v6 + 4);
                 if (someOffs != 0)
                 {
-                    var gdwBitMask = pd.ReadByte(pd.GetModuleAddress("fog.dll") + Fog.gdwBitMasks + 8);
+                    var gdwBitMask = pd.ReadByte(Fog.gdwBitMasks + 8);
                     if ((pd.ReadByte(someOffs + 5) & gdwBitMask) != 0)
                     {
                         if (v3 != 0)

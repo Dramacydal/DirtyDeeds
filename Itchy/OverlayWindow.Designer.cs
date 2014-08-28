@@ -76,6 +76,7 @@
             this.chickenLifePctLabel = new System.Windows.Forms.Label();
             this.chickenManaPctLabel = new System.Windows.Forms.Label();
             this.trackerSettingsGroupBox = new System.Windows.Forms.GroupBox();
+            this.useTelekinesisCheckBox = new System.Windows.Forms.CheckBox();
             this.teleBackCheckBox = new System.Windows.Forms.CheckBox();
             this.reactivatePickitLabel = new System.Windows.Forms.Label();
             this.resetPickitKeyBindButton = new ItchyControls.KeybindButton();
@@ -91,10 +92,9 @@
             this.refreshButton = new System.Windows.Forms.Button();
             this.trackerSettingsTab = new System.Windows.Forms.TabPage();
             this.propertiesExpandButton = new ItchyControls.ExpandButton();
-            this.logExpandButton = new ItchyControls.ExpandButton();
             this.logTranslucentPanel = new ItchyControls.TranslucentPanel();
+            this.logExpandButton = new ItchyControls.ExpandButton();
             this.logTextBox = new ItchyControls.TransparentRichTextBox();
-            this.useTelekinesisCheckBox = new System.Windows.Forms.CheckBox();
             this.settingsTranslucentPanel.SuspendLayout();
             this.settingsTabControl.SuspendLayout();
             this.settingsTab.SuspendLayout();
@@ -102,7 +102,6 @@
             this.hacksGroupBox.SuspendLayout();
             this.chickenSettingsGroupBox.SuspendLayout();
             this.trackerSettingsGroupBox.SuspendLayout();
-            this.logTranslucentPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // itchyLabel
@@ -657,6 +656,16 @@
             this.trackerSettingsGroupBox.TabStop = false;
             this.trackerSettingsGroupBox.Text = "Tracker Settings";
             // 
+            // useTelekinesisCheckBox
+            // 
+            this.useTelekinesisCheckBox.AutoSize = true;
+            this.useTelekinesisCheckBox.Location = new System.Drawing.Point(8, 43);
+            this.useTelekinesisCheckBox.Name = "useTelekinesisCheckBox";
+            this.useTelekinesisCheckBox.Size = new System.Drawing.Size(101, 17);
+            this.useTelekinesisCheckBox.TabIndex = 62;
+            this.useTelekinesisCheckBox.Text = "Use Telekinesis";
+            this.useTelekinesisCheckBox.UseVisualStyleBackColor = true;
+            // 
             // teleBackCheckBox
             // 
             this.teleBackCheckBox.AutoSize = true;
@@ -807,64 +816,52 @@
             // propertiesExpandButton
             // 
             this.propertiesExpandButton.ChildPanel = this.settingsTranslucentPanel;
-            this.propertiesExpandButton.Expanded = true;
+            this.propertiesExpandButton.Expanded = false;
             this.propertiesExpandButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.propertiesExpandButton.Location = new System.Drawing.Point(2, 49);
             this.propertiesExpandButton.Name = "propertiesExpandButton";
             this.propertiesExpandButton.Size = new System.Drawing.Size(18, 16);
             this.propertiesExpandButton.TabIndex = 5;
-            this.propertiesExpandButton.Text = " \\/";
+            this.propertiesExpandButton.Text = " /\\";
             this.propertiesExpandButton.UseVisualStyleBackColor = true;
+            // 
+            // logTranslucentPanel
+            // 
+            this.logTranslucentPanel.AutoScroll = true;
+            this.logTranslucentPanel.BackColor = System.Drawing.Color.DarkRed;
+            this.logTranslucentPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.logTranslucentPanel.Location = new System.Drawing.Point(114, 485);
+            this.logTranslucentPanel.Name = "logTranslucentPanel";
+            this.logTranslucentPanel.Size = new System.Drawing.Size(575, 88);
+            this.logTranslucentPanel.TabIndex = 2;
             // 
             // logExpandButton
             // 
             this.logExpandButton.ChildPanel = this.logTranslucentPanel;
             this.logExpandButton.Expanded = true;
             this.logExpandButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.logExpandButton.Location = new System.Drawing.Point(114, 557);
+            this.logExpandButton.Location = new System.Drawing.Point(91, 556);
             this.logExpandButton.Name = "logExpandButton";
             this.logExpandButton.Size = new System.Drawing.Size(18, 16);
             this.logExpandButton.TabIndex = 4;
             this.logExpandButton.Text = " \\/";
             this.logExpandButton.UseVisualStyleBackColor = true;
             // 
-            // logTranslucentPanel
-            // 
-            this.logTranslucentPanel.AutoScroll = true;
-            this.logTranslucentPanel.BackColor = System.Drawing.Color.Transparent;
-            this.logTranslucentPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.logTranslucentPanel.Controls.Add(this.logTextBox);
-            this.logTranslucentPanel.Location = new System.Drawing.Point(133, 533);
-            this.logTranslucentPanel.Name = "logTranslucentPanel";
-            this.logTranslucentPanel.Size = new System.Drawing.Size(556, 40);
-            this.logTranslucentPanel.TabIndex = 2;
-            // 
             // logTextBox
             // 
             this.logTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.logTextBox.DetectUrls = false;
-            this.logTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.logTextBox.Enabled = false;
             this.logTextBox.Font = new System.Drawing.Font("Tahoma", 8.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.logTextBox.ForeColor = System.Drawing.Color.White;
-            this.logTextBox.Location = new System.Drawing.Point(0, 0);
+            this.logTextBox.Location = new System.Drawing.Point(298, 370);
             this.logTextBox.Name = "logTextBox";
             this.logTextBox.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
             this.logTextBox.ShortcutsEnabled = false;
-            this.logTextBox.Size = new System.Drawing.Size(554, 38);
+            this.logTextBox.Size = new System.Drawing.Size(308, 51);
             this.logTextBox.TabIndex = 1;
             this.logTextBox.Text = "";
             this.logTextBox.WordWrap = false;
-            // 
-            // useTelekinesisCheckBox
-            // 
-            this.useTelekinesisCheckBox.AutoSize = true;
-            this.useTelekinesisCheckBox.Location = new System.Drawing.Point(8, 43);
-            this.useTelekinesisCheckBox.Name = "useTelekinesisCheckBox";
-            this.useTelekinesisCheckBox.Size = new System.Drawing.Size(101, 17);
-            this.useTelekinesisCheckBox.TabIndex = 62;
-            this.useTelekinesisCheckBox.Text = "Use Telekinesis";
-            this.useTelekinesisCheckBox.UseVisualStyleBackColor = true;
             // 
             // OverlayWindow
             // 
@@ -872,9 +869,10 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.MidnightBlue;
             this.ClientSize = new System.Drawing.Size(800, 647);
+            this.Controls.Add(this.logTextBox);
+            this.Controls.Add(this.logExpandButton);
             this.Controls.Add(this.settingsTranslucentPanel);
             this.Controls.Add(this.propertiesExpandButton);
-            this.Controls.Add(this.logExpandButton);
             this.Controls.Add(this.itchyLabel);
             this.Controls.Add(this.logTranslucentPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
@@ -896,7 +894,6 @@
             this.chickenSettingsGroupBox.PerformLayout();
             this.trackerSettingsGroupBox.ResumeLayout(false);
             this.trackerSettingsGroupBox.PerformLayout();
-            this.logTranslucentPanel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 

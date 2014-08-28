@@ -36,10 +36,10 @@ namespace Itchy
             }
 
             var act = pd.Read<Act>(unit.pAct);
-            var expCharFlag = pd.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pExpCharFlag);
-            var diff = pd.ReadByte(pd.GetModuleAddress("d2client.dll") + D2Client.pDifficulty);
+            var expCharFlag = pd.ReadUInt(D2Client.pExpCharFlag);
+            var diff = pd.ReadByte(D2Client.pDifficulty);
 
-            var pAct = pd.Call(pd.GetModuleAddress("d2common.dll") + D2Common.LoadAct,
+            var pAct = pd.Call(D2Common.LoadAct,
                 CallingConventionEx.StdCall,
                 unit.dwAct,
                 act.dwMapSeed,
@@ -48,8 +48,8 @@ namespace Itchy
                 diff,
                 0,
                 (uint)m_ActLevels[unit.dwAct],
-                pd.GetModuleAddress("d2client.dll") + D2Client.LoadAct_1,
-                pd.GetModuleAddress("d2client.dll") + D2Client.LoadAct_2);
+                pd.GetAddress(D2Client.LoadAct_1),
+                pd.GetAddress(D2Client.LoadAct_2));
 
             if (pAct == 0)
             {
@@ -85,7 +85,7 @@ namespace Itchy
                 }
 
                 if (pLevel == 0)
-                    pLevel = pd.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetLevel,
+                    pLevel = pd.Call(D2Common.GetLevel,
                         CallingConventionEx.FastCall,
                         act.pMisc, (uint)i);
                 if (pLevel == 0)
@@ -93,7 +93,7 @@ namespace Itchy
 
                 lvl = pd.Read<Level>(pLevel);
                 if (lvl.pRoom2First == 0)
-                    pd.Call(pd.GetModuleAddress("d2common.dll") + D2Common.InitLevel,
+                    pd.Call(D2Common.InitLevel,
                         CallingConventionEx.StdCall,
                         pLevel);
 
@@ -112,7 +112,7 @@ namespace Itchy
                     if (room.pRoom1 == 0)
                     {
                         roomData = true;
-                        pd.Call(pd.GetModuleAddress("d2common.dll") + D2Common.AddRoomData,
+                        pd.Call(D2Common.AddRoomData,
                             CallingConventionEx.ThisCall,
                             0, actMisc2.pAct, lvl.dwLevelNo, room.dwPosX, room.dwPosY, room.pRoom1);
                     }
@@ -121,9 +121,9 @@ namespace Itchy
                     if (room.pRoom1 == 0)
                         continue;
 
-                    var pAutomapLayer = pd.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pAutoMapLayer);
+                    var pAutomapLayer = pd.ReadUInt(D2Client.pAutoMapLayer);
 
-                    pd.Call(pd.GetModuleAddress("d2client.dll") + D2Client.RevealAutomapRoom,
+                    pd.Call(D2Client.RevealAutomapRoom,
                         CallingConventionEx.StdCall,
                         room.pRoom1,
                         1,
@@ -132,7 +132,7 @@ namespace Itchy
                     DrawPresets(room, lvl);
 
                     if (roomData)
-                        pd.Call(pd.GetModuleAddress("d2common.dll") + D2Common.RemoveRoomData,
+                        pd.Call(D2Common.RemoveRoomData,
                             CallingConventionEx.StdCall,
                             actMisc2.pAct, lvl.dwLevelNo, room.dwPosX, room.dwPosY, room.pRoom1);
 
@@ -145,7 +145,7 @@ namespace Itchy
             var room2 = pd.Read<Room2>(room1.pRoom2);
             var lev = pd.Read<Level>(room2.pLevel);
             InitLayer(lev.dwLevelNo);
-            pd.Call(pd.GetModuleAddress("d2common.dll") + D2Common.UnloadAct,
+            pd.Call(D2Common.UnloadAct,
                 CallingConventionEx.StdCall,
                 pAct);
 
@@ -203,7 +203,7 @@ namespace Itchy
 
                     if (cellNo == -1 && preset.dwTxtFileNo <= 572)
                     {
-                        var pTxt = pd.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetObjectTxt,
+                        var pTxt = pd.Call(D2Common.GetObjectTxt,
                             CallingConventionEx.StdCall,
                             preset.dwTxtFileNo);
                         if (pTxt != 0)
@@ -216,7 +216,7 @@ namespace Itchy
 
                 if (cellNo > 0/* && cellNo < 1258*/)
                 {
-                    var pCell = pd.Call(pd.GetModuleAddress("d2client.dll") + D2Client.NewAutomapCell,
+                    var pCell = pd.Call(D2Client.NewAutomapCell,
                         CallingConventionEx.FastCall);
 
                     var cell = pd.Read<AutomapCell>(pCell);
@@ -230,8 +230,8 @@ namespace Itchy
 
                     pd.Write<AutomapCell>(pCell, cell);
 
-                    var pAutomapLayer = pd.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pAutoMapLayer);
-                    pd.Call(pd.GetModuleAddress("d2client.dll") + D2Client.AddAutomapCell,
+                    var pAutomapLayer = pd.ReadUInt(D2Client.pAutoMapLayer);
+                    pd.Call(D2Client.AddAutomapCell,
                         CallingConventionEx.FastCall,
                         pCell,
                         pAutomapLayer + 0x10);  // &((*p_D2CLIENT_AutomapLayer)->pObjects)
@@ -243,7 +243,7 @@ namespace Itchy
 
         public void InitLayer(uint levelNo)
         {
-            var pLayer = pd.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetLayer,
+            var pLayer = pd.Call(D2Common.GetLayer,
                 CallingConventionEx.FastCall,
                 levelNo);
             if (pLayer == 0)
@@ -251,7 +251,7 @@ namespace Itchy
 
             var layer = pd.Read<AutomapLayer2>(pLayer);
 
-            pd.Call(pd.GetModuleAddress("d2client.dll") + D2Client.InitAutomapLayer_I,
+            pd.Call(D2Client.InitAutomapLayer_I,
                 CallingConventionEx.Register,
                 layer.nLayerNo);
         }

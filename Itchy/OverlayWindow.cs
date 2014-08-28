@@ -24,6 +24,8 @@ namespace Itchy
         public OverlayWindow()
         {
             InitializeComponent();
+
+            logExpandButton.SetDraggable(true);
         }
 
         //

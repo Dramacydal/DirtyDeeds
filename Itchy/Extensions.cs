@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WhiteMagic;
 
 namespace Itchy
 {
@@ -125,6 +126,16 @@ namespace Itchy
 
             TValue value;
             while (!dict.TryRemove(key, out value)) { }
+        }
+
+        public static uint ReadUInt(this ProcessDebugger pd, ModulePointer offs)
+        {
+            return pd.ReadUInt(pd.GetAddress(offs));
+        }
+
+        public static byte ReadByte(this ProcessDebugger pd, ModulePointer offs)
+        {
+            return pd.ReadByte(pd.GetAddress(offs));
         }
     }
 }

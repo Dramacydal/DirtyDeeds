@@ -160,10 +160,10 @@ namespace Itchy
                             {
                                 var item = pd.Read<UnitAny>(pItem);
                                 var pUnit = GetPlayerUnit();
-                                var diff = pd.ReadByte(pd.GetModuleAddress("d2client.dll") + D2Client.pDifficulty);
-                                var pItemPriceList = pd.ReadUInt(pd.GetModuleAddress("d2client.dll") + D2Client.pItemPriceList);
+                                var diff = pd.ReadByte(D2Client.pDifficulty);
+                                var pItemPriceList = pd.ReadUInt(D2Client.pItemPriceList);
 
-                                var price = pd.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetItemPrice,
+                                var price = pd.Call(D2Common.GetItemPrice,
                                     CallingConventionEx.StdCall,
                                     pUnit, pItem, diff, pItemPriceList, 0x9A, 1);
 

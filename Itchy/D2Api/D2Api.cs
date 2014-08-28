@@ -142,7 +142,7 @@ namespace Itchy
 
         public uint GetUnitStat(uint pUnit, StatType stat)
         {
-            return pd.Call(pd.GetModuleAddress("d2common.dll") + D2Common.GetUnitStat,
+            return pd.Call(D2Common.GetUnitStat,
                 CallingConventionEx.StdCall,
                 pUnit, (uint)stat, 0);
         }

@@ -57,6 +57,7 @@
     <Compile Include="Controls\D2ToolstipMenuItem.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\DragExtension.cs" />
     <Compile Include="Controls\KeybindButton.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -71,9 +72,6 @@
     </Compile>
     <Compile Include="D2ItemActionHandler.cs" />
     <Compile Include="D2Tasks.cs" />
-    <Compile Include="Controls\DraggablePanel.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Extensions.cs" />
     <Compile Include="Functions.cs">
       <SubType>Form</SubType>
