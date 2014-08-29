@@ -27,10 +27,12 @@ namespace Itchy
         static extern IntPtr GetForegroundWindow();
 
         public volatile GameSettings Settings = null;
+        public volatile OverlaySettings OverlaySettings = null;
         public volatile ItemProcessingSettings ItemProcessingSettings = null;
         public volatile ItemStorage ItemStorage = null;
 
         private static string ConfigFileName = "Settings.xml";
+        private static string OverlayConfigFileName = "OverlaySettings.xml";
         private static string ItemConfigFileName = "Items.ini";
 
         public Itchy()
@@ -79,12 +81,18 @@ namespace Itchy
                 var x = new XmlSerializer(typeof(GameSettings));
                 Settings = (GameSettings)x.Deserialize(s);
                 s.Close();
+
+                s = new StreamReader(OverlayConfigFileName);
+                x = new XmlSerializer(typeof(OverlaySettings));
+                OverlaySettings = (OverlaySettings)x.Deserialize(s);
+                s.Close();
             }
             catch (Exception)
             {
                 if (s != null)
                     s.Close();
                 Settings = new GameSettings();
+                OverlaySettings = new OverlaySettings();
                 SaveSettings();
             }
         }
@@ -101,16 +109,17 @@ namespace Itchy
                 var x = new XmlSerializer(typeof(GameSettings));
                 x.Serialize(s, Settings);
                 s.Close();
+
+                s = new StreamWriter(OverlayConfigFileName);
+                x = new XmlSerializer(typeof(OverlaySettings));
+                x.Serialize(s, OverlaySettings);
+                s.Close();
             }
             catch (Exception)
             {
                 if (s != null)
                     s.Close();
             }
-        }
-
-        void LoadItemSettings()
-        {
         }
 
         [DllImport("gdi32.dll", ExactSpelling = true)]
@@ -153,7 +162,6 @@ namespace Itchy
 
         private void Itchy_FormClosing(object sender, FormClosingEventArgs e)
         {
-            SaveSettings();
             Hook.UnhookWindowsHookEx(keyHookId);
             Hook.UnhookWindowsHookEx(mouseHookId);
 
@@ -164,6 +172,8 @@ namespace Itchy
 
                 g.Detach();
             }
+
+            SaveSettings();
         }
 
         private void detachButton_Click(object sender, EventArgs e)
@@ -180,13 +190,7 @@ namespace Itchy
 
             games.ResetBindings();*/
         }
-
-        private void clientsComboBox_DropDown(object sender, EventArgs e)
-        {
-            UpdateGames();
-            UpdateTrayItemList();
-        }
-
+ 
         private void testButton_Click(object sender, EventArgs e)
         {
             /*var g = SelectedGame;

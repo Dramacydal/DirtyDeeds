@@ -103,9 +103,6 @@
     <Compile Include="Controls\TranslucentPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\TranslucentPanel.Designer.cs">
-      <DependentUpon>TranslucentPanel.cs</DependentUpon>
-    </Compile>
     <Compile Include="Controls\TransparentRichTextBox.cs">
       <SubType>Component</SubType>
     </Compile>

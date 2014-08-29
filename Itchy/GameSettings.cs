@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -111,6 +112,17 @@ namespace Itchy
         public KeySettings FastExit = new KeySettings();
         public FastPortalSettings FastPortal = new FastPortalSettings();
         public ChickenSettings Chicken = new ChickenSettings();
+    }
+
+    [Serializable]
+    public class OverlaySettings
+    {
+        public OverlaySettings() { }
+
+        public float LogFontSize = 0.0f;
+
+        public Point logPosition = new Point();
+        public Point statsPosition = new Point();
     }
 
     public class ItemProcessingInfo

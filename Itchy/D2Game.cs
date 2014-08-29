@@ -40,6 +40,11 @@ namespace Itchy
             set { itchy.Settings = value; }
         }
 
+        public OverlaySettings OverlaySettings
+        {
+            get { return itchy.OverlaySettings; }
+        }
+
         public ItemProcessingSettings ItemProcessingSettings { get { return itchy.ItemProcessingSettings; } }
 
         protected Process process = null;
@@ -145,6 +150,7 @@ namespace Itchy
         {
             if (overlay != null)
             {
+                overlay.Close();
                 overlay.Dispose();
                 overlay = null;
             }

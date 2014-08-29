@@ -21,6 +21,8 @@ namespace Itchy
 
         public bool ClickThrough { get; set; }
 
+        protected Form logBackForm;
+
         public OverlayWindow()
         {
             InitializeComponent();
@@ -104,11 +106,13 @@ namespace Itchy
             RECT rect;
             GetWindowRect(this.game.Process.MainWindowHandle, out rect);
 
-            if (rect.Left == this.Location.X && rect.Right == this.Location.Y)
+            if (rect.Left - 300 == this.Location.X && rect.Top - 300 == this.Location.Y)
                 return;
 
-            this.SetDesktopLocation(rect.Left, rect.Top);
-            this.Size = new System.Drawing.Size(rect.Right - rect.Left, rect.Bottom - rect.Top);
+            //Console.WriteLine("{0} {1} {2} {3}", rect.Left - 300, this.Location.X, rect.Top - 300, this.Location.Y);
+            //this.SetDesktopLocation(rect.Left - 300, rect.Top - 300);
+            this.Location = new Point(rect.Left - 300, rect.Top - 300);
+            //this.Size = new System.Drawing.Size(rect.Right - rect.Left, rect.Bottom - rect.Top);
         }
 
         [DllImport("user32.dll", SetLastError = true)]
@@ -132,13 +136,16 @@ namespace Itchy
 
         private void OverlayWindow_Load(object sender, EventArgs e)
         {
-            //PostInit();
-
-            //SetupControlPositions();
+            SetupControlPositions();
         }
 
         private void SetupControlPositions()
         {
+            if (!game.OverlaySettings.logPosition.IsEmpty)
+                logHolder.Location = game.OverlaySettings.logPosition;
+            if (game.OverlaySettings.LogFontSize != 0.0f)
+                logTextBox.Font = new Font(logTextBox.Font.FontFamily, game.OverlaySettings.LogFontSize, FontStyle.Bold);
+
             //RECT rect;
             //GetWindowRect(this.game.Process.MainWindowHandle, out rect);
 
@@ -149,7 +156,8 @@ namespace Itchy
 
         private void OverlayWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-
+            game.OverlaySettings.LogFontSize = logTextBox.Font.Size;
+            game.OverlaySettings.logPosition = logHolder.Location;
         }
 
         private void OverlayWindow_Paint(object sender, PaintEventArgs e)
@@ -442,6 +450,9 @@ namespace Itchy
 
         public bool HandleMessage(Keys key, MessageEvent mEvent)
         {
+            if (this.ClickThrough)
+                return true;
+
             var t = this.GetType();
 
             var changed = false;
