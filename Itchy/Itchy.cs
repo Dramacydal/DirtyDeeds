@@ -29,7 +29,6 @@ namespace Itchy
         public volatile GameSettings Settings = null;
         public volatile OverlaySettings OverlaySettings = null;
         public volatile ItemProcessingSettings ItemProcessingSettings = null;
-        public volatile ItemStorage ItemStorage = null;
 
         private static string ConfigFileName = "Settings.xml";
         private static string OverlayConfigFileName = "OverlaySettings.xml";
@@ -55,16 +54,15 @@ namespace Itchy
             keyHookId = SetKeyHook(hookProc);
             mouseHookId = SetMouseHook(hookProc);
 
-            ItemStorage = new ItemStorage();
-            ItemProcessingSettings = new ItemProcessingSettings(ItemConfigFileName, ItemStorage);
+            ItemProcessingSettings = new ItemProcessingSettings(ItemConfigFileName);
             ItemProcessingSettings.Load();
 
             LoadSettings();
 
             clientsToolStripMenuItem.DropDown.Closing += RestrictClosing;
 
-            var testForm = new TestForm();
-            testForm.Show();
+            //var testForm = new TestForm();
+            //testForm.Show();
         }
 
         private void RestrictClosing(object sender, ToolStripDropDownClosingEventArgs e)

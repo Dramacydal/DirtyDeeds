@@ -163,14 +163,12 @@ namespace Itchy
     public class ItemProcessingSettings
     {
         private List<ItemProcessingInfo> infoList = new List<ItemProcessingInfo>();
-        private readonly ItemStorage itemStorage;
         private readonly IniReader ini;
 
         private static readonly char configSeparator = ',';
 
-        public ItemProcessingSettings(string path, ItemStorage itemStorage)
+        public ItemProcessingSettings(string path)
         {
-            this.itemStorage = itemStorage;
             ini = new IniReader(path);
         }
 
@@ -203,7 +201,7 @@ namespace Itchy
                                 info.Codes.Add(code.ToLower());
 
                             foreach (var code in info.Codes)
-                                info.TxtIds.Add(itemStorage.GetIdByCode(code));
+                                info.TxtIds.Add(ItemStorage.GetIdByCode(code));
                             break;
                         }
                         case "color":

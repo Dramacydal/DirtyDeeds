@@ -32,7 +32,6 @@ namespace Itchy
         public bool Installed { get { return pd != null; } }
         public OverlayWindow Overlay { get { return overlay; } }
         public Itchy Itchy { get { return itchy; } }
-        public ItemStorage ItemStorage { get { return itchy.ItemStorage; } }
 
         public GameSettings Settings
         {

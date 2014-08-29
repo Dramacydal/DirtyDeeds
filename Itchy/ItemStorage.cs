@@ -131,22 +131,18 @@ namespace Itchy
 
     public class ItemStorage
     {
-        //public bool CodesLoaded { get { return codesLoaded; } }
+        public static ItemDictionary ItemInfos { get { return itemInfos; } }
 
-        public ItemDictionary ItemInfos { get { return itemInfos; } }
+        public static ItemInfo GetInfo(uint dwTxtFileNo) { return itemInfos[dwTxtFileNo]; }
+        public static ItemInfo GetInfo(string code) { return itemInfos[GetIdByCode(code)]; }
 
-        public ItemInfo GetInfo(uint dwTxtFileNo) { return itemInfos[dwTxtFileNo]; }
-        public ItemInfo GetInfo(string code) { return itemInfos[GetIdByCode(code)]; }
-
-        public string GetCodeById(uint dwTxtFileNo) { return codeByIds[dwTxtFileNo]; }
-        public uint GetIdByCode(string code) { return idByCodes[code]; }
+        public static string GetCodeById(uint dwTxtFileNo) { return codeByIds[dwTxtFileNo]; }
+        public static uint GetIdByCode(string code) { return idByCodes[code]; }
 
         protected static uint maxTxtCode = 658;
-        protected ItemDictionary itemInfos = new ItemDictionary();
-        protected CodeByIdDictionary codeByIds = new CodeByIdDictionary();
-        protected IdByCodeDictionary idByCodes = new IdByCodeDictionary();
-
-        //protected volatile bool codesLoaded = false;
+        protected static ItemDictionary itemInfos = new ItemDictionary();
+        protected static CodeByIdDictionary codeByIds = new CodeByIdDictionary();
+        protected static IdByCodeDictionary idByCodes = new IdByCodeDictionary();
 
         private static string armorFile = @"data\armor.txt";
         private static string codesFile = @"data\Itemcodes.txt";
@@ -155,12 +151,12 @@ namespace Itchy
         private static string uniqueFile = @"data\UniqueItems.txt";
         private static string weaponsFile = @"data\weapons.txt";
 
-        public ItemStorage()
+        static ItemStorage()
         {
             Initialize();
         }
 
-        protected void LoadItemCodes()
+        protected static void LoadItemCodes()
         {
             var r = new StreamReader(codesFile);
 
@@ -186,7 +182,7 @@ namespace Itchy
                 MessageBox.Show("Bad " + codesFile + " file format", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
-        protected List<KeyValuePair<string, string>> LoadDictionary(string fileName)
+        protected static List<KeyValuePair<string, string>> LoadDictionary(string fileName)
         {
             var l = new List<KeyValuePair<string, string>>();
             var r = new StreamReader(fileName);
@@ -202,17 +198,17 @@ namespace Itchy
             return l;
         }
 
-        protected List<KeyValuePair<string, string>> LoadSets()
+        protected static List<KeyValuePair<string, string>> LoadSets()
         {
             return LoadDictionary(setFile);
         }
 
-        protected List<KeyValuePair<string, string>> LoadUniques()
+        protected static List<KeyValuePair<string, string>> LoadUniques()
         {
             return LoadDictionary(uniqueFile);
         }
 
-        protected List<KeyValuePair<string, string>> LoadItemNames()
+        protected static List<KeyValuePair<string, string>> LoadItemNames()
         {
             var l = new List<KeyValuePair<string, string>>();
             l.AddRange(LoadDictionary(armorFile));
@@ -222,7 +218,7 @@ namespace Itchy
             return l;
         }
 
-        private void Initialize()
+        private static void Initialize()
         {
             LoadItemCodes();
             var sets = LoadSets();

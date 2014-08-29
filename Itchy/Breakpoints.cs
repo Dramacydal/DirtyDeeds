@@ -340,7 +340,7 @@ namespace Itchy
 
             if (Game.Settings.ItemNameHack.ChangeItemColor)
             {
-                var itemInfo = Game.ItemStorage.GetInfo(item.dwTxtFileNo);
+                var itemInfo = ItemStorage.GetInfo(item.dwTxtFileNo);
                 if (itemInfo != null)
                 {
                     var sock = Game.GetItemSockets(pItem, item.dwUnitId);
@@ -447,7 +447,7 @@ namespace Itchy
                         if (!Game.Settings.Infravision.HideItems)
                             break;
 
-                        var itemInfo = Game.ItemStorage.GetInfo(unit.dwTxtFileNo);
+                        var itemInfo = ItemStorage.GetInfo(unit.dwTxtFileNo);
                         if (itemInfo != null)
                         {
                             var itemData = pd.Read<ItemData>(unit.pItemData);
