@@ -167,7 +167,6 @@ namespace Itchy
         {
             using (var suspender = new GameSuspender(game))
             {
-
                 if (!game.InGame || !game.GameReady())
                     throw new Exception("Out of game");
 

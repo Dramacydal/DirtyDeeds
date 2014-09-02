@@ -12,6 +12,9 @@ namespace Itchy
     {
         public bool SetSkill(SkillType skillId, bool left = false)
         {
+            if (GetSkill(left) == skillId)
+                return true;
+
             if (!HasSkill(skillId))
                 return false;
 

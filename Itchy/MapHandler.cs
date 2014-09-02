@@ -307,7 +307,7 @@ namespace Itchy
                 {
                     var path = game.Debugger.Read<ObjectPath>(unit.pObjectPath);
                     if (path.dwPosX == x && path.dwPosY == y)
-                        return pUnit;
+                        return unit.dwUnitId;
                 }
 
                 pUnit = unit.pListNext;

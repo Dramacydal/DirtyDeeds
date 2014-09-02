@@ -144,6 +144,24 @@ namespace Itchy
             return false;
         }
 
+        public SkillType GetSkill(bool left = false)
+        {
+            UnitAny unit;
+            if (!GetPlayerUnit(out unit) || unit.pInfo == 0)
+                return SkillType.None;
+
+            var info = pd.Read<Info>(unit.pInfo);
+            if (!left && info.pRightSkill == 0 || left && info.pLeftSkill == 0)
+                return SkillType.None;
+
+            var skill = pd.Read<Skill>(left ? info.pLeftSkill : info.pRightSkill);
+            if (skill.pSkillInfo == 0)
+                return SkillType.None;
+
+            var skillInfo = pd.Read<SkillInfo>(skill.pSkillInfo);
+            return (SkillType)skillInfo.wSkillId;
+        }
+
         public bool GameReady()
         {
             UnitAny player;
