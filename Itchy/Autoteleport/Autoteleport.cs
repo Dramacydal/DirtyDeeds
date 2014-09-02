@@ -22,28 +22,13 @@ namespace Itchy
         protected uint interactRoom = 0;
         protected List<Point> TPath = new List<Point>();
         protected uint lastArea = 0;
-        protected DateTime _timer = new DateTime();
-        protected DateTime _timer2 = new DateTime();
-        protected DateTime _InteractTimer = new DateTime();
-        protected bool setTele = false;
-        protected bool castTele = false;
-        protected bool teleActive = false;
-        protected int Try = 0;
         protected uint interactId = 0;
         protected Thread th = null;
 
         public AutoTeleport(D2Game game)
         {
             this.game = game;
-            th = new Thread(() =>
-                {
-                    while (true)
-                    {
-                        OnLoop();
-                        Thread.Sleep(250);
-                    }
-                });
-
+            th = new Thread(() => Loop());
             th.Start();
         }
 
@@ -134,7 +119,7 @@ namespace Itchy
                         {
                             doInteract = true;
                             interactType = TeleportTargetType.Tile;
-                            interactRoom = 0;
+                            interactRoom = exit.pRoom2;
                         }
 
                         var nodes = MakePath(exit.ptPos.X, exit.ptPos.Y, areas, exit.dwType == (uint)ExitType.Level);
@@ -341,104 +326,98 @@ namespace Itchy
             return (int)dwCount;
         }
 
-        public void OnLoop()
+        public void Loop()
         {
-            if (!game.InGame)
-                return;
+            var _timer = new DateTime();
+            var _InteractTimer = new DateTime();
+            var castTele = false;
+            var tryCount = 0;
 
-            if (TPath.Count == 0)
+            while (true)
             {
-                if (doInteract && interactId != 0 && _InteractTimer.MSecToNow() >= 150)
+                Thread.Sleep(50);
+
+                if (!game.InGame)
+                    continue;
+
+                if (TPath.Count == 0)
                 {
-                    using (var gameSuspender = new GameSuspender(game))
+                    if (doInteract && interactId != 0 && _InteractTimer.MSecToNow() >= 200)
                     {
-                        doInteract = false;
-                        if (game.GameReady())
-                            game.Interact(interactId, (UnitType)interactType);
-                        interactId = 0;
-                    }
-                }
-                return;
-            }
-
-            var End = TPath[TPath.Count - 1];
-
-            if (setTele)
-            {
-                setTele = false;
-                using (var gameSuspender = new GameSuspender(game))
-                {
-                    if (game.GameReady() || !game.SetSkill(SkillType.Teleport))
-                    {
-                        TPath.Clear();
-                        game.LogWarning("Autotele: Failed to set teleport skill.");
-                    }
-                }
-                _timer = DateTime.Now;
-                return;
-            }
-
-            // TODO: check skill for ping
-
-            if (castTele)
-            {
-                castTele = false;
-
-                _timer2 = DateTime.Now;
-                // TODO: check charges
-
-                using (var gameSuspender = new GameSuspender(game))
-                {
-                    if (!game.GameReady() || !game.CastSkillXY(SkillType.Teleport, (ushort)TPath[0].X, (ushort)TPath[0].Y))
-                    {
-                        TPath.Clear();
-                        game.LogWarning("Autotele: Failed to cast teleport.");
-                        return;
-                    }
-                }
-            }
-
-            if (_timer2.MSecToNow() > 500)
-            {
-                if (Try >= 5)
-                {
-                    game.LogWarning("Autotele: Failed to teleport after 5 tries");
-                    TPath.Clear();
-                    Try = 0;
-                    doInteract = false;
-                    return;
-                }
-                else
-                {
-                    ++Try;
-                    castTele = true;
-                }
-            }
-
-            if (TeleportPath.CalculateDistance(game.CurrentX, game.CurrentY, TPath[0].X, TPath[0].Y) <= 5)
-            {
-                TPath.RemoveAt(0);
-                castTele = true;
-                Try = 0;
-            }
-
-            if (doInteract)
-            {
-                if (TeleportPath.CalculateDistance(game.CurrentX, game.CurrentY, End.X, End.Y) <= 5)
-                {
-                    _InteractTimer = DateTime.Now;
-                    using (var gameSuspender = new GameSuspender(game))
-                    {
-                        if (!game.GameReady())
+                        using (var gameSuspender = new GameSuspender(game))
                         {
                             doInteract = false;
+                            if (game.GameReady())
+                                game.Interact(interactId, (UnitType)interactType);
                             interactId = 0;
                         }
-                        else
-                            interactId = game.MapHandler.GetUnitByXY((uint)End.X, (uint)End.Y, interactRoom);
                     }
-                    TPath.Clear();
-                    return;
+                    continue;
+                }
+
+                var End = TPath[TPath.Count - 1];
+
+                // TODO: check skill for ping
+
+                if (castTele)
+                {
+                    castTele = false;
+
+                    _timer = DateTime.Now;
+                    // TODO: check charges
+
+                    using (var gameSuspender = new GameSuspender(game))
+                    {
+                        if (!game.GameReady() || !game.CastSkillXY(SkillType.Teleport, (ushort)TPath[0].X, (ushort)TPath[0].Y))
+                        {
+                            TPath.Clear();
+                            game.LogWarning("Autotele: Failed to cast teleport.");
+                            continue;
+                        }
+                    }
+                }
+
+                if (_timer.MSecToNow() > 500)
+                {
+                    if (tryCount >= 5)
+                    {
+                        game.LogWarning("Autotele: Failed to teleport after {0} tries.", tryCount);
+                        TPath.Clear();
+                        tryCount = 0;
+                        doInteract = false;
+                        castTele = false;
+                        continue;
+                    }
+                    else
+                    {
+                        ++tryCount;
+                        castTele = true;
+                    }
+                }
+
+                if (TeleportPath.CalculateDistance(game.CurrentX, game.CurrentY, TPath[0].X, TPath[0].Y) <= 5)
+                {
+                    TPath.RemoveAt(0);
+                    castTele = true;
+                    tryCount = 0;
+                }
+
+                if (doInteract)
+                {
+                    if (TeleportPath.CalculateDistance(game.CurrentX, game.CurrentY, End.X, End.Y) <= 5)
+                    {
+                        doInteract = false;
+                        _InteractTimer = DateTime.Now;
+                        using (var gameSuspender = new GameSuspender(game))
+                        {
+                            if (!game.GameReady())
+                                interactId = 0;
+                            else
+                                interactId = game.MapHandler.GetUnitByXY((uint)End.X, (uint)End.Y, interactRoom);
+                        }
+                        TPath.Clear();
+                        continue;
+                    }
                 }
             }
         }

@@ -41,7 +41,7 @@ namespace Itchy
         protected WordMatrix m_map;
         protected Point m_ptLevelOrigin = new Point();
         protected uint dwLevelId = 0;
-        protected List<ushort> m_aCollisionTypes = new List<ushort>();
+        //protected List<ushort> m_aCollisionTypes = new List<ushort>();
 
         public CollisionMap(D2Game game)
         {
@@ -66,7 +66,7 @@ namespace Itchy
             var unit = game.Debugger.Read<UnitAny>(pUnit);
 
             var pBestLevel = game.MapHandler.GetLevel(areas[0]);
-            var lvl =game.Debugger.Read<Level>(pBestLevel);
+            var lvl = game.Debugger.Read<Level>(pBestLevel);
             uint dwXSize = 0;
             uint dwYSize = 0;
             m_ptLevelOrigin.X = (int)(lvl.dwPosX * 5);
@@ -122,7 +122,7 @@ namespace Itchy
 
             var add_room = false;
             var path = game.Debugger.Read<Path>(player.pPath);
-            if (room.pRoom1==0)
+            if (room.pRoom1 == 0)
             {
                 add_room
                     = true;
@@ -179,8 +179,8 @@ namespace Itchy
                     if (type == 1024)
                         m_map[i][j] = (ushort)MapData.Invalid;
 
-                    if (!m_aCollisionTypes.Contains(type))
-                        m_aCollisionTypes.Add(type);
+                    /*if (!m_aCollisionTypes.Contains(type))
+                        m_aCollisionTypes.Add(type);*/
 
                     p += 2;
                 }
@@ -197,7 +197,7 @@ namespace Itchy
             var CX = m_map.CX;
             var CY = m_map.CY;
 
-            for (var x = 0; x <CX; ++x)
+            for (var x = 0; x < CX; ++x)
             {
                 for (var y = 0; y < CY; ++y)
                 {
@@ -209,7 +209,7 @@ namespace Itchy
             //m_map.Unlock();
         }
 
-        bool IsGap(int x, int y) 
+        bool IsGap(int x, int y)
         {
             if ((m_map[x][y] % 2) != 0)
                 return false;
@@ -220,7 +220,7 @@ namespace Itchy
             // Horizontal check
             for (i = x - 2; i <= x + 2 && nSpaces < 3; ++i)
             {
-                if ( i < 0 || i >= m_map.CX || (m_map[i][y] % 2) != 0)
+                if (i < 0 || i >= m_map.CX || (m_map[i][y] % 2) != 0)
                     nSpaces = 0;
                 else
                     ++nSpaces;
@@ -233,7 +233,7 @@ namespace Itchy
             nSpaces = 0;
             for (i = y - 2; i <= y + 2 && nSpaces < 3; i++)
             {
-                if ( i < 0 || i >= m_map.CY || (m_map[x][i] % 2) != 0)
+                if (i < 0 || i >= m_map.CY || (m_map[x][i] % 2) != 0)
                     nSpaces = 0;
                 else
                     ++nSpaces;
@@ -490,7 +490,7 @@ namespace Itchy
                     pUnit = preset.pPresetNext;
                 }
 
-                if(bAdded)
+                if (bAdded)
                     game.Debugger.Call(D2Common.RemoveRoomData,
                         CallingConventionEx.StdCall,
                         Me.pAct, level.dwLevelNo, room.dwPosX, room.dwPosY, path.pRoom1);
