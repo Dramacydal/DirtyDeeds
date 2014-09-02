@@ -56,11 +56,13 @@ namespace Itchy
         public static D2CommonPointer pItemTextData = new D2CommonPointer(0x6FDF4CB4 - 0x6FD50000);
         public static D2CommonPointer pMaxItemText = new D2CommonPointer(0x6FDF4CB0 - 0x6FD50000);
         public static D2CommonPointer GetUnitStat = new D2CommonPointer(0x584E0); // __stdcall, (UnitAny* pUnit, DWORD dwStat, DWORD dwStat2)
+        public static D2CommonPointer GetBaseUnitStat = new D2CommonPointer(0x6FDA8590 - 0x6FD50000); // DWORD __stdcall, (UnitAny *Unit, DWORD dwStat, DWORD dwUkn)
         public static D2CommonPointer GetItemPrice = new D2CommonPointer(0x48620); // __stdcall, (UnitAny * player, UnitAny * item, DWORD difficulty, void* questinfo, int value, DWORD flag)
         public static D2CommonPointer sgptDataTables = new D2CommonPointer(0x6FDF33F0 - 0x6FD50000);
         public static D2CommonPointer GetObjectTxt = new D2CommonPointer(0x1ADC0); // ObjectTxt * __stdcall, (DWORD objno)
         public static D2CommonPointer GetFunkUnk_5 = new D2CommonPointer(0x6FDBD1D0 - 0x6FD50000); // __stdcall, (DWORD nLevelNo)
         public static D2CommonPointer TestFunUnk_6 = new D2CommonPointer(0x6FD67CF0 - 0x6FD50000); // DWORD __stdcall, (UnitAny *unit1, UnitAny *unit2, DWORD arg3)
+        public static D2CommonPointer GetLevelText = new D2CommonPointer(0x30CA0); // LevelTxt * __stdcall, (DWORD levelno)
     }
 
     public static class D2Client    // 0x6FAB0000

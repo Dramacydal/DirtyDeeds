@@ -428,6 +428,31 @@ namespace Itchy
         public uint pPreset;            // PresetUnit*
     }
 
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct RoomTile
+    {
+        public uint pRoom2;             // 0x00 Room2*
+        public uint pNext;              // 0x04 RoomTile*
+        public uint _1;                 // 0x08
+        public uint _2;                 // 0x08
+        public uint nNum;               // 0x10 DWORD *
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct LevelTxt
+    {
+        public uint dwLevelNo;          //0x00
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 60, ArraySubType = UnmanagedType.U4)]
+        public uint[] _1;               //0x04
+        public byte _2;                 //0xF4
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 40)]
+        public string szName;           //+16e
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 40)]
+        public string szEntranceText;   //0x11D
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 41)]
+        public string szLevelDesc;      //0x145
+    }
+
     [StructLayout(LayoutKind.Explicit)]
     public struct Type2Info
     {
@@ -521,11 +546,20 @@ namespace Itchy
         public byte bDirection;
     }
 
+    public struct ObjectPath
+    {
+        public uint pRoom1;             // 0x00 Room1*
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2, ArraySubType = UnmanagedType.U4)]
+        public uint[] _1;               // 0x04
+        public uint dwPosX;             // 0x0C
+        public uint dwPosY;             // 0x10
+    }
+
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct RosterUnit
     {
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 0x10)]
-        string szName;                  // 0x00
+        public string szName;           // 0x00
         public uint dwUnitId;           // 0x10
         public uint dwPartyLife;        // 0x14
         public uint _1;                 // 0x18
@@ -541,7 +575,7 @@ namespace Itchy
         public uint[] _6;               // 0x38
         public ushort _7;               // 0x64
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 0x10)]
-        string szName2;                 // 0x66
+        public string szName2;          // 0x66
         public ushort _8;               // 0x76
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 2, ArraySubType = UnmanagedType.U4)]
         public uint[] _9;               // 0x78
@@ -618,5 +652,20 @@ namespace Itchy
     public struct SkillInfo
     {
         public ushort wSkillId;         // 0x00
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct CollMap
+    {
+        public uint dwPosGameX;         // 0x00
+        public uint dwPosGameY;         // 0x04
+        public uint dwSizeGameX;        // 0x08
+        public uint dwSizeGameY;        // 0x0C
+        public uint dwPosRoomX;         // 0x10
+        public uint dwPosRoomY;         // 0x14
+        public uint dwSizeRoomX;        // 0x18
+        public uint dwSizeRoomY;        // 0x1C
+        public uint pMapStart;          // 0x20 WORD*
+        public uint pMapEnd;            // 0x24 WORD*
     }
 }

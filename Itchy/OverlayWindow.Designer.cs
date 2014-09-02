@@ -29,11 +29,7 @@
         private void InitializeComponent()
         {
             this.itchyLabel = new System.Windows.Forms.Label();
-            this.logHolder = new ItchyControls.TranslucentPanel();
-            this.logExpandButton = new ItchyControls.ExpandButton();
-            this.logTranslucentPanel = new ItchyControls.TranslucentPanel();
-            this.logTextBox = new ItchyControls.TransparentRichTextBox();
-            this.propertiesExpandButton = new ItchyControls.ExpandButton();
+            this.settingsHolder = new ItchyControls.TranslucentPanel();
             this.settingsTranslucentPanel = new ItchyControls.TranslucentPanel();
             this.settingsTabControl = new System.Windows.Forms.TabControl();
             this.settingsTab = new System.Windows.Forms.TabPage();
@@ -51,6 +47,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.fastExitLabel = new System.Windows.Forms.Label();
             this.hacksGroupBox = new System.Windows.Forms.GroupBox();
+            this.showItemCodeTextBox = new System.Windows.Forms.CheckBox();
             this.lightHackCheckBox = new System.Windows.Forms.CheckBox();
             this.weatherHackCheckBox = new System.Windows.Forms.CheckBox();
             this.packetReceiveHackCheckBox = new System.Windows.Forms.CheckBox();
@@ -96,8 +93,17 @@
             this.applyButton = new System.Windows.Forms.Button();
             this.refreshButton = new System.Windows.Forms.Button();
             this.trackerSettingsTab = new System.Windows.Forms.TabPage();
-            this.logHolder.SuspendLayout();
-            this.logTranslucentPanel.SuspendLayout();
+            this.settingsExpandButton = new ItchyControls.ExpandButton();
+            this.statsHolder = new ItchyControls.TranslucentPanel();
+            this.statsTranslucentPanel = new ItchyControls.TranslucentPanel();
+            this.statsTextBox = new ItchyControls.TransparentRichTextBox();
+            this.statsRefreshButton = new System.Windows.Forms.Button();
+            this.statsExpandButton = new ItchyControls.ExpandButton();
+            this.logHolder = new ItchyControls.TranslucentPanel();
+            this.logExpandButton = new ItchyControls.ExpandButton();
+            this.logTranslucentPanel = new ItchyControls.TranslucentPanel();
+            this.logTextBox = new ItchyControls.TransparentRichTextBox();
+            this.settingsHolder.SuspendLayout();
             this.settingsTranslucentPanel.SuspendLayout();
             this.settingsTabControl.SuspendLayout();
             this.settingsTab.SuspendLayout();
@@ -105,89 +111,41 @@
             this.hacksGroupBox.SuspendLayout();
             this.chickenSettingsGroupBox.SuspendLayout();
             this.trackerSettingsGroupBox.SuspendLayout();
+            this.statsHolder.SuspendLayout();
+            this.statsTranslucentPanel.SuspendLayout();
+            this.logHolder.SuspendLayout();
+            this.logTranslucentPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // itchyLabel
             // 
             this.itchyLabel.AutoSize = true;
-            this.itchyLabel.Font = new System.Drawing.Font("Microsoft Tai Le", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.itchyLabel.Font = new System.Drawing.Font("Franklin Gothic Medium", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.itchyLabel.ForeColor = System.Drawing.Color.Maroon;
-            this.itchyLabel.Location = new System.Drawing.Point(286, 597);
+            this.itchyLabel.Location = new System.Drawing.Point(594, 893);
             this.itchyLabel.Name = "itchyLabel";
-            this.itchyLabel.Size = new System.Drawing.Size(37, 14);
+            this.itchyLabel.Size = new System.Drawing.Size(67, 28);
             this.itchyLabel.TabIndex = 3;
             this.itchyLabel.Text = "ITCHY";
+            this.itchyLabel.Visible = false;
             // 
-            // logHolder
+            // settingsHolder
             // 
-            this.logHolder.BackColor = System.Drawing.Color.Transparent;
-            this.logHolder.Controls.Add(this.logExpandButton);
-            this.logHolder.Controls.Add(this.logTranslucentPanel);
-            this.logHolder.Location = new System.Drawing.Point(134, 357);
-            this.logHolder.Name = "logHolder";
-            this.logHolder.Size = new System.Drawing.Size(537, 97);
-            this.logHolder.TabIndex = 7;
-            // 
-            // logExpandButton
-            // 
-            this.logExpandButton.ChildPanel = this.logTranslucentPanel;
-            this.logExpandButton.Expanded = true;
-            this.logExpandButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.logExpandButton.Location = new System.Drawing.Point(0, 81);
-            this.logExpandButton.Name = "logExpandButton";
-            this.logExpandButton.Size = new System.Drawing.Size(19, 16);
-            this.logExpandButton.TabIndex = 4;
-            this.logExpandButton.Text = " \\/";
-            this.logExpandButton.UseVisualStyleBackColor = true;
-            // 
-            // logTranslucentPanel
-            // 
-            this.logTranslucentPanel.AutoScroll = true;
-            this.logTranslucentPanel.BackColor = System.Drawing.Color.Transparent;
-            this.logTranslucentPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.logTranslucentPanel.Controls.Add(this.logTextBox);
-            this.logTranslucentPanel.Dock = System.Windows.Forms.DockStyle.Right;
-            this.logTranslucentPanel.Location = new System.Drawing.Point(19, 0);
-            this.logTranslucentPanel.Name = "logTranslucentPanel";
-            this.logTranslucentPanel.Size = new System.Drawing.Size(518, 97);
-            this.logTranslucentPanel.TabIndex = 2;
-            // 
-            // logTextBox
-            // 
-            this.logTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.logTextBox.DetectUrls = false;
-            this.logTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.logTextBox.Enabled = false;
-            this.logTextBox.Font = new System.Drawing.Font("Candara", 8.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.logTextBox.ForeColor = System.Drawing.Color.White;
-            this.logTextBox.Location = new System.Drawing.Point(0, 0);
-            this.logTextBox.Name = "logTextBox";
-            this.logTextBox.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
-            this.logTextBox.ShortcutsEnabled = false;
-            this.logTextBox.Size = new System.Drawing.Size(516, 95);
-            this.logTextBox.TabIndex = 1;
-            this.logTextBox.Text = "lol wtf hz omg";
-            this.logTextBox.WordWrap = false;
-            // 
-            // propertiesExpandButton
-            // 
-            this.propertiesExpandButton.ChildPanel = this.settingsTranslucentPanel;
-            this.propertiesExpandButton.Expanded = false;
-            this.propertiesExpandButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.propertiesExpandButton.Location = new System.Drawing.Point(2, 49);
-            this.propertiesExpandButton.Name = "propertiesExpandButton";
-            this.propertiesExpandButton.Size = new System.Drawing.Size(18, 16);
-            this.propertiesExpandButton.TabIndex = 5;
-            this.propertiesExpandButton.Text = " /\\";
-            this.propertiesExpandButton.UseVisualStyleBackColor = true;
+            this.settingsHolder.BackColor = System.Drawing.Color.Transparent;
+            this.settingsHolder.Controls.Add(this.settingsTranslucentPanel);
+            this.settingsHolder.Controls.Add(this.settingsExpandButton);
+            this.settingsHolder.Location = new System.Drawing.Point(12, 2);
+            this.settingsHolder.Name = "settingsHolder";
+            this.settingsHolder.Size = new System.Drawing.Size(612, 28);
+            this.settingsHolder.TabIndex = 0;
             // 
             // settingsTranslucentPanel
             // 
             this.settingsTranslucentPanel.BackColor = System.Drawing.Color.Transparent;
             this.settingsTranslucentPanel.Controls.Add(this.settingsTabControl);
-            this.settingsTranslucentPanel.Location = new System.Drawing.Point(19, 25);
+            this.settingsTranslucentPanel.Location = new System.Drawing.Point(21, 3);
             this.settingsTranslucentPanel.Name = "settingsTranslucentPanel";
-            this.settingsTranslucentPanel.Size = new System.Drawing.Size(582, 526);
+            this.settingsTranslucentPanel.Size = new System.Drawing.Size(582, 551);
             this.settingsTranslucentPanel.TabIndex = 6;
             // 
             // settingsTabControl
@@ -198,7 +156,7 @@
             this.settingsTabControl.Location = new System.Drawing.Point(0, 0);
             this.settingsTabControl.Name = "settingsTabControl";
             this.settingsTabControl.SelectedIndex = 0;
-            this.settingsTabControl.Size = new System.Drawing.Size(582, 526);
+            this.settingsTabControl.Size = new System.Drawing.Size(582, 551);
             this.settingsTabControl.TabIndex = 0;
             // 
             // settingsTab
@@ -214,16 +172,16 @@
             this.settingsTab.Location = new System.Drawing.Point(4, 22);
             this.settingsTab.Name = "settingsTab";
             this.settingsTab.Padding = new System.Windows.Forms.Padding(3);
-            this.settingsTab.Size = new System.Drawing.Size(574, 500);
+            this.settingsTab.Size = new System.Drawing.Size(574, 525);
             this.settingsTab.TabIndex = 0;
             this.settingsTab.Text = "Settings";
             this.settingsTab.UseVisualStyleBackColor = true;
             // 
             // reloadItemIniButton
             // 
-            this.reloadItemIniButton.Location = new System.Drawing.Point(383, 424);
+            this.reloadItemIniButton.Location = new System.Drawing.Point(412, 459);
             this.reloadItemIniButton.Name = "reloadItemIniButton";
-            this.reloadItemIniButton.Size = new System.Drawing.Size(155, 23);
+            this.reloadItemIniButton.Size = new System.Drawing.Size(156, 23);
             this.reloadItemIniButton.TabIndex = 63;
             this.reloadItemIniButton.Text = "Reload Items.ini";
             this.reloadItemIniButton.UseVisualStyleBackColor = true;
@@ -362,6 +320,7 @@
             // 
             // hacksGroupBox
             // 
+            this.hacksGroupBox.Controls.Add(this.showItemCodeTextBox);
             this.hacksGroupBox.Controls.Add(this.lightHackCheckBox);
             this.hacksGroupBox.Controls.Add(this.weatherHackCheckBox);
             this.hacksGroupBox.Controls.Add(this.packetReceiveHackCheckBox);
@@ -385,10 +344,20 @@
             this.hacksGroupBox.Controls.Add(this.viewInventoryKeyLabel);
             this.hacksGroupBox.Location = new System.Drawing.Point(6, 2);
             this.hacksGroupBox.Name = "hacksGroupBox";
-            this.hacksGroupBox.Size = new System.Drawing.Size(188, 493);
+            this.hacksGroupBox.Size = new System.Drawing.Size(188, 516);
             this.hacksGroupBox.TabIndex = 61;
             this.hacksGroupBox.TabStop = false;
             this.hacksGroupBox.Text = "Hacks";
+            // 
+            // showItemCodeTextBox
+            // 
+            this.showItemCodeTextBox.AutoSize = true;
+            this.showItemCodeTextBox.Location = new System.Drawing.Point(22, 331);
+            this.showItemCodeTextBox.Name = "showItemCodeTextBox";
+            this.showItemCodeTextBox.Size = new System.Drawing.Size(104, 17);
+            this.showItemCodeTextBox.TabIndex = 44;
+            this.showItemCodeTextBox.Text = "Show Item Code";
+            this.showItemCodeTextBox.UseVisualStyleBackColor = true;
             // 
             // lightHackCheckBox
             // 
@@ -448,7 +417,7 @@
             // 
             this.hideDyingCheckBox.AutoSize = true;
             this.hideDyingCheckBox.Enabled = false;
-            this.hideDyingCheckBox.Location = new System.Drawing.Point(22, 449);
+            this.hideDyingCheckBox.Location = new System.Drawing.Point(22, 471);
             this.hideDyingCheckBox.Name = "hideDyingCheckBox";
             this.hideDyingCheckBox.Size = new System.Drawing.Size(107, 17);
             this.hideDyingCheckBox.TabIndex = 42;
@@ -458,7 +427,7 @@
             // viewInventoryHackCheckBox
             // 
             this.viewInventoryHackCheckBox.AutoSize = true;
-            this.viewInventoryHackCheckBox.Location = new System.Drawing.Point(6, 354);
+            this.viewInventoryHackCheckBox.Location = new System.Drawing.Point(6, 376);
             this.viewInventoryHackCheckBox.Name = "viewInventoryHackCheckBox";
             this.viewInventoryHackCheckBox.Size = new System.Drawing.Size(137, 17);
             this.viewInventoryHackCheckBox.TabIndex = 4;
@@ -470,7 +439,7 @@
             // 
             this.hideItemCheckBox.AutoSize = true;
             this.hideItemCheckBox.Enabled = false;
-            this.hideItemCheckBox.Location = new System.Drawing.Point(22, 470);
+            this.hideItemCheckBox.Location = new System.Drawing.Point(21, 494);
             this.hideItemCheckBox.Name = "hideItemCheckBox";
             this.hideItemCheckBox.Size = new System.Drawing.Size(76, 17);
             this.hideItemCheckBox.TabIndex = 41;
@@ -492,7 +461,7 @@
             // 
             this.hideCorpsesCheckBox.AutoSize = true;
             this.hideCorpsesCheckBox.Enabled = false;
-            this.hideCorpsesCheckBox.Location = new System.Drawing.Point(22, 428);
+            this.hideCorpsesCheckBox.Location = new System.Drawing.Point(22, 448);
             this.hideCorpsesCheckBox.Name = "hideCorpsesCheckBox";
             this.hideCorpsesCheckBox.Size = new System.Drawing.Size(89, 17);
             this.hideCorpsesCheckBox.TabIndex = 40;
@@ -513,7 +482,7 @@
             // infravisionHackCheckBox
             // 
             this.infravisionHackCheckBox.AutoSize = true;
-            this.infravisionHackCheckBox.Location = new System.Drawing.Point(6, 404);
+            this.infravisionHackCheckBox.Location = new System.Drawing.Point(6, 425);
             this.infravisionHackCheckBox.Name = "infravisionHackCheckBox";
             this.infravisionHackCheckBox.Size = new System.Drawing.Size(115, 17);
             this.infravisionHackCheckBox.TabIndex = 39;
@@ -591,7 +560,7 @@
             // 
             this.changeColorCheckBox.AutoSize = true;
             this.changeColorCheckBox.Enabled = false;
-            this.changeColorCheckBox.Location = new System.Drawing.Point(22, 331);
+            this.changeColorCheckBox.Location = new System.Drawing.Point(21, 353);
             this.changeColorCheckBox.Name = "changeColorCheckBox";
             this.changeColorCheckBox.Size = new System.Drawing.Size(90, 17);
             this.changeColorCheckBox.TabIndex = 13;
@@ -601,7 +570,7 @@
             // viewInventoryKeybindButton
             // 
             this.viewInventoryKeybindButton.Key = System.Windows.Forms.Keys.None;
-            this.viewInventoryKeybindButton.Location = new System.Drawing.Point(22, 377);
+            this.viewInventoryKeybindButton.Location = new System.Drawing.Point(21, 399);
             this.viewInventoryKeybindButton.Name = "viewInventoryKeybindButton";
             this.viewInventoryKeybindButton.Size = new System.Drawing.Size(50, 20);
             this.viewInventoryKeybindButton.TabIndex = 14;
@@ -612,7 +581,7 @@
             // viewInventoryKeyLabel
             // 
             this.viewInventoryKeyLabel.AutoSize = true;
-            this.viewInventoryKeyLabel.Location = new System.Drawing.Point(79, 383);
+            this.viewInventoryKeyLabel.Location = new System.Drawing.Point(78, 405);
             this.viewInventoryKeyLabel.Name = "viewInventoryKeyLabel";
             this.viewInventoryKeyLabel.Size = new System.Drawing.Size(98, 13);
             this.viewInventoryKeyLabel.TabIndex = 16;
@@ -841,7 +810,7 @@
             // 
             // closeButton
             // 
-            this.closeButton.Location = new System.Drawing.Point(463, 454);
+            this.closeButton.Location = new System.Drawing.Point(493, 492);
             this.closeButton.Name = "closeButton";
             this.closeButton.Size = new System.Drawing.Size(75, 23);
             this.closeButton.TabIndex = 38;
@@ -851,7 +820,7 @@
             // 
             // applyButton
             // 
-            this.applyButton.Location = new System.Drawing.Point(382, 454);
+            this.applyButton.Location = new System.Drawing.Point(412, 492);
             this.applyButton.Name = "applyButton";
             this.applyButton.Size = new System.Drawing.Size(75, 23);
             this.applyButton.TabIndex = 37;
@@ -861,7 +830,7 @@
             // 
             // refreshButton
             // 
-            this.refreshButton.Location = new System.Drawing.Point(206, 468);
+            this.refreshButton.Location = new System.Drawing.Point(206, 492);
             this.refreshButton.Name = "refreshButton";
             this.refreshButton.Size = new System.Drawing.Size(75, 23);
             this.refreshButton.TabIndex = 36;
@@ -874,10 +843,138 @@
             this.trackerSettingsTab.Location = new System.Drawing.Point(4, 22);
             this.trackerSettingsTab.Name = "trackerSettingsTab";
             this.trackerSettingsTab.Padding = new System.Windows.Forms.Padding(3);
-            this.trackerSettingsTab.Size = new System.Drawing.Size(574, 500);
+            this.trackerSettingsTab.Size = new System.Drawing.Size(574, 525);
             this.trackerSettingsTab.TabIndex = 1;
             this.trackerSettingsTab.Text = "Tracker Settings";
             this.trackerSettingsTab.UseVisualStyleBackColor = true;
+            // 
+            // settingsExpandButton
+            // 
+            this.settingsExpandButton.ChildPanel = this.settingsTranslucentPanel;
+            this.settingsExpandButton.Expanded = false;
+            this.settingsExpandButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.settingsExpandButton.Location = new System.Drawing.Point(3, 3);
+            this.settingsExpandButton.Name = "settingsExpandButton";
+            this.settingsExpandButton.Size = new System.Drawing.Size(18, 16);
+            this.settingsExpandButton.TabIndex = 5;
+            this.settingsExpandButton.Text = " /\\";
+            this.settingsExpandButton.UseVisualStyleBackColor = true;
+            this.settingsExpandButton.Click += new System.EventHandler(this.settingsExpandButton_Click);
+            // 
+            // statsHolder
+            // 
+            this.statsHolder.BackColor = System.Drawing.Color.Transparent;
+            this.statsHolder.Controls.Add(this.statsTranslucentPanel);
+            this.statsHolder.Controls.Add(this.statsRefreshButton);
+            this.statsHolder.Controls.Add(this.statsExpandButton);
+            this.statsHolder.Location = new System.Drawing.Point(645, 30);
+            this.statsHolder.Name = "statsHolder";
+            this.statsHolder.Size = new System.Drawing.Size(157, 369);
+            this.statsHolder.TabIndex = 8;
+            this.statsHolder.Visible = false;
+            // 
+            // statsTranslucentPanel
+            // 
+            this.statsTranslucentPanel.BackColor = System.Drawing.Color.Transparent;
+            this.statsTranslucentPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.statsTranslucentPanel.Controls.Add(this.statsTextBox);
+            this.statsTranslucentPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.statsTranslucentPanel.Location = new System.Drawing.Point(0, 23);
+            this.statsTranslucentPanel.Name = "statsTranslucentPanel";
+            this.statsTranslucentPanel.Size = new System.Drawing.Size(157, 346);
+            this.statsTranslucentPanel.TabIndex = 1;
+            // 
+            // statsTextBox
+            // 
+            this.statsTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.statsTextBox.DetectUrls = false;
+            this.statsTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.statsTextBox.Enabled = false;
+            this.statsTextBox.Font = new System.Drawing.Font("Candara", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.statsTextBox.ForeColor = System.Drawing.Color.White;
+            this.statsTextBox.Location = new System.Drawing.Point(0, 0);
+            this.statsTextBox.Name = "statsTextBox";
+            this.statsTextBox.Size = new System.Drawing.Size(155, 344);
+            this.statsTextBox.TabIndex = 0;
+            this.statsTextBox.Text = "";
+            this.statsTextBox.WordWrap = false;
+            // 
+            // statsRefreshButton
+            // 
+            this.statsRefreshButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.statsRefreshButton.Location = new System.Drawing.Point(84, 3);
+            this.statsRefreshButton.Name = "statsRefreshButton";
+            this.statsRefreshButton.Size = new System.Drawing.Size(50, 19);
+            this.statsRefreshButton.TabIndex = 2;
+            this.statsRefreshButton.Text = "Refresh";
+            this.statsRefreshButton.UseVisualStyleBackColor = true;
+            this.statsRefreshButton.Visible = false;
+            this.statsRefreshButton.Click += new System.EventHandler(this.statsRefreshButton_Click);
+            // 
+            // statsExpandButton
+            // 
+            this.statsExpandButton.ChildPanel = this.statsTranslucentPanel;
+            this.statsExpandButton.Expanded = false;
+            this.statsExpandButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.statsExpandButton.Location = new System.Drawing.Point(134, 3);
+            this.statsExpandButton.Name = "statsExpandButton";
+            this.statsExpandButton.Size = new System.Drawing.Size(19, 19);
+            this.statsExpandButton.TabIndex = 0;
+            this.statsExpandButton.Text = " /\\";
+            this.statsExpandButton.UseVisualStyleBackColor = true;
+            this.statsExpandButton.Click += new System.EventHandler(this.statsExpandButton_Click);
+            // 
+            // logHolder
+            // 
+            this.logHolder.BackColor = System.Drawing.Color.Transparent;
+            this.logHolder.Controls.Add(this.logExpandButton);
+            this.logHolder.Controls.Add(this.logTranslucentPanel);
+            this.logHolder.Location = new System.Drawing.Point(87, 405);
+            this.logHolder.Name = "logHolder";
+            this.logHolder.Size = new System.Drawing.Size(537, 97);
+            this.logHolder.TabIndex = 7;
+            this.logHolder.Visible = false;
+            // 
+            // logExpandButton
+            // 
+            this.logExpandButton.ChildPanel = this.logTranslucentPanel;
+            this.logExpandButton.Expanded = true;
+            this.logExpandButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.logExpandButton.Location = new System.Drawing.Point(0, 81);
+            this.logExpandButton.Name = "logExpandButton";
+            this.logExpandButton.Size = new System.Drawing.Size(19, 16);
+            this.logExpandButton.TabIndex = 4;
+            this.logExpandButton.Text = " \\/";
+            this.logExpandButton.UseVisualStyleBackColor = true;
+            // 
+            // logTranslucentPanel
+            // 
+            this.logTranslucentPanel.AutoScroll = true;
+            this.logTranslucentPanel.BackColor = System.Drawing.Color.Transparent;
+            this.logTranslucentPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.logTranslucentPanel.Controls.Add(this.logTextBox);
+            this.logTranslucentPanel.Dock = System.Windows.Forms.DockStyle.Right;
+            this.logTranslucentPanel.Location = new System.Drawing.Point(19, 0);
+            this.logTranslucentPanel.Name = "logTranslucentPanel";
+            this.logTranslucentPanel.Size = new System.Drawing.Size(518, 97);
+            this.logTranslucentPanel.TabIndex = 2;
+            // 
+            // logTextBox
+            // 
+            this.logTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.logTextBox.DetectUrls = false;
+            this.logTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.logTextBox.Enabled = false;
+            this.logTextBox.Font = new System.Drawing.Font("Candara", 8.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.logTextBox.ForeColor = System.Drawing.Color.White;
+            this.logTextBox.Location = new System.Drawing.Point(0, 0);
+            this.logTextBox.Name = "logTextBox";
+            this.logTextBox.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
+            this.logTextBox.ShortcutsEnabled = false;
+            this.logTextBox.Size = new System.Drawing.Size(516, 95);
+            this.logTextBox.TabIndex = 1;
+            this.logTextBox.Text = "lol wtf hz omg";
+            this.logTextBox.WordWrap = false;
             // 
             // OverlayWindow
             // 
@@ -885,10 +982,10 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.MidnightBlue;
             this.ClientSize = new System.Drawing.Size(1400, 1212);
+            this.Controls.Add(this.settingsHolder);
+            this.Controls.Add(this.statsHolder);
             this.Controls.Add(this.logHolder);
-            this.Controls.Add(this.propertiesExpandButton);
             this.Controls.Add(this.itchyLabel);
-            this.Controls.Add(this.settingsTranslucentPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "OverlayWindow";
             this.ShowInTaskbar = false;
@@ -897,8 +994,7 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OverlayWindow_FormClosing);
             this.Load += new System.EventHandler(this.OverlayWindow_Load);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.OverlayWindow_Paint);
-            this.logHolder.ResumeLayout(false);
-            this.logTranslucentPanel.ResumeLayout(false);
+            this.settingsHolder.ResumeLayout(false);
             this.settingsTranslucentPanel.ResumeLayout(false);
             this.settingsTabControl.ResumeLayout(false);
             this.settingsTab.ResumeLayout(false);
@@ -910,6 +1006,10 @@
             this.chickenSettingsGroupBox.PerformLayout();
             this.trackerSettingsGroupBox.ResumeLayout(false);
             this.trackerSettingsGroupBox.PerformLayout();
+            this.statsHolder.ResumeLayout(false);
+            this.statsTranslucentPanel.ResumeLayout(false);
+            this.logHolder.ResumeLayout(false);
+            this.logTranslucentPanel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -921,7 +1021,7 @@
         private ItchyControls.TranslucentPanel logTranslucentPanel;
         private System.Windows.Forms.Label itchyLabel;
         private ItchyControls.ExpandButton logExpandButton;
-        public ItchyControls.ExpandButton propertiesExpandButton;
+        public ItchyControls.ExpandButton settingsExpandButton;
         private ItchyControls.TranslucentPanel settingsTranslucentPanel;
         private System.Windows.Forms.TabControl settingsTabControl;
         private System.Windows.Forms.TabPage settingsTab;
@@ -985,5 +1085,12 @@
         private System.Windows.Forms.CheckBox teleBackCheckBox;
         private System.Windows.Forms.CheckBox useTelekinesisCheckBox;
         private ItchyControls.TranslucentPanel logHolder;
+        private ItchyControls.TranslucentPanel statsHolder;
+        private ItchyControls.ExpandButton statsExpandButton;
+        private ItchyControls.TranslucentPanel statsTranslucentPanel;
+        private System.Windows.Forms.Button statsRefreshButton;
+        private ItchyControls.TransparentRichTextBox statsTextBox;
+        private ItchyControls.TranslucentPanel settingsHolder;
+        private System.Windows.Forms.CheckBox showItemCodeTextBox;
     }
 }

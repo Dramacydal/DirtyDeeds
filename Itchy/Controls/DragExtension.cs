@@ -77,6 +77,13 @@ namespace Itchy
 
             control.Left += offset.X;
             control.Top += offset.Y;
+
+            if (control is ItchyControls.ExpandButton)
+            {
+                var butt = control as ItchyControls.ExpandButton;
+                if (butt.ChildPanel != null)
+                    butt.ChildPanel.RelocateByDrag(offset);
+            }
         }
     }
 }

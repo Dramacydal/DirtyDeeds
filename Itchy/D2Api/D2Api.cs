@@ -9,6 +9,141 @@ namespace Itchy
 {
     public partial class D2Game
     {
+        public uint GetPlayerUnit()
+        {
+            /*return pd.Call(pd.GetModuleAddress("d2client.dll") + D2Client.GetPlayerUnit,
+                CallingConventionEx.StdCall);*/
+            return pd.ReadUInt(D2Client.pPlayerUnit);
+        }
+
+        public byte GetDifficulty()
+        {
+            return pd.ReadByte(D2Client.pDifficulty);
+        }
+
+        public uint GetUIVar(UIVars uiVar)
+        {
+            if (uiVar > UIVars.Max)
+                return 0;
+
+            return pd.ReadUInt(D2Client.pUiVars + (uint)uiVar * 4);
+        }
+
+        public void SetUIVar(UIVars uiVar, uint value)
+        {
+            if (uiVar > UIVars.Max)
+                return;
+
+            pd.Call(D2Client.SetUiVar,
+                CallingConventionEx.FastCall,
+                (uint)uiVar,
+                value,
+                0);
+        }
+
+        public bool GetPlayerUnit(out UnitAny unit)
+        {
+            var pUnit = GetPlayerUnit();
+            if (pUnit == 0)
+            {
+                unit = new UnitAny();
+                return false;
+            }
+
+            unit = pd.Read<UnitAny>(pUnit);
+            return true;
+        }
+
+        public volatile string PlayerName = "";
+
+        public string GetPlayerName()
+        {
+            try
+            {
+                UnitAny unit;
+                if (!GetPlayerUnit(out unit) || unit.pPlayerData == 0)
+                    return "";
+
+                var data = pd.Read<PlayerData>(unit.pPlayerData);
+                return data.szName;
+            }
+            catch (Exception)
+            {
+            }
+
+            return "";
+        }
+
+        public void PrintGameString(string str, D2Color color = D2Color.Default)
+        {
+            try
+            {
+                var addr = pd.AllocateUTF16String(str);
+                pd.Call(D2Client.PrintGameString,
+                    CallingConventionEx.StdCall,
+                    addr, (uint)color);
+
+                pd.FreeMemory(addr);
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        public void OpenStash()
+        {
+            if (!GameReady())
+                return;
+
+            var packet = new byte[] { 0x77, 0x10 };
+            ReceivePacket(packet);
+        }
+
+        public void OpenCube()
+        {
+            if (!GameReady())
+                return;
+
+            var packet = new byte[] { 0x77, 0x15 };
+            ReceivePacket(packet);
+        }
+
+        public void ExitGame()
+        {
+            if (!GameReady())
+                return;
+
+            pd.Call(D2Client.ExitGame,
+                CallingConventionEx.FastCall);
+        }
+
+        public bool HasSkill(SkillType skillId)
+        {
+            UnitAny unit;
+            if (!GetPlayerUnit(out unit) || unit.pInfo == 0)
+                return false;
+
+            var info = pd.Read<Info>(unit.pInfo);
+
+            for (var pSkill = info.pFirstSkill; pSkill != 0; )
+            {
+                var skill = pd.Read<Skill>(pSkill);
+                if (skill.pSkillInfo == 0)
+                {
+                    pSkill = skill.pNextSkill;
+                    continue;
+                }
+
+                var skillInfo = pd.Read<SkillInfo>(skill.pSkillInfo);
+                if (skillInfo.wSkillId == (ushort)skillId)
+                    return true;
+
+                pSkill = skill.pNextSkill;
+            }
+
+            return false;
+        }
+
         public bool GameReady()
         {
             UnitAny player;
@@ -143,6 +278,13 @@ namespace Itchy
         public uint GetUnitStat(uint pUnit, StatType stat)
         {
             return pd.Call(D2Common.GetUnitStat,
+                CallingConventionEx.StdCall,
+                pUnit, (uint)stat, 0);
+        }
+
+        public uint GetBaseUnitStat(uint pUnit, StatType stat)
+        {
+            return pd.Call(D2Common.GetBaseUnitStat,
                 CallingConventionEx.StdCall,
                 pUnit, (uint)stat, 0);
         }

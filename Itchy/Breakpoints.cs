@@ -281,61 +281,41 @@ namespace Itchy
             var item = pd.Read<UnitAny>(pItem);
             var itemData = pd.Read<ItemData>(item.pItemData);
 
-            var pTxt = Game.GetItemText(item.dwTxtFileNo);
-            var txt = pd.Read<ItemTxt>(pTxt);
-            var code = txt.GetCode();
+            var changed = false;
 
-            bool changed = false;
+            var appendix = "";
+
+            if (Game.Settings.ItemNameHack.ShowItemCode)
+            {
+                var pTxt = Game.GetItemText(item.dwTxtFileNo);
+                var txt = pd.Read<ItemTxt>(pTxt);
+                appendix += "(" + txt.GetCode() + ")";
+            }
 
             if (Game.Settings.ItemNameHack.ShowEth && (itemData.dwFlags & 0x400000) != 0)
-            {
-                if (!changed)
-                    str += " ";
-                str += "{E}";
-                changed = true;
-            }
+                appendix += "{E}";
 
             var runeNumber = item.RuneNumber();
             if (runeNumber > 0 && Game.Settings.ItemNameHack.ShowRuneNumber)
-            {
-                if (!changed)
-                    str += " ";
-                str += "(" + runeNumber + ")";
-                changed = true;
-            }
+                appendix += "(" + runeNumber + ")";
 
             if (Game.Settings.ItemNameHack.ShowSockets)
             {
                 var cnt = Game.GetItemSockets(pItem, item.dwUnitId);
 
                 if (cnt > 0 && cnt != uint.MaxValue)
-                {
-                    if (!changed)
-                        str += " ";
-                    str += "(" + cnt + ")";
-                    changed = true;
-                }
+                    appendix += "(" + cnt + ")";
             }
 
             if (Game.Settings.ItemNameHack.ShowItemLevel && itemData.dwItemLevel > 1)
-            {
-                if (!changed)
-                    str += " ";
-                str += "(L" + itemData.dwItemLevel + ")";
-                changed = true;
-            }
+                appendix += "(L" + itemData.dwItemLevel + ")";
 
             if (Game.Settings.ItemNameHack.ShowItemPrice)
             {
                 var price = Game.GetItemPrice(pItem, item.dwUnitId);
 
                 if (price > 0 && price != uint.MaxValue)
-                {
-                    if (!changed)
-                        str += " ";
-                    str += "($" + price + ")";
-                    changed = true;
-                }
+                    appendix += "($" + price + ")";
             }
 
             if (Game.Settings.ItemNameHack.ChangeItemColor)
@@ -349,13 +329,16 @@ namespace Itchy
                     if (configEntries.Count() != 0)
                     {
                         var entry = configEntries.First();
-                        if (entry.Color != D2Color.Default)
-                        {
-                            str = "ÿc" + entry.Color.GetCode() + str;
-                            changed = true;
-                        }
+                        str = "ÿc" + entry.Color.GetCode() + str;
+                        changed = true;
                     }
                 }
+            }
+
+            if (appendix != "")
+            {
+                str += " " + appendix;
+                changed = true;
             }
 
             if (changed)

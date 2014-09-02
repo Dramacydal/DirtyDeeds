@@ -12,8 +12,9 @@ namespace Itchy
 {
     public static class Extensions
     {
-        public static void AppendText(this RichTextBox box, string text, Color color)
+        public static void AppendText(this RichTextBox box, string text, Color color, params object[] args)
         {
+            text = string.Format(text, args);
             if (color == Color.Empty)
             {
                 box.AppendText(text);
@@ -31,18 +32,16 @@ namespace Itchy
             box.ScrollToCaret();
         }
 
-        public static void AppendLine(this RichTextBox box, string text, Color color)
+        public static void AppendLine(this RichTextBox box, string text, Color color, params object[] args)
         {
-            box.AppendText("\n" + text, color == Color.Empty ? box.ForeColor : color);
+            box.AppendText("\n" + text, color == Color.Empty ? box.ForeColor : color, args);
         }
 
         public static void LogLine(this RichTextBox box, string text, Color color, params object[] args)
         {
-            text = string.Format(text, args);
-
             var time = DateTime.Now;
             var str = string.Format("[{0:D2}:{1:D2}:{2:D2}] ", time.Hour, time.Minute, time.Second);
-            box.Invoke((MethodInvoker)delegate { box.AppendLine(str + text, color); });
+            box.Invoke((MethodInvoker)delegate { box.AppendLine(str + text, color, args); });
         }
 
         public static char GetCode(this D2Color color)
@@ -136,6 +135,21 @@ namespace Itchy
         public static byte ReadByte(this ProcessDebugger pd, ModulePointer offs)
         {
             return pd.ReadByte(pd.GetAddress(offs));
+        }
+
+        public static int X(this Size sz)
+        {
+            return sz.Width;
+        }
+
+        public static int Y(this Size sz)
+        {
+            return sz.Height;
+        }
+
+        public static Point Clone(this Point p)
+        {
+            return new Point(p.X, p.Y);
         }
     }
 }

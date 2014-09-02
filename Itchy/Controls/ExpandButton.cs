@@ -87,6 +87,8 @@ namespace ItchyControls
         {
             if (childPanel != null)
                 Expanded = !childPanel.Visible;
+
+            base.OnClick(e);
         }
     }
 }

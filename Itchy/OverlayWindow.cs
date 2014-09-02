@@ -26,8 +26,6 @@ namespace Itchy
         public OverlayWindow()
         {
             InitializeComponent();
-
-            logExpandButton.SetDraggable(true);
         }
 
         //
@@ -85,7 +83,7 @@ namespace Itchy
 
         public void UpdateOverlay()
         {
-            if (!this.ClickThrough && !this.propertiesExpandButton.Expanded)
+            if (!this.ClickThrough && !this.settingsExpandButton.Expanded)
                 MakeNonInteractive(true);
 
             var foreGroundWindow = GetForegroundWindow();
@@ -141,8 +139,17 @@ namespace Itchy
 
         private void SetupControlPositions()
         {
-            if (!game.OverlaySettings.logPosition.IsEmpty)
-                logHolder.Location = game.OverlaySettings.logPosition;
+            logExpandButton.SetDraggable(true);
+            settingsExpandButton.SetDraggable(true);
+            statsExpandButton.SetDraggable(true);
+            statsRefreshButton.SetDraggable(true);
+
+            if (!game.OverlaySettings.SettingsPosition.IsEmpty)
+                settingsHolder.Location = game.OverlaySettings.SettingsPosition;
+            if (!game.OverlaySettings.LogPosition.IsEmpty)
+                logHolder.Location = game.OverlaySettings.LogPosition;
+            if (!game.OverlaySettings.StatsPosition.IsEmpty)
+                statsHolder.Location = game.OverlaySettings.StatsPosition;
             if (game.OverlaySettings.LogFontSize != 0.0f)
                 logTextBox.Font = new Font(logTextBox.Font.FontFamily, game.OverlaySettings.LogFontSize, FontStyle.Bold);
 
@@ -157,7 +164,9 @@ namespace Itchy
         private void OverlayWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
             game.OverlaySettings.LogFontSize = logTextBox.Font.Size;
-            game.OverlaySettings.logPosition = logHolder.Location;
+            game.OverlaySettings.SettingsPosition = settingsHolder.Location;
+            game.OverlaySettings.LogPosition = logHolder.Location;
+            game.OverlaySettings.StatsPosition = statsHolder.Location;
         }
 
         private void OverlayWindow_Paint(object sender, PaintEventArgs e)
@@ -193,6 +202,7 @@ namespace Itchy
             showItemPriceCheckBox.Checked = settings.ItemNameHack.ShowItemPrice;
             showRuneNumberCheckBox.Checked = settings.ItemNameHack.ShowRuneNumber;
             showSocketsCheckBox.Checked = settings.ItemNameHack.ShowSockets;
+            showItemCodeTextBox.Checked = settings.ItemNameHack.ShowItemCode;
             changeColorCheckBox.Checked = settings.ItemNameHack.ChangeItemColor;
 
             viewInventoryHackCheckBox.Checked = settings.ViewInventory.Enabled;
@@ -246,6 +256,7 @@ namespace Itchy
             settings.ItemNameHack.ShowItemPrice = showItemPriceCheckBox.Checked;
             settings.ItemNameHack.ShowRuneNumber = showRuneNumberCheckBox.Checked;
             settings.ItemNameHack.ShowSockets = showSocketsCheckBox.Checked;
+            settings.ItemNameHack.ShowItemCode = showItemCodeTextBox.Checked;
             settings.ItemNameHack.ChangeItemColor = changeColorCheckBox.Checked;
 
             settings.ViewInventory.Enabled = viewInventoryHackCheckBox.Checked;
@@ -347,6 +358,7 @@ namespace Itchy
             showRuneNumberCheckBox.Enabled = state;
             showSocketsCheckBox.Enabled = state;
             changeColorCheckBox.Enabled = state;
+            showItemCodeTextBox.Enabled = state;
         }
 
         private void viewInventoryHackCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -417,7 +429,8 @@ namespace Itchy
 
         private void closeButton_Click(object sender, EventArgs e)
         {
-            propertiesExpandButton.Expanded = false;
+            settingsExpandButton.Expanded = false;
+            settingsExpandButton_Click(sender, e);
         }
 
         private void applyButton_Click(object sender, EventArgs e)
@@ -436,15 +449,16 @@ namespace Itchy
         {
             if (inGame)
             {
-                logTranslucentPanel.Show();
                 itchyLabel.Show();
-                logExpandButton.Show();
+                logHolder.Show();
+                statsHolder.Show();
             }
             else
             {
-                logTranslucentPanel.Hide();
                 itchyLabel.Hide();
-                logExpandButton.Hide();
+                logHolder.Hide();
+                statsHolder.Hide();
+                statsTextBox.Clear();
             }
         }
 
@@ -461,7 +475,7 @@ namespace Itchy
                 if (f.FieldType != typeof(KeybindButton))
                     continue;
 
-                var b = (KeybindButton)f.GetValue(this);
+                var b = f.GetValue(this) as KeybindButton;
                 if (b.WaitingKeyPress)
                 {
                     changed = true;
@@ -478,7 +492,7 @@ namespace Itchy
                         if (f2.Name == f.Name)
                             continue;
 
-                        var b2 = (KeybindButton)f2.GetValue(this);
+                        var b2 = f2.GetValue(this) as KeybindButton;
                         if (b2.Key == key)
                             b2.Key = Keys.None;
                     }
@@ -501,5 +515,149 @@ namespace Itchy
         protected override void OnMouseMove(MouseEventArgs e) { }
         protected override void OnMouseDown(MouseEventArgs e) { }
         protected override void OnMouseUp(MouseEventArgs e) { }
+
+        private void statsExpandButton_Click(object sender, EventArgs e)
+        {
+            if (statsExpandButton.Expanded)
+            {
+                BuildStats();
+                statsRefreshButton.Show();
+            }
+            else
+                statsRefreshButton.Hide();
+        }
+
+        private void settingsExpandButton_Click(object sender, EventArgs e)
+        {
+            if (settingsExpandButton.Expanded)
+                settingsHolder.Size = new Size(620, 568);
+            else
+                settingsHolder.Size = new Size(20, 20);
+        }
+
+        protected void BuildStats()
+        {
+            if (!game.InGame)
+                return;
+
+            using (var suspender = new GameSuspender(game))
+            {
+                var pUnit = game.GetPlayerUnit();
+                if (pUnit == 0 || !game.GameReady())
+                    return;
+
+                var log = statsTextBox;
+                log.Clear();
+
+                var negresByDiff = new int[] { 0, 40, 100 };
+
+                log.AppendText("Str: {0} + {1} = {2}", Color.Empty, game.GetBaseUnitStat(pUnit, StatType.Strength),
+                    game.GetUnitStat(pUnit, StatType.Strength) - game.GetBaseUnitStat(pUnit, StatType.Strength),
+                    game.GetUnitStat(pUnit, StatType.Strength));
+
+                log.AppendLine("Dex: {0} + {1} = {2}", Color.Empty, game.GetBaseUnitStat(pUnit, StatType.Dexterity),
+                    game.GetUnitStat(pUnit, StatType.Dexterity) - game.GetBaseUnitStat(pUnit, StatType.Dexterity),
+                    game.GetUnitStat(pUnit, StatType.Dexterity));
+
+                log.AppendLine("Vit: {0} + {1} = {2}", Color.Empty, game.GetBaseUnitStat(pUnit, StatType.Vitality),
+                    game.GetUnitStat(pUnit, StatType.Vitality) - game.GetBaseUnitStat(pUnit, StatType.Vitality),
+                    game.GetUnitStat(pUnit, StatType.Vitality));
+
+                log.AppendLine("Eng: {0} + {1} = {2}", Color.Empty, game.GetBaseUnitStat(pUnit, StatType.Energy),
+                    game.GetUnitStat(pUnit, StatType.Energy) - game.GetBaseUnitStat(pUnit, StatType.Energy),
+                    game.GetUnitStat(pUnit, StatType.Energy));
+
+                log.AppendLine("", Color.Empty);
+
+                log.AppendLine("Fire Resist: ", Color.Red);
+                log.AppendText("{0} - {1} = {2} / {3}", Color.Empty,
+                    game.GetUnitStat(pUnit, StatType.FireResist),
+                    negresByDiff[game.GetDifficulty()],
+                    game.GetUnitStat(pUnit, StatType.FireResist) - negresByDiff[game.GetDifficulty()],
+                    game.GetUnitStat(pUnit, StatType.MaxFireResist) + 75);
+
+                log.AppendLine("Cold Resist: ", Color.SkyBlue);
+                log.AppendText("{0} - {1} = {2} / {3}", Color.Empty,
+                    game.GetUnitStat(pUnit, StatType.ColdResist),
+                    negresByDiff[game.GetDifficulty()],
+                    game.GetUnitStat(pUnit, StatType.ColdResist) - negresByDiff[game.GetDifficulty()],
+                    game.GetUnitStat(pUnit, StatType.MaxColdResist) + 75);
+
+                log.AppendLine("Lightning Resist: ", Color.Yellow);
+                log.AppendText("{0} - {1} = {2} / {3}", Color.Empty,
+                    game.GetUnitStat(pUnit, StatType.LightResist),
+                    negresByDiff[game.GetDifficulty()],
+                    game.GetUnitStat(pUnit, StatType.LightResist) - negresByDiff[game.GetDifficulty()],
+                    game.GetUnitStat(pUnit, StatType.MaxLightningResist) + 75);
+
+                log.AppendLine("Poison Resist: ", Color.LawnGreen);
+                log.AppendText("{0} - {1} = {2} / {3}", Color.Empty,
+                    game.GetUnitStat(pUnit, StatType.PoisonResist),
+                    negresByDiff[game.GetDifficulty()],
+                    game.GetUnitStat(pUnit, StatType.PoisonResist) - negresByDiff[game.GetDifficulty()],
+                    game.GetUnitStat(pUnit, StatType.MaxPoisonResist) + 75);
+
+                log.AppendLine("Magic Resist: ", Color.Orange);
+                log.AppendText("{0} - {1} = {2} / {3}", Color.Empty,
+                    game.GetUnitStat(pUnit, StatType.MagicResist),
+                    negresByDiff[game.GetDifficulty()],
+                    game.GetUnitStat(pUnit, StatType.MagicResist) - negresByDiff[game.GetDifficulty()],
+                    game.GetUnitStat(pUnit, StatType.MaxMagicResist) + 75);
+
+                log.AppendLine("Damage Resist: ", Color.SandyBrown);
+                log.AppendText("{0}%", Color.Empty,
+                    game.GetUnitStat(pUnit, StatType.DamageResist));
+
+                log.AppendLine("", Color.Empty);
+
+                log.AppendLine("Absorbs: ", Color.Empty);
+                log.AppendText("{0}", Color.Red, game.GetUnitStat(pUnit, StatType.AbsorbFire));
+                log.AppendText("/", Color.Empty);
+                log.AppendText("{0}", Color.SkyBlue, game.GetUnitStat(pUnit, StatType.AbsorbCold));
+                log.AppendText("/", Color.Empty);
+                log.AppendText("{0}", Color.Yellow, game.GetUnitStat(pUnit, StatType.AbsorbLight));
+                log.AppendText("/", Color.Empty);
+                log.AppendText("{0}", Color.Orange, game.GetUnitStat(pUnit, StatType.AbsorbMagic));
+
+                log.AppendLine("Absorb Pcts: ", Color.Empty);
+                log.AppendText("{0}%", Color.Red, game.GetUnitStat(pUnit, StatType.AbsorbFirePercent));
+                log.AppendText("/", Color.Empty);
+                log.AppendText("{0}%", Color.SkyBlue, game.GetUnitStat(pUnit, StatType.AbsorbColdPercent));
+                log.AppendText("/", Color.Empty);
+                log.AppendText("{0}%", Color.Yellow, game.GetUnitStat(pUnit, StatType.AbsorbLightingPercent));
+                log.AppendText("/", Color.Empty);
+                log.AppendText("{0}%", Color.Orange, game.GetUnitStat(pUnit, StatType.AbsorbLightingPercent));
+
+                log.AppendLine("", Color.Empty);
+
+                log.AppendLine("Magic Find: ", Color.SkyBlue);
+                log.AppendText("{0}%", Color.Empty, game.GetUnitStat(pUnit, StatType.MagicFind));
+                log.AppendLine("Gold Find: ", Color.Yellow);
+                log.AppendText("{0}%", Color.Empty, game.GetUnitStat(pUnit, StatType.GoldFind));
+
+                log.AppendLine("", Color.Empty);
+
+                log.AppendLine("Faster Cast Rate: {0}%", Color.Empty, game.GetUnitStat(pUnit, StatType.FasterCastRate));
+                log.AppendLine("Faster Hit Recovery: {0}%", Color.Empty, game.GetUnitStat(pUnit, StatType.FasterHitRecovery));
+                log.AppendLine("Increased Attack Speed: {0}%", Color.Empty, game.GetUnitStat(pUnit, StatType.FasterAttackRate));
+                log.AppendLine("Faster Block Rate: {0}%", Color.Empty, game.GetUnitStat(pUnit, StatType.FasterBlockRate));
+                log.AppendLine("Faster Run/Walk: {0}%", Color.Empty, game.GetUnitStat(pUnit, StatType.FasterMoveVelocity));
+
+                log.AppendLine("", Color.Empty);
+
+                log.AppendLine("Crushing Blow: {0}", Color.Empty, game.GetUnitStat(pUnit, StatType.CrushingBlow));
+                log.AppendLine("Deadly Strike: {0}", Color.Empty, game.GetUnitStat(pUnit, StatType.DeadlyStrike));
+            }
+        }
+
+        private void statsRefreshButton_Click(object sender, EventArgs e)
+        {
+            BuildStats();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            game.Test();
+        }
     }
 }

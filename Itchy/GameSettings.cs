@@ -75,6 +75,7 @@ namespace Itchy
         public bool ShowItemPrice = false;
         public bool ShowRuneNumber = false;
         public bool ShowSockets = false;
+        public bool ShowItemCode = false;
         public bool ChangeItemColor = false;
     }
 
@@ -121,8 +122,9 @@ namespace Itchy
 
         public float LogFontSize = 0.0f;
 
-        public Point logPosition = new Point();
-        public Point statsPosition = new Point();
+        public Point SettingsPosition = new Point();
+        public Point LogPosition = new Point();
+        public Point StatsPosition = new Point();
     }
 
     public class ItemProcessingInfo

@@ -51,7 +51,6 @@ namespace Itchy
         protected volatile OverlayWindow overlay = null;
         protected Itchy itchy;
 
-        protected List<uint> revealedActs = new List<uint>();
         public volatile bool backToTown = false;
         public volatile uint viewingUnit = 0;
 
@@ -135,12 +134,12 @@ namespace Itchy
 
             overlay = new OverlayWindow();
             overlay.game = this;
-            //overlay.Visible = false;
             overlay.PostCreate();
-            //overlay.Show();
+            overlay.InGameStateChanged(InGame);
 
             pickit = new Pickit(this);
             PlayerInfo = new PlayerInfo(this);
+            MapHandler = new MapHandler(this);
 
             return true;
         }
@@ -169,6 +168,12 @@ namespace Itchy
             {
                 pickit.Stop();
                 pickit = null;
+            }
+
+            if (MapHandler != null)
+            {
+                MapHandler.Reset();
+                MapHandler = null;
             }
 
             PlayerInfo = null;
@@ -237,7 +242,9 @@ namespace Itchy
         public volatile bool InGame = false;
         public volatile ushort CurrentX = 0;
         public volatile ushort CurrentY = 0;
+
         public volatile PlayerInfo PlayerInfo;
+        public volatile MapHandler MapHandler;
 
         private void CheckInGame(bool first = false)
         {
@@ -289,82 +296,6 @@ namespace Itchy
             catch (Exception) { }
         }
 
-        public uint GetPlayerUnit()
-        {
-            /*return pd.Call(pd.GetModuleAddress("d2client.dll") + D2Client.GetPlayerUnit,
-                CallingConventionEx.StdCall);*/
-            return pd.ReadUInt(D2Client.pPlayerUnit);
-        }
-
-        public uint GetUIVar(UIVars uiVar)
-        {
-            if (uiVar > UIVars.Max)
-                return 0;
-
-            return pd.ReadUInt(D2Client.pUiVars + (uint)uiVar * 4);
-        }
-
-        public void SetUIVar(UIVars uiVar, uint value)
-        {
-            if (uiVar > UIVars.Max)
-                return;
-
-            pd.Call(D2Client.SetUiVar,
-                CallingConventionEx.FastCall,
-                (uint)uiVar,
-                value,
-                0);
-        }
-
-        public bool GetPlayerUnit(out UnitAny unit)
-        {
-            var pUnit = GetPlayerUnit();
-            if (pUnit == 0)
-            {
-                unit = new UnitAny();
-                return false;
-            }
-
-            unit = pd.Read<UnitAny>(pUnit);
-            return true;
-        }
-
-        public volatile string PlayerName = "";
-
-        public string GetPlayerName()
-        {
-            try
-            {
-                UnitAny unit;
-                if (!GetPlayerUnit(out unit) || unit.pPlayerData == 0)
-                    return "";
-
-                var data = pd.Read<PlayerData>(unit.pPlayerData);
-                return data.szName;
-            }
-            catch (Exception)
-            {
-            }
-
-            return "";
-        }
-
-        public void PrintGameString(string str, D2Color color = D2Color.Default)
-        {
-            try
-            {
-                var addr = pd.AllocateUTF16String(str);
-                pd.Call(D2Client.PrintGameString,
-                    CallingConventionEx.StdCall,
-                    addr, (uint)color);
-
-                pd.FreeMemory(addr);
-            }
-            catch (Exception)
-            {
-            }
-        }
-
         public void Test()
         {
             /*var val = llGetUnitStat(GetPlayerUnit(), StatType.MaxHealth);
@@ -373,8 +304,14 @@ namespace Itchy
 
             using (var suspender = new GameSuspender(this))
             {
-                PrintGameString("Asdasasd");
-                return;
+                ResumeStormThread();
+
+                var at = new AutoTeleport(this);
+                Level level;
+                if (!GetPlayerLevel(out level))
+                    return;
+
+                at.ManageTele(TeleportInfo.Vectors[level.dwLevelNo * 4]);
             }
         }
 
@@ -391,33 +328,6 @@ namespace Itchy
             var handle = pd.ReadUInt(Storm.pHandle);
 
             pd.Call(pd.GetModuleAddress("kernel32.dll") + funcAddress - hModule, CallingConventionEx.StdCall, handle);
-        }
-
-        public void OpenStash()
-        {
-            if (!GameReady())
-                return;
-
-            var packet = new byte[] { 0x77, 0x10 };
-            ReceivePacket(packet);
-        }
-
-        public void OpenCube()
-        {
-            if (!GameReady())
-                return;
-
-            var packet = new byte[] { 0x77, 0x15 };
-            ReceivePacket(packet);
-        }
-
-        public void ExitGame()
-        {
-            if (!GameReady())
-                return;
-
-            pd.Call(D2Client.ExitGame,
-                CallingConventionEx.FastCall);
         }
 
         public void Log(Color color, string message, params object[] args)
@@ -452,7 +362,7 @@ namespace Itchy
 
         public void EnteredGame()
         {
-            revealedActs.Clear();
+            MapHandler.Reset();
         }
 
         public uint GetViewingUnit()
@@ -521,13 +431,13 @@ namespace Itchy
 
             if (key == Keys.LControlKey || key == Keys.RControlKey)
             {
-                if (mEvent == MessageEvent.WM_KEYUP && !overlay.ClickThrough && !overlay.propertiesExpandButton.Expanded)
+                if (mEvent == MessageEvent.WM_KEYUP && !overlay.ClickThrough && !overlay.settingsExpandButton.Expanded)
                         overlay.MakeNonInteractive(true);
                     else if (mEvent == MessageEvent.WM_KEYDOWN && overlay.ClickThrough)
                         overlay.MakeNonInteractive(false);
             }
 
-            if (mEvent == MessageEvent.WM_KEYUP && overlay.propertiesExpandButton.Expanded)
+            if (mEvent == MessageEvent.WM_KEYUP && overlay.settingsExpandButton.Expanded)
                 if (!overlay.HandleMessage(key, mEvent))
                     return false;
 
@@ -559,9 +469,9 @@ namespace Itchy
                     using (var suspender = new GameSuspender(this))
                     {
                         ResumeStormThread();
-                        RevealAct();
+                        //MapHandler.RevealAct();
                         //ItemStorage.LoadCodes(this);
-                        //Test();
+                        Test();
                     }
                 }
                 if (key == Settings.FastPortal.Key)
@@ -643,33 +553,6 @@ namespace Itchy
 
             if (Settings.Infravision.Enabled)
                 AddBreakPoint(new InfravisionBreakPoint(this));
-        }
-
-        public bool HasSkill(SkillType skillId)
-        {
-            UnitAny unit;
-            if (!GetPlayerUnit(out unit) || unit.pInfo == 0)
-                return false;
-
-            var info = pd.Read<Info>(unit.pInfo);
-
-            for (var pSkill = info.pFirstSkill; pSkill != 0; )
-            {
-                var skill = pd.Read<Skill>(pSkill);
-                if (skill.pSkillInfo == 0)
-                {
-                    pSkill = skill.pNextSkill;
-                    continue;
-                }
-
-                var skillInfo = pd.Read<SkillInfo>(skill.pSkillInfo);
-                if (skillInfo.wSkillId == (ushort)skillId)
-                    return true;
-
-                pSkill = skill.pNextSkill;
-            }
-
-            return false;
         }
     }
 }
