@@ -7,107 +7,91 @@ using WhiteMagic;
 
 namespace Itchy
 {
-    public class D2CommonPointer : ModulePointer
+    public class D2Common : ModulePointer    // 0x6FD50000
     {
-        public D2CommonPointer(uint offset)
+        public D2Common(uint offset)
             : base("d2common.dll", offset)
         { }
+
+        public static D2Common GetLevel = new D2Common(0x6D440);  // fastcall (ActMisc *pMisc, DWORD dwLevelNo)
+        public static D2Common InitLevel = new D2Common(0x6DDF0); // stdcall (Level *pLevel)
+        //public static D2CommonOffset AutomapLayer2 = new D2CommonOffset(0x30B00;//0x6FD9F0D0 - 0x6FD50000);
+        public static D2Common GetLayer = new D2Common(0x30B00);  // fastcall (DWORD dwLevelNo)
+        public static D2Common AddRoomData = new D2Common(0x24990);   // stdcall (Act * ptAct, int LevelId, int Xpos, int Ypos, Room1 * pRoom)
+        public static D2Common RemoveRoomData = new D2Common(0x24930);    // stdcall (Act* ptAct, int LevelId, int Xpos, int Ypos, Room1* pRoom)
+        public static D2Common LoadAct = new D2Common(0x24810);   // stdcall (DWORD ActNumber, DWORD MapId, DWORD Unk, DWORD Unk_2, DWORD Unk_3, DWORD Unk_4, DWORD TownLevelId, DWORD Func_1, DWORD Func_2)
+        public static D2Common UnloadAct = new D2Common(0x24590); // stdcall
+        public static D2Common GetItemText = new D2Common(0x62C70); // ItemTxt *__stdcall, (DWORD dwItemNo)
+        public static D2Common pItemTextData = new D2Common(0x6FDF4CB4 - 0x6FD50000);
+        public static D2Common pMaxItemText = new D2Common(0x6FDF4CB0 - 0x6FD50000);
+        public static D2Common GetUnitStat = new D2Common(0x584E0); // __stdcall, (UnitAny* pUnit, DWORD dwStat, DWORD dwStat2)
+        public static D2Common GetBaseUnitStat = new D2Common(0x6FDA8590 - 0x6FD50000); // DWORD __stdcall, (UnitAny *Unit, DWORD dwStat, DWORD dwUkn)
+        public static D2Common GetItemPrice = new D2Common(0x48620); // __stdcall, (UnitAny * player, UnitAny * item, DWORD difficulty, void* questinfo, int value, DWORD flag)
+        public static D2Common sgptDataTables = new D2Common(0x6FDF33F0 - 0x6FD50000);
+        public static D2Common GetObjectTxt = new D2Common(0x1ADC0); // ObjectTxt * __stdcall, (DWORD objno)
+        public static D2Common GetFunkUnk_5 = new D2Common(0x6FDBD1D0 - 0x6FD50000); // __stdcall, (DWORD nLevelNo)
+        public static D2Common TestFunUnk_6 = new D2Common(0x6FD67CF0 - 0x6FD50000); // DWORD __stdcall, (UnitAny *unit1, UnitAny *unit2, DWORD arg3)
+        public static D2Common GetLevelText = new D2Common(0x30CA0); // LevelTxt * __stdcall, (DWORD levelno)
     }
 
-    public class D2ClientPointer : ModulePointer
+    public class D2Client : ModulePointer    // 0x6FAB0000
     {
-        public D2ClientPointer(uint offset)
+        public D2Client(uint offset)
             : base("d2client.dll", offset)
         { }
+
+        public static D2Client GetPlayerUnit = new D2Client(0x613C0); // stdcall ()
+        public static D2Client InitAutomapLayer_I = new D2Client(0x733D0); // register (DWORD nLayerNo)
+        public static D2Client pAutoMapLayer = new D2Client(0x11CF28);
+        public static D2Client RevealAutomapRoom = new D2Client(0x73160); // stdcall (Room1 *pRoom1, DWORD dwClipFlag, AutomapLayer *aLayer)
+        public static D2Client PrintGameString = new D2Client(0x6FB25EB0 - 0x6FAB0000);
+        public static D2Client pExpCharFlag = new D2Client(0x1087B4);
+        public static D2Client GetDifficulty = new D2Client(0x42980); // cdecl
+        public static D2Client pDifficulty = new D2Client(0x6FBCD1D8 - 0x6FAB0000);
+        public static D2Client LoadAct_1 = new D2Client(0x737F0); // asm
+        public static D2Client LoadAct_2 = new D2Client(0x2B420); // asm
+        public static D2Client pPlayerUnit = new D2Client(0x11D050);
+        public static D2Client ExitGame = new D2Client(0x43870); // fastcall
+        public static D2Client GetUiVar_I = new D2Client(0x17C50); // register (DWORD dwVarNo)
+        public static D2Client SetUiVar = new D2Client(0x1C190); // __fastcall, (DWORD varno, DWORD howset, DWORD unknown1)
+        public static D2Client pUiVars = new D2Client(0x6FBCC890 - 0x6FAB0000);
+        public static D2Client pServerUnitTable = new D2Client(0x1047B8);
+        public static D2Client pClientUnitTable = new D2Client(0x103BB8);
+        public static D2Client pPlayerUnitList = new D2Client(0x11CB04);  // RosterUnit*
+        public static D2Client pItemPriceList = new D2Client(0x1018B3);  // __stdcall, (void)
+        public static D2Client GetSelectedUnit = new D2Client(0x17280); // __stdcall, (void)
+        public static D2Client pMouseX = new D2Client(0x11C950);  // DWORD
+        public static D2Client pMouseY = new D2Client(0x11C94C);  // DWORD
+        public static D2Client NewAutomapCell = new D2Client(0x703C0); // AutomapCell * __fastcall, (void)
+        public static D2Client AddAutomapCell = new D2Client(0x71EA0); // void __fastcall, (AutomapCell *aCell, AutomapCell **node)
+        public static D2Client TestPvpFlag_I = new D2Client(0x6A720);
     }
 
-    public class D2NetPointer : ModulePointer
+    public class D2Net : ModulePointer   // 0x6FBF0000
     {
-        public D2NetPointer(uint offset)
+        public D2Net(uint offset)
             : base("d2net.dll", offset)
         { }
+
+        public static D2Net ReceivePacket = new D2Net(0x6FBF64A0 - 0x6FBF0000);  // stdcall (BYTE *aPacket, DWORD aLen)
+        public static D2Net SendPacket = new D2Net(0x6F20); // stdcall (size_t aLen, DWORD arg1, BYTE* aPacket)
     }
 
-    public class StormPointer : ModulePointer
+    public class Storm : ModulePointer   // 0x6FBF0000
     {
-        public StormPointer(uint offset)
+        public Storm(uint offset)
             : base("storm.dll", offset)
         { }
+
+        public static Storm pHandle = new Storm(0x6FC42A50 - 0x6FBF0000);
     }
 
-    public class FogPointer : ModulePointer
+    public class Fog : ModulePointer     // 0x6FF50000
     {
-        public FogPointer(uint offset)
+        public Fog(uint offset)
             : base("fog.dll", offset)
         { }
-    }
 
-    public static class D2Common    // 0x6FD50000
-    {
-        public static D2CommonPointer GetLevel = new D2CommonPointer(0x6D440);  // fastcall (ActMisc *pMisc, DWORD dwLevelNo)
-        public static D2CommonPointer InitLevel = new D2CommonPointer(0x6DDF0); // stdcall (Level *pLevel)
-        //public static D2CommonOffset AutomapLayer2 = new D2CommonOffset(0x30B00;//0x6FD9F0D0 - 0x6FD50000);
-        public static D2CommonPointer GetLayer = new D2CommonPointer(0x30B00);  // fastcall (DWORD dwLevelNo)
-        public static D2CommonPointer AddRoomData = new D2CommonPointer(0x24990);   // stdcall (Act * ptAct, int LevelId, int Xpos, int Ypos, Room1 * pRoom)
-        public static D2CommonPointer RemoveRoomData = new D2CommonPointer(0x24930);    // stdcall (Act* ptAct, int LevelId, int Xpos, int Ypos, Room1* pRoom)
-        public static D2CommonPointer LoadAct = new D2CommonPointer(0x24810);   // stdcall (DWORD ActNumber, DWORD MapId, DWORD Unk, DWORD Unk_2, DWORD Unk_3, DWORD Unk_4, DWORD TownLevelId, DWORD Func_1, DWORD Func_2)
-        public static D2CommonPointer UnloadAct = new D2CommonPointer(0x24590); // stdcall
-        public static D2CommonPointer GetItemText = new D2CommonPointer(0x62C70); // ItemTxt *__stdcall, (DWORD dwItemNo)
-        public static D2CommonPointer pItemTextData = new D2CommonPointer(0x6FDF4CB4 - 0x6FD50000);
-        public static D2CommonPointer pMaxItemText = new D2CommonPointer(0x6FDF4CB0 - 0x6FD50000);
-        public static D2CommonPointer GetUnitStat = new D2CommonPointer(0x584E0); // __stdcall, (UnitAny* pUnit, DWORD dwStat, DWORD dwStat2)
-        public static D2CommonPointer GetBaseUnitStat = new D2CommonPointer(0x6FDA8590 - 0x6FD50000); // DWORD __stdcall, (UnitAny *Unit, DWORD dwStat, DWORD dwUkn)
-        public static D2CommonPointer GetItemPrice = new D2CommonPointer(0x48620); // __stdcall, (UnitAny * player, UnitAny * item, DWORD difficulty, void* questinfo, int value, DWORD flag)
-        public static D2CommonPointer sgptDataTables = new D2CommonPointer(0x6FDF33F0 - 0x6FD50000);
-        public static D2CommonPointer GetObjectTxt = new D2CommonPointer(0x1ADC0); // ObjectTxt * __stdcall, (DWORD objno)
-        public static D2CommonPointer GetFunkUnk_5 = new D2CommonPointer(0x6FDBD1D0 - 0x6FD50000); // __stdcall, (DWORD nLevelNo)
-        public static D2CommonPointer TestFunUnk_6 = new D2CommonPointer(0x6FD67CF0 - 0x6FD50000); // DWORD __stdcall, (UnitAny *unit1, UnitAny *unit2, DWORD arg3)
-        public static D2CommonPointer GetLevelText = new D2CommonPointer(0x30CA0); // LevelTxt * __stdcall, (DWORD levelno)
-    }
-
-    public static class D2Client    // 0x6FAB0000
-    {
-        public static D2ClientPointer GetPlayerUnit = new D2ClientPointer(0x613C0); // stdcall ()
-        public static D2ClientPointer InitAutomapLayer_I = new D2ClientPointer(0x733D0); // register (DWORD nLayerNo)
-        public static D2ClientPointer pAutoMapLayer = new D2ClientPointer(0x11CF28);
-        public static D2ClientPointer RevealAutomapRoom = new D2ClientPointer(0x73160); // stdcall (Room1 *pRoom1, DWORD dwClipFlag, AutomapLayer *aLayer)
-        public static D2ClientPointer PrintGameString = new D2ClientPointer(0x6FB25EB0 - 0x6FAB0000);
-        public static D2ClientPointer pExpCharFlag = new D2ClientPointer(0x1087B4);
-        public static D2ClientPointer GetDifficulty = new D2ClientPointer(0x42980); // cdecl
-        public static D2ClientPointer pDifficulty = new D2ClientPointer(0x6FBCD1D8 - 0x6FAB0000);
-        public static D2ClientPointer LoadAct_1 = new D2ClientPointer(0x737F0); // asm
-        public static D2ClientPointer LoadAct_2 = new D2ClientPointer(0x2B420); // asm
-        public static D2ClientPointer pPlayerUnit = new D2ClientPointer(0x11D050);
-        public static D2ClientPointer ExitGame = new D2ClientPointer(0x43870); // fastcall
-        public static D2ClientPointer GetUiVar_I = new D2ClientPointer(0x17C50); // register (DWORD dwVarNo)
-        public static D2ClientPointer SetUiVar = new D2ClientPointer(0x1C190); // __fastcall, (DWORD varno, DWORD howset, DWORD unknown1)
-        public static D2ClientPointer pUiVars = new D2ClientPointer(0x6FBCC890 - 0x6FAB0000);
-        public static D2ClientPointer pServerUnitTable = new D2ClientPointer(0x1047B8);
-        public static D2ClientPointer pClientUnitTable = new D2ClientPointer(0x103BB8);
-        public static D2ClientPointer pPlayerUnitList = new D2ClientPointer(0x11CB04);  // RosterUnit*
-        public static D2ClientPointer pItemPriceList = new D2ClientPointer(0x1018B3);  // __stdcall, (void)
-        public static D2ClientPointer GetSelectedUnit = new D2ClientPointer(0x17280); // __stdcall, (void)
-        public static D2ClientPointer pMouseX = new D2ClientPointer(0x11C950);  // DWORD
-        public static D2ClientPointer pMouseY = new D2ClientPointer(0x11C94C);  // DWORD
-        public static D2ClientPointer NewAutomapCell = new D2ClientPointer(0x703C0); // AutomapCell * __fastcall, (void)
-        public static D2ClientPointer AddAutomapCell = new D2ClientPointer(0x71EA0); // void __fastcall, (AutomapCell *aCell, AutomapCell **node)
-        public static D2ClientPointer TestPvpFlag_I = new D2ClientPointer(0x6A720);
-    }
-
-    public static class D2Net       // 0x6FBF0000
-    {
-        public static D2NetPointer ReceivePacket = new D2NetPointer(0x6FBF64A0 - 0x6FBF0000);  // stdcall (BYTE *aPacket, DWORD aLen)
-        public static D2NetPointer SendPacket = new D2NetPointer(0x6F20); // stdcall (size_t aLen, DWORD arg1, BYTE* aPacket)
-    }
-
-    public static class Storm       // 0x6FBF0000
-    {
-        public static StormPointer pHandle = new StormPointer(0x6FC42A50 - 0x6FBF0000);
-    }
-
-    public static class Fog         // 0x6FF50000
-    {
-        public static FogPointer gdwBitMasks = new FogPointer(0x6FF77020 - 0x6FF50000);
-    }
-    
+        public static Fog gdwBitMasks = new Fog(0x6FF77020 - 0x6FF50000);
+    }    
 }
