@@ -46,10 +46,10 @@ namespace Itchy
 
         public ItemProcessingSettings ItemProcessingSettings { get { return itchy.ItemProcessingSettings; } }
 
-        protected Process process = null;
-        protected ProcessDebugger pd = null;
+        protected volatile Process process = null;
+        protected volatile ProcessDebugger pd = null;
         protected volatile OverlayWindow overlay = null;
-        protected Itchy itchy;
+        protected volatile Itchy itchy;
 
         public volatile bool backToTown = false;
         public volatile uint viewingUnit = 0;
@@ -82,7 +82,6 @@ namespace Itchy
 
         public override string ToString()
         {
-            //return process.MainModule.FileVersionInfo.InternalName + " - " + process.Id + (Installed ? " (*) " + PlayerName : "");
             return process.MainModule.FileVersionInfo.InternalName + " - " + process.Id + (Installed ? " " + PlayerName : "");
         }
 
