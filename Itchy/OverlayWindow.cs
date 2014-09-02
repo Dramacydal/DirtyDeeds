@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Security.Permissions;
+using Itchy.D2Enums;
 using ItchyControls;
 
 namespace Itchy

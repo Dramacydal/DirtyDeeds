@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using IniParser;
+using Itchy.D2Enums;
 
 namespace Itchy
 {

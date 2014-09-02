@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using Itchy.D2Enums;
 using WhiteMagic;
 
 namespace Itchy

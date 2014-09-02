@@ -65,7 +65,16 @@
     <Compile Include="Controls\KeybindButton.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="D2Enums\D2Color.cs" />
+    <Compile Include="D2Enums\Inventory.cs" />
+    <Compile Include="D2Enums\ItemQuality.cs" />
     <Compile Include="D2Enums\Map.cs" />
+    <Compile Include="D2Enums\Modes.cs" />
+    <Compile Include="D2Enums\Packets.cs" />
+    <Compile Include="D2Enums\SkillType.cs" />
+    <Compile Include="D2Enums\StatType.cs" />
+    <Compile Include="D2Enums\UIVars.cs" />
+    <Compile Include="D2Enums\UnitType.cs" />
     <Compile Include="GameSuspender.cs" />
     <Compile Include="PlayerInfo.cs" />
     <Compile Include="D2Api\D2Api.cs" />

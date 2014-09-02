@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Itchy.AutoTeleport;
+using Itchy.D2Enums;
 using WhiteMagic;
 
 using System.Xml.Serialization;
