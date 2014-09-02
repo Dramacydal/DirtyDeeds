@@ -53,11 +53,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Autoteleport\Autoteleport.cs" />
-    <Compile Include="Autoteleport\TeleportPath.cs" />
+    <Compile Include="AutoTeleport\AutoTeleHandler.cs" />
+    <Compile Include="AutoTeleport\TeleportPath.cs" />
     <Compile Include="Breakpoints.cs" />
-    <Compile Include="Autoteleport\CMatrix.cs" />
-    <Compile Include="Autoteleport\CollisionMap.cs" />
+    <Compile Include="AutoTeleport\CMatrix.cs" />
+    <Compile Include="AutoTeleport\CollisionMap.cs" />
     <Compile Include="Controls\D2ToolstipMenuItem.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -111,7 +111,7 @@
     <Compile Include="Controls\TransparentRichTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Autoteleport\TeleportInfo.cs" />
+    <Compile Include="AutoTeleport\TeleportInfo.cs" />
     <Compile Include="TestForm.cs">
       <SubType>Form</SubType>
     </Compile>

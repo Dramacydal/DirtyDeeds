@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Itchy
+namespace Itchy.AutoTeleport
 {
     using PointList = List<Point>;
 

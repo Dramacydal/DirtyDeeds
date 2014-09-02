@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 
-namespace Itchy
+namespace Itchy.AutoTeleport
 {
     public class MatrixException : Exception
     {

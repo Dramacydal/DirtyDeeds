@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Itchy.AutoTeleport;
 using WhiteMagic;
 
 using System.Xml.Serialization;
@@ -139,6 +140,7 @@ namespace Itchy
             pickit = new Pickit(this);
             PlayerInfo = new PlayerInfo(this);
             MapHandler = new MapHandler(this);
+            AutoTeleport = new AutoTeleHandler(this);
 
             return true;
         }
@@ -173,6 +175,12 @@ namespace Itchy
             {
                 MapHandler.Reset();
                 MapHandler = null;
+            }
+
+            if (AutoTeleport != null)
+            {
+                AutoTeleport.Terminate();
+                AutoTeleport = null;
             }
 
             PlayerInfo = null;
@@ -244,6 +252,7 @@ namespace Itchy
 
         public volatile PlayerInfo PlayerInfo;
         public volatile MapHandler MapHandler;
+        public volatile AutoTeleHandler AutoTeleport;
 
         private void CheckInGame(bool first = false)
         {
@@ -252,18 +261,20 @@ namespace Itchy
 
             try
             {
-                if (check && Settings.ReceivePacketHack.Enabled && Settings.ReceivePacketHack.ItemTracker.Enabled &&
-                    Settings.ReceivePacketHack.ItemTracker.EnablePickit)
+                if (check)
                 {
-                    var unit = pd.Read<UnitAny>(pPlayer);
-                    if (unit.pPath != 0)
+                    using (var suspender = new GameSuspender(this))
                     {
-                        var path = pd.Read<Path>(unit.pPath);
-                        if (path.xPos != CurrentX || path.yPos != CurrentY)
+                        var unit = pd.Read<UnitAny>(pPlayer);
+                        if (unit.pPath != 0)
                         {
-                            CurrentX = path.xPos;
-                            CurrentY = path.yPos;
-                            OnRelocaton();
+                            var path = pd.Read<Path>(unit.pPath);
+                            if (path.xPos != CurrentX || path.yPos != CurrentY)
+                            {
+                                CurrentX = path.xPos;
+                                CurrentY = path.yPos;
+                                OnRelocaton();
+                            }
                         }
                     }
                 }
@@ -272,7 +283,12 @@ namespace Itchy
                     return;
 
                 if (check)
-                    PlayerName = GetPlayerName();
+                {
+                    using (var suspender = new GameSuspender(this))
+                    {
+                        PlayerName = GetPlayerName();
+                    }
+                }
                 else
                     PlayerName = "";
 
@@ -305,12 +321,11 @@ namespace Itchy
             {
                 ResumeStormThread();
 
-                var at = new AutoTeleport(this);
                 Level level;
                 if (!GetPlayerLevel(out level))
                     return;
 
-                at.ManageTele(TeleportInfo.Vectors[level.dwLevelNo * 4]);
+                AutoTeleport.ManageTele(TeleportInfo.Vectors[level.dwLevelNo * 4]);
             }
         }
 
@@ -357,11 +372,15 @@ namespace Itchy
 
             if (PlayerInfo != null)
                 PlayerInfo.Reset();
+
+            if (AutoTeleport != null)
+                AutoTeleport.Terminate();
         }
 
         public void EnteredGame()
         {
-            MapHandler.Reset();
+            if (MapHandler != null)
+                MapHandler.Reset();
         }
 
         public uint GetViewingUnit()

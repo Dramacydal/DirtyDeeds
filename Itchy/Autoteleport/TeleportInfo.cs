@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Itchy.D2Enums;
 
-namespace Itchy
+namespace Itchy.AutoTeleport
 {
     public enum TeleportTargetType
     {
