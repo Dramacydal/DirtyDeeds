@@ -10,6 +10,9 @@ using WhiteMagic;
 
 namespace Itchy.AutoTeleport
 {
+    using PointList = List<Point>;
+    using WordMatrix = CMatrix<ushort>;
+
     public class AutoTeleHandler
     {
         public enum TeleType
@@ -29,7 +32,7 @@ namespace Itchy.AutoTeleport
         protected bool doInteract = false;
         protected TeleportTargetType interactType = TeleportTargetType.None;
         protected uint interactRoom = 0;
-        protected List<Point> TPath = new List<Point>();
+        protected PointList TPath = new PointList();
         protected uint lastArea = 0;
         protected uint interactId = 0;
         protected Thread th = null;

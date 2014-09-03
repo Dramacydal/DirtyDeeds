@@ -41,7 +41,7 @@ namespace Itchy
                 while (!needStop)
                 {
                     ProcessPicks(false);
-                    Thread.Sleep(150);
+                    Thread.Sleep(50);
                 }
             });
 
@@ -72,7 +72,7 @@ namespace Itchy
                 th.Join();
         }
 
-        public void FullIntentory()
+        public void OnFullIntentory()
         {
             var str = "Intentory is full! Disabling pickit.";
             if (game.Settings.ReceivePacketHack.ItemTracker.ReactivatePickit.Key != Keys.None)

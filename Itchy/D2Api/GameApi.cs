@@ -75,6 +75,71 @@ namespace Itchy
             return "";
         }
 
+        public void ReceivePacket(byte[] packet)
+        {
+            var addr = pd.AllocateBytes(packet);
+            pd.Call(D2Net.ReceivePacket,
+                CallingConventionEx.StdCall,
+                addr, packet.Length);
+            pd.FreeMemory(addr);
+        }
+
+        public void SendPacket(byte[] packet)
+        {
+            var addr = pd.AllocateBytes(packet);
+            pd.Call(D2Net.SendPacket,
+                CallingConventionEx.StdCall,
+                packet.Length, 1, addr);
+            pd.FreeMemory(addr);
+        }
+
+        public void UseItem(uint pItem)
+        {
+            if (pItem == 0)
+                return;
+
+            var item = pd.Read<UnitAny>(pItem);
+            UnitAny player;
+            if (!GetPlayerUnit(out player))
+                return;
+
+            switch (GetItemLocation(item))
+            {
+                case StorageType.Inventory:
+                    {
+                        var path = pd.Read<Path>(player.pPath);
+                        var bytes = new List<byte>();
+
+                        bytes.Add(0x20);
+                        bytes.AddRange(BitConverter.GetBytes(item.dwUnitId));
+                        bytes.AddRange(BitConverter.GetBytes((uint)path.xPos));
+                        bytes.AddRange(BitConverter.GetBytes((uint)path.yPos));
+                        SendPacket(bytes.ToArray());
+                        break;
+                    }
+                case StorageType.Belt:
+                    {
+                        var bytes = new List<byte>();
+
+                        bytes.Add(0x26);
+                        bytes.AddRange(BitConverter.GetBytes(item.dwUnitId));
+                        bytes.AddRange(BitConverter.GetBytes((uint)0));
+                        bytes.AddRange(BitConverter.GetBytes((uint)0));
+                        SendPacket(bytes.ToArray());
+                        break;
+                    }
+            }
+        }
+
+        public void Interact(uint dwUnitId, UnitType unitType)
+        {
+            var packet = new List<byte>();
+            packet.Add(0x13);
+            packet.AddRange(BitConverter.GetBytes((uint)unitType));
+            packet.AddRange(BitConverter.GetBytes(dwUnitId));
+            SendPacket(packet.ToArray());
+        }
+
         public void PrintGameString(string str, D2Color color = D2Color.Default)
         {
             try

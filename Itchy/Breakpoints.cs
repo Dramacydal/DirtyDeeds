@@ -202,7 +202,7 @@ namespace Itchy
                         Game.Settings.ReceivePacketHack.ItemTracker.EnablePickit)
                     {
                         if (packet[1] == 0 && packet[6] == 0x17)
-                            Game.Pickit.FullIntentory();
+                            Game.Pickit.OnFullIntentory();
                     }
                     break;
                 }
@@ -407,11 +407,11 @@ namespace Itchy
         public override bool HandleException(ref CONTEXT ctx, ProcessDebugger pd)
         {
             // Esi - pUnit
-            var hide = 0u;
+            var hide = false;
 
             var pUnit = ctx.Esi;
             if (pUnit == 0)
-                hide = 1;
+                hide = true;
             else if (Game.Settings.Infravision.HideCorpses || Game.Settings.Infravision.HideDying || Game.Settings.Infravision.HideItems)
             {
                 var unit = pd.Read<UnitAny>(pUnit);
@@ -423,7 +423,7 @@ namespace Itchy
                             unit.dwMode == (uint)NpcMode.Dead ||
                             Game.Settings.Infravision.HideDying && 
                             unit.dwMode == (uint)NpcMode.Death)
-                            hide = 1;
+                            hide = true;
                         break;
                     }
                     case UnitType.Item:
@@ -442,14 +442,14 @@ namespace Itchy
                             var configEntries = Game.ItemProcessingSettings.GetMatches(itemInfo, sock,
                                 (itemData.dwFlags & 0x400000) != 0, (ItemQuality)itemData.dwQuality).Where(it => it.Hide);
                             if (configEntries.Count() != 0)
-                                hide = 1;
+                                hide = true;
                         }
                         break;
                     }
                 }
             }
 
-            ctx.Eax = hide;
+            ctx.Eax = hide ? 1u : 0u;
 
             ctx.Eip += 0x77;
 

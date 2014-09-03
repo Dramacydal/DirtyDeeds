@@ -85,9 +85,7 @@ namespace Itchy
                 var item = pd.Read<UnitAny>(pItem);
                 var itemData = pd.Read<ItemData>(item.pItemData);
 
-                var pItemTxt = pd.Call(D2Common.GetItemText,
-                    CallingConventionEx.StdCall,
-                    item.dwTxtFileNo);
+                var pItemTxt = GetItemText(item.dwTxtFileNo);
                 var txt = pd.Read<ItemTxt>(pItemTxt);
                 if ((uint)storage != itemData.ItemLocation && storage != StorageType.Null)
                 {
@@ -152,71 +150,6 @@ namespace Itchy
                 return 0;
 
             return pData + 424 * dwTxtFileNo;
-        }
-
-        public void ReceivePacket(byte[] packet)
-        {
-            var addr = pd.AllocateBytes(packet);
-            pd.Call(D2Net.ReceivePacket,
-                CallingConventionEx.StdCall,
-                addr, packet.Length);
-            pd.FreeMemory(addr);
-        }
-
-        public void SendPacket(byte[] packet)
-        {
-            var addr = pd.AllocateBytes(packet);
-            pd.Call(D2Net.SendPacket,
-                CallingConventionEx.StdCall,
-                packet.Length, 1, addr);
-            pd.FreeMemory(addr);
-        }
-
-        public void UseItem(uint pItem)
-        {
-            if (pItem == 0)
-                return;
-
-            var item = pd.Read<UnitAny>(pItem);
-            UnitAny player;
-            if (!GetPlayerUnit(out player))
-                return;
-
-            switch (GetItemLocation(item))
-            {
-                case StorageType.Inventory:
-                {
-                    var path = pd.Read<Path>(player.pPath);
-                    var bytes = new List<byte>();
-
-                    bytes.Add(0x20);
-                    bytes.AddRange(BitConverter.GetBytes(item.dwUnitId));
-                    bytes.AddRange(BitConverter.GetBytes((uint)path.xPos));
-                    bytes.AddRange(BitConverter.GetBytes((uint)path.yPos));
-                    SendPacket(bytes.ToArray());
-                    break;
-                }
-                case StorageType.Belt:
-                {
-                    var bytes = new List<byte>();
-
-                    bytes.Add(0x26);
-                    bytes.AddRange(BitConverter.GetBytes(item.dwUnitId));
-                    bytes.AddRange(BitConverter.GetBytes((uint)0));
-                    bytes.AddRange(BitConverter.GetBytes((uint)0));
-                    SendPacket(bytes.ToArray());
-                    break;
-                }
-            }
-        }
-
-        public void Interact(uint dwUnitId, UnitType unitType)
-        {
-            var packet = new List<byte>();
-            packet.Add(0x13);
-            packet.AddRange(BitConverter.GetBytes((uint)unitType));
-            packet.AddRange(BitConverter.GetBytes(dwUnitId));
-            SendPacket(packet.ToArray());
         }
 
         public uint llGetUnitStat(uint pUnit, StatType stat)
