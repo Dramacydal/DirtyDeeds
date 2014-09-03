@@ -946,6 +946,7 @@
             this.logExpandButton.TabIndex = 4;
             this.logExpandButton.Text = " \\/";
             this.logExpandButton.UseVisualStyleBackColor = true;
+            this.logExpandButton.Click += new System.EventHandler(this.logExpandButton_Click);
             // 
             // logTranslucentPanel
             // 
@@ -990,6 +991,7 @@
             this.Name = "OverlayWindow";
             this.ShowInTaskbar = false;
             this.Text = "OverlayWindow";
+            this.TopMost = true;
             this.TransparencyKey = System.Drawing.Color.MidnightBlue;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OverlayWindow_FormClosing);
             this.Load += new System.EventHandler(this.OverlayWindow_Load);

@@ -1,4 +1,4 @@
-﻿namespace Itchy.D2Api
+﻿namespace Itchy.D2Enums
 {
     /// <summary>
     /// This is used by GS Packet 0x9C - 0x9D, and is pretty weird...

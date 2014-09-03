@@ -372,5 +372,18 @@ namespace Itchy
                 CallingConventionEx.StdCall,
                 pUnit, (uint)stat, 0);
         }
+        public bool TeleportTo(ushort x, ushort y)
+        {
+            return CastSkillXY(SkillType.Teleport, x, y);
+        }
+
+        public bool IsDead()
+        {
+            var pUnit = GetPlayerUnit();
+            if (pUnit == 0)
+                return false;
+
+            return llGetUnitStat(pUnit, StatType.Health) == 0;
+        }
     }
 }

@@ -88,19 +88,17 @@ namespace Itchy
                 MakeNonInteractive(true);
 
             var foreGroundWindow = GetForegroundWindow();
-            var newState = foreGroundWindow == this.game.Process.MainWindowHandle;
-            if (newState != this.TopMost)
-                this.TopMost = newState;
-
-            if (!IsApplicationChildForm(foreGroundWindow) && !newState)
+            if (foreGroundWindow == this.game.Process.MainWindowHandle)
+            {
+                if (!this.Visible)
+                    this.Show();
+            }
+            else if (foreGroundWindow != this.Handle)
             {
                 if (this.Visible)
                     this.Hide();
                 return;
             }
-
-            if (!this.Visible)
-                this.Show();
 
             RECT rect;
             GetWindowRect(this.game.Process.MainWindowHandle, out rect);
@@ -108,10 +106,7 @@ namespace Itchy
             if (rect.Left - 300 == this.Location.X && rect.Top - 300 == this.Location.Y)
                 return;
 
-            //Console.WriteLine("{0} {1} {2} {3}", rect.Left - 300, this.Location.X, rect.Top - 300, this.Location.Y);
-            //this.SetDesktopLocation(rect.Left - 300, rect.Top - 300);
             this.Location = new Point(rect.Left - 300, rect.Top - 300);
-            //this.Size = new System.Drawing.Size(rect.Right - rect.Left, rect.Bottom - rect.Top);
         }
 
         [DllImport("user32.dll", SetLastError = true)]
@@ -125,6 +120,10 @@ namespace Itchy
 
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool SetForegroundWindow(IntPtr hWnd);
 
         //[DllImport("user32.dll")]
         //[return: MarshalAs(UnmanagedType.Bool)]
@@ -432,6 +431,8 @@ namespace Itchy
         {
             settingsExpandButton.Expanded = false;
             settingsExpandButton_Click(sender, e);
+
+            SetForegroundWindow(game.Process.MainWindowHandle);
         }
 
         private void applyButton_Click(object sender, EventArgs e)
@@ -526,6 +527,8 @@ namespace Itchy
             }
             else
                 statsRefreshButton.Hide();
+
+            SetForegroundWindow(game.Process.MainWindowHandle);
         }
 
         private void settingsExpandButton_Click(object sender, EventArgs e)
@@ -534,6 +537,8 @@ namespace Itchy
                 settingsHolder.Size = new Size(620, 568);
             else
                 settingsHolder.Size = new Size(20, 20);
+
+            SetForegroundWindow(game.Process.MainWindowHandle);
         }
 
         protected void BuildStats()
@@ -654,11 +659,12 @@ namespace Itchy
         private void statsRefreshButton_Click(object sender, EventArgs e)
         {
             BuildStats();
+            SetForegroundWindow(game.Process.MainWindowHandle);
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void logExpandButton_Click(object sender, EventArgs e)
         {
-            game.Test();
+            SetForegroundWindow(game.Process.MainWindowHandle);
         }
     }
 }

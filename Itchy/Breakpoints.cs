@@ -202,7 +202,7 @@ namespace Itchy
                         Game.Settings.ReceivePacketHack.ItemTracker.EnablePickit)
                     {
                         if (packet[1] == 0 && packet[6] == 0x17)
-                            Game.Pickit.OnFullIntentory();
+                            Game.Pickit.Disable(PickitDisableReason.InventoryFull);
                     }
                     break;
                 }

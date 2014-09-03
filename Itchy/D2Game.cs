@@ -515,7 +515,7 @@ namespace Itchy
                     Settings.ReceivePacketHack.ItemTracker.EnablePickit)
                 {
                     if (pickit != null)
-                        pickit.Reset(true);
+                        pickit.ToggleEnabled();
                 }
             }
 

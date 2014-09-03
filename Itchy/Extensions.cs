@@ -89,6 +89,11 @@ namespace Itchy
             return (DateTime.Now.Ticks - date.Ticks) / TimeSpan.TicksPerMillisecond;
         }
 
+        public static bool Passed(this DateTime date)
+        {
+            return date <= DateTime.Now;
+        }
+
         public static Color GetColor(this ItemQuality quality)
         {
             switch (quality)

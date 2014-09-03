@@ -78,16 +78,16 @@ namespace Itchy
 
         public bool IsEth { get { return flags.HasFlag(ItemFlag.Ethereal); } }
 
-        public double DistanceSq(double x, double y)
+        public double Distance(double x, double y)
         {
-            return Math.Pow(this.x - x, 2) + Math.Pow(this.y - y, 2);
+            return Math.Sqrt(Math.Pow(this.x - x, 2) + Math.Pow(this.y - y, 2));
         }
 
         public ItemInfo info = null;
         public List<ItemProcessingInfo> processingInfo = null;
 
-        public DateTime pickDate;
         public uint pickTryCount = 0;
+        public DateTime dropTime = DateTime.Now;
     }
 
     public partial class D2Game
@@ -495,16 +495,14 @@ namespace Itchy
                 return;
 
             var uid = BitConverter.ToUInt32(data, 2);
-            Task.Factory.StartNew(() => pickit.RemoveItem(uid));
+            Task.Factory.StartNew(() => pickit.OnItemRemovedFromGround(uid));
             //Log("Removing uid {0} from pickit", uid);
         }
 
         public void OnRelocaton()
         {
-            if (pickit == null || pickit.fullInventory)
-                return;
-
-            pickit.ProcessPicks(true);
+            //if (pickit == null || pickit.fullInventory)
+            //    return;
         }
     }
 }

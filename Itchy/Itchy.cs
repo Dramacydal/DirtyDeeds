@@ -51,8 +51,8 @@ namespace Itchy
             UpdateTrayItemList();
 
             hookProc = new HookProc(HookCallback);
-            //keyHookId = SetKeyHook(hookProc);
-            //mouseHookId = SetMouseHook(hookProc);
+            keyHookId = SetKeyHook(hookProc);
+            mouseHookId = SetMouseHook(hookProc);
 
             ItemProcessingSettings = new ItemProcessingSettings(ItemConfigFileName);
             ItemProcessingSettings.Load();
@@ -160,8 +160,8 @@ namespace Itchy
 
         private void Itchy_FormClosing(object sender, FormClosingEventArgs e)
         {
-            //Hook.UnhookWindowsHookEx(keyHookId);
-            //Hook.UnhookWindowsHookEx(mouseHookId);
+            Hook.UnhookWindowsHookEx(keyHookId);
+            Hook.UnhookWindowsHookEx(mouseHookId);
 
             foreach (var g in games)
             {

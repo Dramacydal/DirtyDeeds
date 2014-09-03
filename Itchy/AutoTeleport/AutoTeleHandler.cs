@@ -388,7 +388,7 @@ namespace Itchy.AutoTeleport
 
                     using (var gameSuspender = new GameSuspender(game))
                     {
-                        if (!game.GameReady() || !game.CastSkillXY(SkillType.Teleport, (ushort)TPath[0].X, (ushort)TPath[0].Y))
+                        if (!game.GameReady() || !game.TeleportTo((ushort)TPath[0].X, (ushort)TPath[0].Y))
                         {
                             TPath.Clear();
                             game.LogWarning("Autotele: Failed to cast teleport.");

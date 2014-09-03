@@ -1,4 +1,4 @@
-﻿namespace Itchy.D2Api
+﻿namespace Itchy.D2Enums
 {
     //TODO: 2 unknowns left... are there imbue and craft / transmute action types ?
     public enum ItemActionType
