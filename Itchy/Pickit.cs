@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -11,6 +12,7 @@ using Itchy.D2Enums;
 namespace Itchy
 {
     using PickitDictionary = ConcurrentDictionary<uint, ItemActionInfo>;
+    using TeleHistory = List<Point>;
 
     public enum PickitDisableReason
     {
@@ -31,9 +33,8 @@ namespace Itchy
         protected Thread th = null;
         protected volatile bool needStop = false;
 
-        public volatile bool isDisabled = false;
-        protected ushort preTeleX = 0;
-        protected ushort preTeleY = 0;
+        protected volatile bool isDisabled = false;
+        protected TeleHistory teleHistory = new TeleHistory();
 
         public Pickit(D2Game game)
         {
@@ -52,8 +53,7 @@ namespace Itchy
 
         public void Reset()
         {
-            preTeleX = 0;
-            preTeleY = 0;
+            teleHistory.Clear();
 
             itemsToPick.Clear();
             isDisabled = false;
@@ -131,11 +131,15 @@ namespace Itchy
                 if (game.IsInTown())
                     return false;
 
+                game.RefreshUnitPosition();
+
+                if (Math.Sqrt(Math.Pow((double)game.CurrentX - x, 2) + Math.Pow((double)game.CurrentY- y, 2)) >= telePickupRadius)
+                    return false;
+
                 if (!game.TeleportTo(x, y))
                     return false;
 
-                preTeleX = game.CurrentX;
-                preTeleY = game.CurrentY;
+                teleHistory.Add(new Point(game.CurrentX, game.CurrentY));
             }
 
             return true;
@@ -143,10 +147,17 @@ namespace Itchy
 
         protected void TeleBack()
         {
-            if (!game.InGame)
-                throw new Exception("Out of game");
+            var idx = teleHistory.Count - 1;
+            var point = teleHistory[idx];
+            teleHistory.RemoveAt(idx);
 
-            if (preTeleX == 0 && preTeleY == 0)
+            if (!game.InGame)
+            {
+                teleHistory.Clear();
+                throw new Exception("Out of game");
+            }
+
+            if (point.IsEmpty)
                 return;
 
             using (var suspender = new GameSuspender(game))
@@ -154,17 +165,19 @@ namespace Itchy
                 if (!game.GameReady())
                     throw new Exception("Out of game");
 
+                game.RefreshUnitPosition();
+
+                if (Math.Sqrt(Math.Pow(point.X - game.CurrentX, 2) + Math.Pow(point.Y - game.CurrentY, 2)) >= telePickupRadius)
+                    return;
+
                 if (game.IsDead())
                 {
                     Disable(PickitDisableReason.Died);
                     throw new Exception("Player is dead");
                 }
 
-                game.TeleportTo(preTeleX, preTeleY);
+                game.TeleportTo((ushort)point.X, (ushort)point.Y);
             }
-
-            preTeleX = 0;
-            preTeleY = 0;
         }
 
         protected bool Pick(ItemActionInfo item, bool pick, bool telekinesis)
@@ -264,7 +277,7 @@ namespace Itchy
                                 continue;
                             }
                         }
-                        if (preTeleX == 0 && preTeleY == 0 && game.Settings.ReceivePacketHack.ItemTracker.EnableTelepick &&
+                        if (game.Settings.ReceivePacketHack.ItemTracker.EnableTelepick &&
                             item.processingInfo.Find(it => it.NoTele) == null &&
                             TelePick((ushort)item.x, (ushort)item.y))
                         {
@@ -275,7 +288,7 @@ namespace Itchy
 
                     if (game.Settings.ReceivePacketHack.ItemTracker.EnableTelepick &&
                         game.Settings.ReceivePacketHack.ItemTracker.TeleBack &&
-                        preTeleX != 0 && preTeleY != 0)
+                        teleHistory.Count != 0)
                     {
                         TeleBack();
                         Thread.Sleep(400);

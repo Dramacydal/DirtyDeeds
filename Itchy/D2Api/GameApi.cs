@@ -385,5 +385,29 @@ namespace Itchy
 
             return llGetUnitStat(pUnit, StatType.Health) == 0;
         }
+
+        public ushort GetUnitX(uint pUnit)
+        {
+            return (ushort)pd.Call(D2Client.GetUnitX,
+                CallingConventionEx.FastCall,
+                pUnit);
+        }
+
+        public ushort GetUnitY(uint pUnit)
+        {
+            return (ushort)pd.Call(D2Client.GetUnitY,
+                CallingConventionEx.FastCall,
+                pUnit);
+        }
+
+        public void RefreshUnitPosition()
+        {
+            var pUnit = GetPlayerUnit();
+            if (pUnit == 0)
+                return;
+
+            CurrentX = GetUnitX(pUnit);
+            CurrentY = GetUnitY(pUnit);
+        }
     }
 }

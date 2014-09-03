@@ -266,17 +266,7 @@ namespace Itchy
                 {
                     using (var suspender = new GameSuspender(this))
                     {
-                        var unit = pd.Read<UnitAny>(pPlayer);
-                        if (unit.pPath != 0)
-                        {
-                            var path = pd.Read<Path>(unit.pPath);
-                            if (path.xPos != CurrentX || path.yPos != CurrentY)
-                            {
-                                CurrentX = path.xPos;
-                                CurrentY = path.yPos;
-                                OnRelocaton();
-                            }
-                        }
+                        RefreshUnitPosition();
                     }
                 }
 

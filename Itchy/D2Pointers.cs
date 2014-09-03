@@ -65,6 +65,8 @@ namespace Itchy
         public static D2Client NewAutomapCell = new D2Client(0x703C0); // AutomapCell * __fastcall, (void)
         public static D2Client AddAutomapCell = new D2Client(0x71EA0); // void __fastcall, (AutomapCell *aCell, AutomapCell **node)
         public static D2Client TestPvpFlag_I = new D2Client(0x6A720);
+        public static D2Client GetUnitX = new D2Client(0x1210); // int __fastcall, (UnitAny* pUnit)
+        public static D2Client GetUnitY = new D2Client(0x1240); // int __fastcall, (UnitAny* pUnit)
     }
 
     public class D2Net : ModulePointer   // 0x6FBF0000
