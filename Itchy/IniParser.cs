@@ -35,7 +35,6 @@ namespace IniParser
 
         protected IniKeyDictionary keys = new IniKeyDictionary();
         protected string name;
-
     }
 
     public class IniReader

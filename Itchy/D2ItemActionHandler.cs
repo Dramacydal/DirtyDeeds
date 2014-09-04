@@ -391,89 +391,7 @@ namespace Itchy
                 || itemInfo.IsRune() && Settings.ReceivePacketHack.ItemTracker.LogRunes
                 || log && Settings.ReceivePacketHack.ItemTracker.LogItems)
             {
-                var message = "Dropped ";
-
-                var addsocks = false;
-                var addilvl = false;
-
-                var color = i.quality.GetColor();
-                switch (i.quality)
-                {
-                    case ItemQuality.Unique:
-                    {
-                        if (itemInfo.PossibleUniques.Count == 1)
-                            message += itemInfo.PossibleUniques[0];
-                        else if (itemInfo.IsBijou())
-                            message += itemInfo.Name;
-                        else
-                        {
-                            message += itemInfo.Name + " (";
-                            for (int j = 0; j < itemInfo.PossibleUniques.Count; ++j)
-                            {
-                                message += itemInfo.PossibleUniques[j];
-                                if (j != itemInfo.PossibleUniques.Count - 1)
-                                    message += ", ";
-                            }
-                            message += ")";
-                        }
-                        break;
-                    }
-                    case ItemQuality.Set:
-                    {
-                        if (itemInfo.PossibleSets.Count == 1)
-                            message += itemInfo.PossibleSets[0];
-                        else if (itemInfo.IsBijou())
-                            message += itemInfo.Name;
-                        else
-                        {
-                            message += itemInfo.Name + " (";
-                            for (int j = 0; j < itemInfo.PossibleSets.Count; ++j)
-                            {
-                                message += itemInfo.PossibleSets[j];
-                                if (j != itemInfo.PossibleSets.Count - 1)
-                                    message += ", ";
-                            }
-                            message += ")";
-                        }
-                        break;
-                    }
-                    case ItemQuality.Normal:
-                    {
-                        message += itemInfo.Name;
-                        if (itemInfo.IsRune())
-                        {
-                            color = Color.MediumPurple;
-                            message += " (" + itemInfo.RuneNumber().ToString() + ")";
-                        }
-                        else
-                        {
-                            addsocks = true;
-                            addilvl = true;
-                        }
-                        break;
-                    }
-                    case ItemQuality.Superior:
-                    {
-                        message += "Superior " + itemInfo.Name;
-                        addsocks = true;
-                        addilvl = true;
-                        break;
-                    }
-                    default:
-                    {
-                        message += itemInfo.Name;
-                        break;
-                    }
-                }
-
-                if (addsocks && i.sockets != 0)
-                    message += " (" + i.sockets.ToString() + ")";
-                if (addilvl && i.iLvl > 1)
-                    message += " (L" + i.iLvl.ToString() + ")";
-                if (i.IsEth)
-                    message += " (Eth)";
-
-                Log(color, message);
+                LogDrop(i);
             }
 
             if (pick)
@@ -483,6 +401,93 @@ namespace Itchy
             }
 
             return true;
+        }
+
+        protected void LogDrop(ItemActionInfo i)
+        {
+            var message = "Dropped ";
+
+            var addsocks = false;
+            var addilvl = false;
+
+            var color = i.quality.GetColor();
+            switch (i.quality)
+            {
+                case ItemQuality.Unique:
+                    {
+                        if (i.info.PossibleUniques.Count == 1)
+                            message += i.info.PossibleUniques[0];
+                        else if (i.info.IsBijou())
+                            message += i.info.Name;
+                        else
+                        {
+                            message += i.info.Name + " (";
+                            for (int j = 0; j < i.info.PossibleUniques.Count; ++j)
+                            {
+                                message += i.info.PossibleUniques[j];
+                                if (j != i.info.PossibleUniques.Count - 1)
+                                    message += ", ";
+                            }
+                            message += ")";
+                        }
+                        break;
+                    }
+                case ItemQuality.Set:
+                    {
+                        if (i.info.PossibleSets.Count == 1)
+                            message += i.info.PossibleSets[0];
+                        else if (i.info.IsBijou())
+                            message += i.info.Name;
+                        else
+                        {
+                            message += i.info.Name + " (";
+                            for (int j = 0; j < i.info.PossibleSets.Count; ++j)
+                            {
+                                message += i.info.PossibleSets[j];
+                                if (j != i.info.PossibleSets.Count - 1)
+                                    message += ", ";
+                            }
+                            message += ")";
+                        }
+                        break;
+                    }
+                case ItemQuality.Normal:
+                    {
+                        message += i.info.Name;
+                        if (i.info.IsRune())
+                        {
+                            color = Color.MediumPurple;
+                            message += " (" + i.info.RuneNumber().ToString() + ")";
+                        }
+                        else
+                        {
+                            addsocks = true;
+                            addilvl = true;
+                        }
+                        break;
+                    }
+                case ItemQuality.Superior:
+                    {
+                        message += "Superior " + i.info.Name;
+                        addsocks = true;
+                        addilvl = true;
+                        break;
+                    }
+                default:
+                    {
+                        message += i.info.Name;
+                        break;
+                    }
+            }
+
+            if (addsocks && i.sockets != 0)
+                message += " (" + i.sockets.ToString() + ")";
+            if (addilvl && i.iLvl > 1)
+                message += " (L" + i.iLvl.ToString() + ")";
+            if (i.IsEth)
+                message += " (Eth)";
+
+            Log(message, color);
         }
 
         public void ItemGoneHandler(byte[] data)

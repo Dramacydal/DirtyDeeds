@@ -64,9 +64,7 @@ namespace Itchy
         protected Thread syncThread = null;
         protected Thread gameCheckThread = null;
 
-        public D2Game()
-        {
-        }
+        public D2Game() { }
 
         public void Dispose()
         {
@@ -335,19 +333,19 @@ namespace Itchy
             pd.Call(pd.GetModuleAddress("kernel32.dll") + funcAddress - hModule, CallingConventionEx.StdCall, handle);
         }
 
-        public void Log(Color color, string message, params object[] args)
+        public void Log(string message, Color color, params object[] args)
         {
             this.overlay.logTextBox.LogLine(message, color, args);
         }
 
         public void Log(string message, params object[] args)
         {
-            Log(Color.Empty, message, args);
+            Log(message, Color.Empty, args);
         }
 
         public void LogWarning(string message, params object[] args)
         {
-            Log(Color.Red, message, args);
+            Log(message, Color.Red, args);
         }
 
         public void ExitedGame()
