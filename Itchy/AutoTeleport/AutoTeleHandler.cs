@@ -64,9 +64,16 @@ namespace Itchy.AutoTeleport
 
         public void ManageTele(TeleportInfo path)
         {
+            UnitAny player;
+            if (!game.GetPlayerUnit(out player))
+                return;
+
             Level lvl;
             if (!game.GetPlayerLevel(out lvl))
                 return;
+
+            if (!game.MapHandler.IsActRevealed(player.dwAct))
+                game.MapHandler.RevealAct();
 
             var p = path.Clone();
 
@@ -115,14 +122,14 @@ namespace Itchy.AutoTeleport
 
             if (p.Type == TeleportTargetType.Exit)
             {
-                var g_collisionMap = new CollisionMap(game);
-
-                if (!g_collisionMap.CreateMap(areas.ToArray()))
+                var g_collisionMap = game.MapHandler.LevelCollisions[areas[0]];
+                if (areas.Count == 2)
+                    g_collisionMap = g_collisionMap.Merge(game.MapHandler.LevelCollisions[areas[1]]);
+                if (!g_collisionMap.m_map.IsCreated())
                     return;
 
-                var ExitArray = new List<LevelExit>();
-                var ExitCount = g_collisionMap.GetLevelExits(ExitArray);
-                if (ExitCount == 0)
+                var ExitArray = game.MapHandler.LevelExits[areas[0]];
+                if (ExitArray.Count == 0)
                     return;
 
                 foreach (var exit in ExitArray)
@@ -280,11 +287,13 @@ namespace Itchy.AutoTeleport
 
         public int MakePath(int x, int y, List<byte> areas, bool MoveThrough)
         {
-            var g_collisionMap = new CollisionMap(game);
             uint dwCount = 0;
             var aPath = new Point[255];
 
-            if (!g_collisionMap.CreateMap(areas.ToArray()))
+            var g_collisionMap = game.MapHandler.LevelCollisions[areas[0]];
+            if (areas.Count == 2)
+                g_collisionMap = g_collisionMap.Merge(game.MapHandler.LevelCollisions[areas[1]]);
+            if (!g_collisionMap.m_map.IsCreated())
                 return 0;
 
             UnitAny unit;

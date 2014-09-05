@@ -10,7 +10,6 @@ using WhiteMagic;
 namespace Itchy.AutoTeleport
 {
     using WordMatrix = CMatrix<ushort>;
-    using LevelExitList = List<LevelExit>;
 
     public enum MapData
     {
@@ -38,118 +37,18 @@ namespace Itchy.AutoTeleport
 
     public class CollisionMap
     {
+        public Point LevelOrigin = new Point();
+
         protected D2Game game;
-        protected WordMatrix m_map;
-        protected Point m_ptLevelOrigin = new Point();
+        public WordMatrix m_map;
         protected uint dwLevelId = 0;
         //protected List<ushort> m_aCollisionTypes = new List<ushort>();
 
-        public CollisionMap(D2Game game)
+        public CollisionMap(D2Game game, uint dwLevelId = 0)
         {
             this.game = game;
+            this.dwLevelId = dwLevelId;
             m_map = new WordMatrix();
-        }
-
-        public bool CreateMap(byte[] areas)
-        {
-            return BuildMapData(areas);
-        }
-
-        protected bool BuildMapData(byte[] areas)
-        {
-            if (m_map.IsCreated())
-                return true;
-
-            var pUnit = game.GetPlayerUnit();
-            if (pUnit == 0)
-                return false;
-
-            var unit = game.Debugger.Read<UnitAny>(pUnit);
-
-            var pBestLevel = game.MapHandler.GetLevel(areas[0]);
-            var lvl = game.Debugger.Read<Level>(pBestLevel);
-            uint dwXSize = 0;
-            uint dwYSize = 0;
-            m_ptLevelOrigin.X = (int)(lvl.dwPosX * 5);
-            m_ptLevelOrigin.Y = (int)(lvl.dwPosY * 5);
-            dwLevelId = areas[0];
-
-            var lvls = new List<Level>();
-            foreach (var area in areas)
-            {
-                var pLevel = game.MapHandler.GetLevel(area);
-                if (pLevel == 0)
-                    continue;
-
-                lvl = game.Debugger.Read<Level>(pLevel);
-                lvls.Add(lvl);
-
-                if (m_ptLevelOrigin.X / 5 > (int)lvl.dwPosX)
-                    m_ptLevelOrigin.X = (int)(lvl.dwPosX * 5);
-                if (m_ptLevelOrigin.Y / 5 > (int)lvl.dwPosY)
-                    m_ptLevelOrigin.Y = (int)(lvl.dwPosY * 5);
-
-                dwXSize += lvl.dwSizeX * 5;
-                dwYSize += lvl.dwSizeY * 5;
-            }
-
-            if (!m_map.Create((int)dwXSize, (int)dwYSize, (ushort)MapData.Invalid))
-                return false;
-
-            foreach (var lvll in lvls)
-                Search(lvll.pRoom2First, unit, new List<uint>(), lvll.dwLevelNo);
-
-            FillGaps();
-            FillGaps();
-
-            return true;
-        }
-
-        protected void Search(uint ro, UnitAny player, List<uint> aSkip, uint scanArea)
-        {
-            if (ro == 0)
-                return;
-
-            if (aSkip.Contains(ro))
-                return;
-
-            var room = game.Debugger.Read<Room2>(ro);
-            if (room.pLevel == 0)
-                return;
-
-            var lvl = game.Debugger.Read<Level>(room.pLevel);
-            if (lvl.dwLevelNo != scanArea)
-                return;
-
-            var add_room = false;
-            var path = game.Debugger.Read<Path>(player.pPath);
-            if (room.pRoom1 == 0)
-            {
-                add_room
-                    = true;
-                game.Debugger.Call(D2Common.AddRoomData,
-                    CallingConventionEx.ThisCall,
-                    0, player.pAct, lvl.dwLevelNo, room.dwPosX, room.dwPosY, path.pRoom1);
-            }
-
-            aSkip.Add(ro);
-
-            room = game.Debugger.Read<Room2>(ro);
-
-            if (room.pRoom1 != 0)
-            {
-                var room1 = game.Debugger.Read<Room1>(room.pRoom1);
-                AddCollisionData(room1.Coll);
-            }
-
-            var roomsNear = game.Debugger.ReadArray<uint>(room.pRoom2Near, (int)room.dwRoomsNear);
-            foreach (var room2 in roomsNear)
-                Search(room2, player, aSkip, scanArea);
-
-            if (add_room)
-                game.Debugger.Call(D2Common.RemoveRoomData,
-                CallingConventionEx.StdCall,
-                player.pAct, lvl.dwLevelNo, room.dwPosX, room.dwPosY, path.pRoom1);
         }
 
         public void AddCollisionData(uint pColl)
@@ -159,8 +58,8 @@ namespace Itchy.AutoTeleport
 
             var coll = game.Debugger.Read<CollMap>(pColl);
 
-            var x = (int)coll.dwPosGameX - m_ptLevelOrigin.X;
-            var y = (int)coll.dwPosGameY - m_ptLevelOrigin.Y;
+            var x = (int)coll.dwPosGameX - LevelOrigin.X;
+            var y = (int)coll.dwPosGameY - LevelOrigin.Y;
             var cx = (int)coll.dwSizeGameX;
             var cy = (int)coll.dwSizeGameY;
 
@@ -188,7 +87,7 @@ namespace Itchy.AutoTeleport
             }
         }
 
-        protected void FillGaps()
+        public void FillGaps()
         {
             if (!m_map.IsCreated())
                 return;
@@ -242,10 +141,9 @@ namespace Itchy.AutoTeleport
 
             return nSpaces < 3;
         }
-        uint GetTileLevelNo(uint pRoom2, uint dwTileNo)
-        {
-            var room2 = game.Debugger.Read<Room2>(pRoom2);
 
+        public static uint GetTileLevelNo(D2Game game, Room2 room2, uint dwTileNo)
+        {
             for (var pRoomTile = room2.pRoomTiles; pRoomTile != 0; )
             {
                 var roomTile = game.Debugger.Read<RoomTile>(pRoomTile);
@@ -262,16 +160,10 @@ namespace Itchy.AutoTeleport
             return 0;
         }
 
-        public int GetLevelExits(LevelExitList lpLevel)
+        public List<Point> GetPtCenters()
         {
-            UnitAny Me;
-            if (!game.GetPlayerUnit(out Me))
-                return 0;
-
             var ptExitPoints = new Point[0x40, 2];
             int nTotalPoints = 0;
-            int nCurrentExit = 0;
-            int nMaxExits = 0x40;
 
             for (var i = 0; i < m_map.CX; ++i)
             {
@@ -361,7 +253,7 @@ namespace Itchy.AutoTeleport
                 }
             }
 
-            var ptCenters = new Point[nTotalPoints];
+            var ptCenters = new List<Point>();
             for (var i = 0; i < nTotalPoints; ++i)
             {
                 int nXDiff = ptExitPoints[i, 1].X - ptExitPoints[i, 0].X;
@@ -384,122 +276,10 @@ namespace Itchy.AutoTeleport
                         nYCenter = ptExitPoints[i, 0].Y + (nYDiff / 2);
                 }
 
-                ptCenters[i].X = nXCenter != 0 ? nXCenter : ptExitPoints[i, 0].X;
-                ptCenters[i].Y = nYCenter != 0 ? nYCenter : ptExitPoints[i, 0].Y;
+                ptCenters.Add(new Point(nXCenter != 0 ? nXCenter : ptExitPoints[i, 0].X, nYCenter != 0 ? nYCenter : ptExitPoints[i, 0].Y));
             }
 
-            var pLevel = game.MapHandler.GetLevel(dwLevelId);
-            var level = game.Debugger.Read<Level>(pLevel);
-
-            for (var pRoom = level.pRoom2First; pRoom != 0; )
-            {
-                var room = game.Debugger.Read<Room2>(pRoom);
-                var roomsNear = game.Debugger.ReadArray<uint>(room.pRoom2Near, (int)room.dwRoomsNear);
-                foreach (var pr in roomsNear)
-                {
-                    var r = game.Debugger.Read<Room2>(pr);
-                    var lvl = game.Debugger.Read<Level>(r.pLevel);
-                    if (lvl.dwLevelNo != dwLevelId)
-                    {
-                        int nRoomX = (int)room.dwPosX * 5;
-                        int nRoomY = (int)room.dwPosY * 5;
-
-                        for (int j = 0; j < nTotalPoints; ++j)
-                        {
-                            if ((ptCenters[j].X + m_ptLevelOrigin.X) >= (short)nRoomX && (ptCenters[j].X + m_ptLevelOrigin.X) <= (short)(nRoomX + (room.dwSizeX * 5)))
-                            {
-                                if ((ptCenters[j].Y + m_ptLevelOrigin.Y) >= (short)nRoomY && (ptCenters[j].Y + m_ptLevelOrigin.Y) <= (short)(nRoomY + (room.dwSizeY * 5)))
-                                {
-                                    if (nCurrentExit >= nMaxExits)
-                                        return 0;
-
-                                    var exit = new LevelExit
-                                    {
-                                        dwTargetLevel = lvl.dwLevelNo,
-                                        ptPos = new Point(ptCenters[j].X + m_ptLevelOrigin.X, ptCenters[j].Y + m_ptLevelOrigin.Y),
-                                        dwType = (uint)ExitType.Level,
-                                        dwId = 0,
-                                        pRoom2 = 0,
-                                    };
-
-                                    lpLevel.Add(exit);
-                                    ++nCurrentExit;
-                                }
-                            }
-                        }
-
-                        break;
-                    }
-                }
-
-                var bAdded = false;
-                var path = game.Debugger.Read<Path>(Me.pPath);
-                if (room.pRoom1 == 0)
-                {
-                    game.Debugger.Call(D2Common.AddRoomData,
-                        CallingConventionEx.ThisCall,
-                        0, Me.pAct, level.dwLevelNo, room.dwPosX, room.dwPosY, path.pRoom1);
-                    bAdded = true;
-                }
-
-                for (var pUnit = room.pPreset; pUnit != 0; )
-                {
-                    var preset = game.Debugger.Read<PresetUnit>(pUnit);
-
-                    if (nCurrentExit >= nMaxExits)
-                    {
-                        if (bAdded)
-                        {
-                            game.Debugger.Call(D2Common.RemoveRoomData,
-                                CallingConventionEx.StdCall,
-                                Me.pAct, level.dwLevelNo, room.dwPosX, room.dwPosY, path.pRoom1);
-                            return 0;
-                        }
-                    }
-
-                    if (preset.dwType == (uint)UnitType.Tile)
-                    {
-                        var dwTargetLevel = GetTileLevelNo(pRoom, preset.dwTxtFileNo);
-
-                        if (dwTargetLevel != 0)
-                        {
-                            var bExists = false;
-
-                            for (var i = 0; i < nCurrentExit; ++i)
-                            {
-                                if (((uint)lpLevel[i].ptPos.X == (room.dwPosX * 5) + preset.dwPosX) &&
-                                    ((uint)lpLevel[i].ptPos.Y == (room.dwPosY * 5) + preset.dwPosY))
-                                    bExists = true;
-                            }
-
-                            if (!bExists)
-                            {
-                                var exit = new LevelExit
-                                {
-                                    dwTargetLevel = dwTargetLevel,
-                                    ptPos = new Point((int)((room.dwPosX * 5) + preset.dwPosX), (int)((room.dwPosY * 5) + preset.dwPosY)),
-                                    dwType = (uint)ExitType.Tile,
-                                    dwId = preset.dwTxtFileNo,
-                                    pRoom2 = pRoom
-                                };
-                                lpLevel.Add(exit);
-                                ++nCurrentExit;
-                            }
-                        }
-                    }
-
-                    pUnit = preset.pPresetNext;
-                }
-
-                if (bAdded)
-                    game.Debugger.Call(D2Common.RemoveRoomData,
-                        CallingConventionEx.StdCall,
-                        Me.pAct, level.dwLevelNo, room.dwPosX, room.dwPosY, path.pRoom1);
-
-                pRoom = room.pRoom2Next;
-            }
-
-            return nCurrentExit;
+            return ptCenters;
         }
 
         public bool IsValidAbsLocation(int x, int y)
@@ -507,28 +287,66 @@ namespace Itchy.AutoTeleport
             if (!m_map.IsCreated())
                 return false;
 
-            x -= m_ptLevelOrigin.X;
-            y -= m_ptLevelOrigin.Y;
+            x -= LevelOrigin.X;
+            y -= LevelOrigin.Y;
 
             return m_map.IsValidIndex(x, y);
         }
 
         public void AbsToRelative(ref Point pt)
         {
-            pt.X -= m_ptLevelOrigin.X;
-            pt.Y -= m_ptLevelOrigin.Y;
+            pt.X -= LevelOrigin.X;
+            pt.Y -= LevelOrigin.Y;
         }
 
         public void RelativeToAbs(ref Point pt)
         {
-            pt.X += m_ptLevelOrigin.X;
-            pt.Y += m_ptLevelOrigin.Y;
+            pt.X += LevelOrigin.X;
+            pt.Y += LevelOrigin.Y;
         }
 
         public bool CopyMapData(WordMatrix rBuffer)
         {
             m_map.ExportData(rBuffer);
             return rBuffer.IsCreated();
+        }
+
+        public CollisionMap Merge(CollisionMap other)
+        {
+            var newMap = new CollisionMap(game, dwLevelId);
+
+            var newOrigin = LevelOrigin.Clone();
+            if (other.LevelOrigin.X < newOrigin.X)
+                newOrigin.X = other.LevelOrigin.X;
+            if (other.LevelOrigin.Y < newOrigin.Y)
+                newOrigin.Y = other.LevelOrigin.Y;
+
+            var cX = 0;
+            var cY = 0;
+
+            if (newOrigin.X == LevelOrigin.X)
+                cX = other.LevelOrigin.X - newOrigin.X + other.m_map.CX;
+            else
+                cX = LevelOrigin.X - newOrigin.X + m_map.CX;
+
+            if (newOrigin.Y == LevelOrigin.Y)
+                cY = other.LevelOrigin.Y - newOrigin.Y + other.m_map.CY;
+            else
+                cY = LevelOrigin.Y - newOrigin.Y + m_map.CY;
+
+            if (!newMap.m_map.Create(cX, cY, (ushort)MapData.Invalid))
+                return new CollisionMap(game);
+
+            newMap.LevelOrigin = newOrigin;
+            for (var i = 0; i < m_map.CX; ++i)
+                for (var j = 0; j < m_map.CY; ++j)
+                    newMap.m_map[LevelOrigin.X - newOrigin.X + i][LevelOrigin.Y - newOrigin.Y + j] = m_map[i][j];
+
+            for (var i = 0; i < other.m_map.CX; ++i)
+                for (var j = 0; j < other.m_map.CY; ++j)
+                    newMap.m_map[other.LevelOrigin.X - newOrigin.X + i][other.LevelOrigin.Y - newOrigin.Y + j] = other.m_map[i][j];
+
+            return newMap;
         }
     }
 }

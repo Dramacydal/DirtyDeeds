@@ -1,32 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Itchy.AutoTeleport;
 using Itchy.D2Enums;
 using WhiteMagic;
 
 namespace Itchy
 {
+    using CollisionDictionary = ConcurrentDictionary<uint, CollisionMap>;
+    using LevelExitsDictionary = ConcurrentDictionary<uint, List<LevelExit>>;
+
     public class MapHandler
     {
+        public CollisionDictionary LevelCollisions { get { return levelCollisions; } }
+        public LevelExitsDictionary LevelExits { get { return levelExits; } }
+
         protected D2Game game;
         protected List<uint> revealedActs = new List<uint>();
+        protected CollisionDictionary levelCollisions = new CollisionDictionary();
+        protected LevelExitsDictionary levelExits = new LevelExitsDictionary();
+
+        protected static uint[] m_ActLevels = new uint[]
+        {
+            1, 40, 75, 103, 109, 137
+        };
 
         public MapHandler(D2Game game)
         {
             this.game = game;
         }
 
-        protected int[] m_ActLevels = new int[]
-        {
-            1, 40, 75, 103, 109, 137
-        };
+        public bool IsActRevealed(uint actNo) { return revealedActs.Contains(actNo); }
 
         public void Reset()
         {
             revealedActs.Clear();
+            levelCollisions.Clear();
         }
 
         public uint GetLevel(uint dwLevel)
@@ -57,6 +70,13 @@ namespace Itchy
                 act.pMisc, dwLevel);
 
             return pLevel;
+        }
+
+        protected void InitLevel(uint pLevel)
+        {
+            game.Debugger.Call(D2Common.InitLevel,
+                CallingConventionEx.StdCall,
+                pLevel);
         }
 
         public void RevealAct()
@@ -118,21 +138,25 @@ namespace Itchy
 
             for (var i = m_ActLevels[unit.dwAct]; i < m_ActLevels[unit.dwAct + 1]; ++i)
             {
-                var pLevel = GetLevel((uint)i);
+                var pLevel = GetLevel(i);
                 if (pLevel == 0)
                     continue;
 
-                var lvl = game.Debugger.Read<Level>(pLevel);
-                if (lvl.pRoom2First == 0)
-                    game.Debugger.Call(D2Common.InitLevel,
-                    CallingConventionEx.StdCall,
-                    pLevel);
+                var collisionMap = new CollisionMap(game, i);
 
+                var lvl = game.Debugger.Read<Level>(pLevel);
                 if (lvl.dwLevelNo > 255)
                     continue;
 
+                if (lvl.pRoom2First == 0)
+                    InitLevel(pLevel);
+
                 InitLayer(lvl.dwLevelNo);
                 lvl = game.Debugger.Read<Level>(pLevel);
+
+                collisionMap.LevelOrigin.X = (int)(lvl.dwPosX * 5);
+                collisionMap.LevelOrigin.Y = (int)(lvl.dwPosY * 5);
+                var collisionOk = collisionMap.m_map.Create((int)lvl.dwSizeX * 5, (int)lvl.dwSizeY * 5, (ushort)MapData.Invalid);
 
                 for (var pRoom = lvl.pRoom2First; pRoom != 0; )
                 {
@@ -150,7 +174,10 @@ namespace Itchy
 
                     room = game.Debugger.Read<Room2>(pRoom);
                     if (room.pRoom1 == 0)
+                    {
+                        pRoom = room.pRoom2Next;
                         continue;
+                    }
 
                     var pAutomapLayer = game.Debugger.ReadUInt(D2Client.pAutoMapLayer);
 
@@ -160,7 +187,17 @@ namespace Itchy
                         1,
                         pAutomapLayer);
 
-                    DrawPresets(room, lvl);
+                    if (collisionOk)
+                    {
+                        var l = game.Debugger.Read<Level>(room.pLevel);
+                        if (l.dwLevelNo == i)
+                        {
+                            var r = game.Debugger.Read<Room1>(room.pRoom1);
+                            collisionMap.AddCollisionData(r.Coll);
+                        }
+                    }
+
+                    LoopPresets(pRoom, room, lvl);
 
                     if (roomData)
                         game.Debugger.Call(D2Common.RemoveRoomData,
@@ -169,6 +206,12 @@ namespace Itchy
 
                     pRoom = room.pRoom2Next;
                 }
+
+                if (collisionOk)
+                    collisionMap.FillGaps();
+
+                FillLevelExits(lvl, collisionMap);
+                levelCollisions.Add(lvl.dwLevelNo, collisionMap);
             }
 
             var path = game.Debugger.Read<Path>(unit.pPath);
@@ -187,90 +230,162 @@ namespace Itchy
             game.Log("Revealed act {0}", unit.dwAct + 1);
         }
 
-        protected void DrawPresets(Room2 room, Level lvl)
+        protected void DrawPreset(Room2 room, Level lvl, PresetUnit preset)
+        {
+            var cellNo = -1;
+            // Special NPC Check
+            if (preset.dwType == 1)
+            {
+                // Izual
+                if (preset.dwTxtFileNo == 256)
+                    cellNo = 300;
+                // Hephasto
+                else if (preset.dwTxtFileNo == 402)
+                    cellNo = 745;
+            }
+            else if (preset.dwType == 2)
+            {
+                switch (preset.dwTxtFileNo)
+                {
+                    case 580:   // Uber Chest in Lower Kurast
+                        if (lvl.dwLevelNo == 79)
+                            cellNo = 9;
+                        break;
+                    case 371:   // Countess Chest
+                        cellNo = 301;
+                        break;
+                    case 152:   // Act 2 Orifice
+                        cellNo = 300;
+                        break;
+                    case 460:   // Frozen Anya
+                        cellNo = 1468;
+                        break;
+                    case 402:   // Canyon / Arcane Waypoint
+                        if (lvl.dwLevelNo == 46)
+                            cellNo = 0;
+                        break;
+                    case 376:   // Hell Forge
+                        cellNo = 376;
+                        break;
+                    default:
+                        break;
+                }
+
+                if (cellNo == -1 && preset.dwTxtFileNo <= 572)
+                {
+                    var pTxt = game.Debugger.Call(D2Common.GetObjectTxt,
+                        CallingConventionEx.StdCall,
+                        preset.dwTxtFileNo);
+                    if (pTxt != 0)
+                    {
+                        var txt = game.Debugger.Read<ObjectTxt>(pTxt);
+                        cellNo = (int)txt.nAutoMap;
+                    }
+                }
+            }
+
+            if (cellNo > 0/* && cellNo < 1258*/)
+            {
+                var pCell = game.Debugger.Call(D2Client.NewAutomapCell,
+                    CallingConventionEx.FastCall);
+
+                var cell = game.Debugger.Read<AutomapCell>(pCell);
+
+                var x = preset.dwPosX + room.dwPosX * 5;
+                var y = preset.dwPosY + room.dwPosY * 5;
+
+                cell.nCellNo = (ushort)cellNo;
+                cell.xPixel = (ushort)(((short)x - (short)y) * 1.6 + 1);
+                cell.yPixel = (ushort)((y + x) * 0.8 - 3);
+
+                game.Debugger.Write<AutomapCell>(pCell, cell);
+
+                var pAutomapLayer = game.Debugger.ReadUInt(D2Client.pAutoMapLayer);
+                game.Debugger.Call(D2Client.AddAutomapCell,
+                    CallingConventionEx.FastCall,
+                    pCell,
+                    pAutomapLayer + 0x10);  // &((*p_D2CLIENT_AutomapLayer)->pObjects)
+            }
+        }
+
+        protected void LoopPresets(uint pRoom, Room2 room, Level lvl)
         {
             for (var pPreset = room.pPreset; pPreset != 0; )
             {
                 var preset = game.Debugger.Read<PresetUnit>(pPreset);
 
-                var cellNo = -1;
-                // Special NPC Check
-                if (preset.dwType == 1)
+                var tileLevelNo = CollisionMap.GetTileLevelNo(game, room, preset.dwTxtFileNo);
+                if (tileLevelNo != 0)
                 {
-                    // Izual
-                    if (preset.dwTxtFileNo == 256)
-                        cellNo = 300;
-                    // Hephasto
-                    else if (preset.dwTxtFileNo == 402)
-                        cellNo = 745;
-                }
-                else if (preset.dwType == 2)
-                {
-                    switch (preset.dwTxtFileNo)
+                    var exit = new LevelExit
                     {
-                        case 580:   // Uber Chest in Lower Kurast
-                            if (lvl.dwLevelNo == 79)
-                                cellNo = 9;
-                            break;
-                        case 371:   // Countess Chest
-                            cellNo = 301;
-                            break;
-                        case 152:   // Act 2 Orifice
-                            cellNo = 300;
-                            break;
-                        case 460:   // Frozen Anya
-                            cellNo = 1468;
-                            break;
-                        case 402:   // Canyon / Arcane Waypoint
-                            if (lvl.dwLevelNo == 46)
-                                cellNo = 0;
-                            break;
-                        case 376:   // Hell Forge
-                            cellNo = 376;
-                            break;
-                        default:
-                            break;
-                    }
+                        dwTargetLevel = tileLevelNo,
+                        ptPos = new Point((int)((room.dwPosX * 5) + preset.dwPosX), (int)((room.dwPosY * 5) + preset.dwPosY)),
+                        dwType = (uint)ExitType.Tile,
+                        dwId = preset.dwTxtFileNo,
+                        pRoom2 = pRoom
+                    };
 
-                    if (cellNo == -1 && preset.dwTxtFileNo <= 572)
-                    {
-                        var pTxt = game.Debugger.Call(D2Common.GetObjectTxt,
-                            CallingConventionEx.StdCall,
-                            preset.dwTxtFileNo);
-                        if (pTxt != 0)
-                        {
-                            var txt = game.Debugger.Read<ObjectTxt>(pTxt);
-                            cellNo = (int)txt.nAutoMap;
-                        }
-                    }
+                    if (!levelExits.ContainsKey(lvl.dwLevelNo))
+                        levelExits.Add(lvl.dwLevelNo, new List<LevelExit>());
+
+                    levelExits[lvl.dwLevelNo].Add(exit);
                 }
 
-                if (cellNo > 0/* && cellNo < 1258*/)
-                {
-                    var pCell = game.Debugger.Call(D2Client.NewAutomapCell,
-                        CallingConventionEx.FastCall);
-
-                    var cell = game.Debugger.Read<AutomapCell>(pCell);
-
-                    var x = preset.dwPosX + room.dwPosX * 5;
-                    var y = preset.dwPosY + room.dwPosY * 5;
-
-                    cell.nCellNo = (ushort)cellNo;
-                    cell.xPixel = (ushort)(((short)x - (short)y) * 1.6 + 1);
-                    cell.yPixel = (ushort)((y + x) * 0.8 - 3);
-
-                    game.Debugger.Write<AutomapCell>(pCell, cell);
-
-                    var pAutomapLayer = game.Debugger.ReadUInt(D2Client.pAutoMapLayer);
-                    game.Debugger.Call(D2Client.AddAutomapCell,
-                        CallingConventionEx.FastCall,
-                        pCell,
-                        pAutomapLayer + 0x10);  // &((*p_D2CLIENT_AutomapLayer)->pObjects)
-                }
+                DrawPreset(room, lvl, preset);
 
                 pPreset = preset.pPresetNext;
             }
         }
+
+        protected void FillLevelExits(Level level, CollisionMap cmap)
+        {
+            var ptCenters = cmap.GetPtCenters();
+
+            for (var pRoom = level.pRoom2First; pRoom != 0; )
+            {
+                var room = game.Debugger.Read<Room2>(pRoom);
+                var roomsNear = game.Debugger.ReadArray<uint>(room.pRoom2Near, (int)room.dwRoomsNear);
+                foreach (var pr in roomsNear)
+                {
+                    var r = game.Debugger.Read<Room2>(pr);
+                    var lvl = game.Debugger.Read<Level>(r.pLevel);
+                    if (lvl.dwLevelNo != level.dwLevelNo)
+                    {
+                        int nRoomX = (int)room.dwPosX * 5;
+                        int nRoomY = (int)room.dwPosY * 5;
+
+                        foreach (var ptCenter in ptCenters)
+                        {
+                            if ((ptCenter.X + cmap.LevelOrigin.X) >= (short)nRoomX && (ptCenter.X + cmap.LevelOrigin.X) <= (short)(nRoomX + (room.dwSizeX * 5)))
+                            {
+                                if ((ptCenter.Y + cmap.LevelOrigin.Y) >= (short)nRoomY && (ptCenter.Y + cmap.LevelOrigin.Y) <= (short)(nRoomY + (room.dwSizeY * 5)))
+                                {
+                                    var exit = new LevelExit
+                                    {
+                                        dwTargetLevel = lvl.dwLevelNo,
+                                        ptPos = new Point(ptCenter.X + cmap.LevelOrigin.X, ptCenter.Y + cmap.LevelOrigin.Y),
+                                        dwType = (uint)ExitType.Level,
+                                        dwId = 0,
+                                        pRoom2 = 0,
+                                    };
+
+                                    if (!levelExits.ContainsKey(level.dwLevelNo))
+                                        levelExits.Add(level.dwLevelNo, new List<LevelExit>());
+
+                                    levelExits[level.dwLevelNo].Add(exit);
+                                }
+                            }
+                        }
+
+                        break;
+                    }
+                }
+
+                pRoom = room.pRoom2Next;
+            }
+        }
+
         protected void InitLayer(uint levelNo)
         {
             var pLayer = game.Debugger.Call(D2Common.GetLayer,
