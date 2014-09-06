@@ -241,7 +241,8 @@ namespace Itchy
                     !game.Settings.ReceivePacketHack.Enabled ||
                     !game.Settings.ReceivePacketHack.ItemTracker.Enabled ||
                     !game.Settings.ReceivePacketHack.ItemTracker.EnablePickit ||
-                    isDisabled)
+                    isDisabled ||
+                    game.AutoTeleport.IsTeleporting)
                     continue;
 
                 try

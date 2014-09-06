@@ -41,13 +41,11 @@ namespace Itchy.AutoTeleport
 
         protected D2Game game;
         public WordMatrix m_map;
-        protected uint dwLevelId = 0;
         //protected List<ushort> m_aCollisionTypes = new List<ushort>();
 
-        public CollisionMap(D2Game game, uint dwLevelId = 0)
+        public CollisionMap(D2Game game)
         {
             this.game = game;
-            this.dwLevelId = dwLevelId;
             m_map = new WordMatrix();
         }
 
@@ -313,7 +311,7 @@ namespace Itchy.AutoTeleport
 
         public CollisionMap Merge(CollisionMap other)
         {
-            var newMap = new CollisionMap(game, dwLevelId);
+            var newMap = new CollisionMap(game);
 
             var newOrigin = LevelOrigin.Clone();
             if (other.LevelOrigin.X < newOrigin.X)

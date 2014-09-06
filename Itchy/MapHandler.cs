@@ -16,13 +16,11 @@ namespace Itchy
 
     public class MapHandler
     {
-        public CollisionDictionary LevelCollisions { get { return levelCollisions; } }
-        public LevelExitsDictionary LevelExits { get { return levelExits; } }
-
         protected D2Game game;
-        protected List<uint> revealedActs = new List<uint>();
-        protected CollisionDictionary levelCollisions = new CollisionDictionary();
-        protected LevelExitsDictionary levelExits = new LevelExitsDictionary();
+        protected volatile List<uint> revealedActs = new List<uint>();
+        protected volatile List<uint> revealedLevels = new List<uint>();
+        protected volatile CollisionDictionary levelCollisions = new CollisionDictionary();
+        protected volatile LevelExitsDictionary levelExits = new LevelExitsDictionary();
 
         protected static uint[] m_ActLevels = new uint[]
         {
@@ -34,11 +32,11 @@ namespace Itchy
             this.game = game;
         }
 
-        public bool IsActRevealed(uint actNo) { return revealedActs.Contains(actNo); }
-
         public void Reset()
         {
             revealedActs.Clear();
+            revealedLevels.Clear();
+            levelExits.Clear();
             levelCollisions.Clear();
         }
 
@@ -79,6 +77,140 @@ namespace Itchy
                 pLevel);
         }
 
+        public void RevealLevel(uint dwLevelId)
+        {
+            UnitAny unit;
+            if (!game.GetPlayerUnit(out unit))
+                return;
+
+            var pAct = LoadAct(unit);
+            if (pAct == 0)
+                return;
+
+            _RevealLevel(dwLevelId, true);
+
+            UnloadAct(pAct, unit);
+        }
+
+        protected void _RevealLevel(uint dwLevelId, bool buildCollisions)
+        {
+            var pLevel = GetLevel(dwLevelId);
+            if (pLevel == 0)
+                return;
+
+            var collisionMap = buildCollisions ? new CollisionMap(game) : null;
+
+            var lvl = game.Debugger.Read<Level>(pLevel);
+            if (lvl.dwLevelNo > 255)
+                return;
+
+            if (lvl.pRoom2First == 0)
+                InitLevel(pLevel);
+
+            InitLayer(lvl.dwLevelNo);
+            lvl = game.Debugger.Read<Level>(pLevel);
+
+            if (collisionMap != null)
+            {
+                collisionMap.LevelOrigin.X = (int)(lvl.dwPosX * 5);
+                collisionMap.LevelOrigin.Y = (int)(lvl.dwPosY * 5);
+                if (!collisionMap.m_map.Create((int)lvl.dwSizeX * 5, (int)lvl.dwSizeY * 5, (ushort)MapData.Invalid))
+                    collisionMap = null;
+            }
+
+            for (var pRoom = lvl.pRoom2First; pRoom != 0; )
+            {
+                var room = game.Debugger.Read<Room2>(pRoom);
+
+                var actMisc2 = game.Debugger.Read<ActMisc>(lvl.pMisc);
+                var roomData = false;
+                if (room.pRoom1 == 0)
+                {
+                    roomData = true;
+                    game.Debugger.Call(D2Common.AddRoomData,
+                        CallingConventionEx.ThisCall,
+                        0, actMisc2.pAct, lvl.dwLevelNo, room.dwPosX, room.dwPosY, room.pRoom1);
+                }
+
+                room = game.Debugger.Read<Room2>(pRoom);
+                if (room.pRoom1 == 0)
+                {
+                    pRoom = room.pRoom2Next;
+                    continue;
+                }
+
+                var pAutomapLayer = game.Debugger.ReadUInt(D2Client.pAutoMapLayer);
+
+                game.Debugger.Call(D2Client.RevealAutomapRoom,
+                    CallingConventionEx.StdCall,
+                    room.pRoom1,
+                    1,
+                    pAutomapLayer);
+
+                if (collisionMap != null)
+                {
+                    var l = game.Debugger.Read<Level>(room.pLevel);
+                    if (l.dwLevelNo == dwLevelId)
+                    {
+                        var r = game.Debugger.Read<Room1>(room.pRoom1);
+                        collisionMap.AddCollisionData(r.Coll);
+                    }
+                }
+
+                LoopPresets(pRoom, room, lvl);
+
+                if (roomData)
+                    game.Debugger.Call(D2Common.RemoveRoomData,
+                        CallingConventionEx.StdCall,
+                        actMisc2.pAct, lvl.dwLevelNo, room.dwPosX, room.dwPosY, room.pRoom1);
+
+                pRoom = room.pRoom2Next;
+            }
+
+            if (collisionMap != null)
+            {
+                collisionMap.FillGaps();
+
+                FillLevelExits(lvl, collisionMap);
+                levelCollisions.Add(lvl.dwLevelNo, collisionMap);
+            }
+
+            if (!revealedLevels.Contains(lvl.dwLevelNo))
+                revealedLevels.Add(lvl.dwLevelNo);
+        }
+
+        protected uint LoadAct(UnitAny player)
+        {
+            var act = game.Debugger.Read<Act>(player.pAct);
+            var expCharFlag = game.Debugger.ReadUInt(D2Client.pExpCharFlag);
+            var diff = game.Debugger.ReadByte(D2Client.pDifficulty);
+
+            return game.Debugger.Call(D2Common.LoadAct,
+                CallingConventionEx.StdCall,
+                player.dwAct,
+                act.dwMapSeed,
+                expCharFlag,
+                0,
+                diff,
+                0,
+                (uint)m_ActLevels[player.dwAct],
+                game.Debugger.GetAddress(D2Client.LoadAct_1),
+                game.Debugger.GetAddress(D2Client.LoadAct_2));
+        }
+
+        protected void UnloadAct(uint pAct, UnitAny player)
+        {
+            var path = game.Debugger.Read<Path>(player.pPath);
+            var room1 = game.Debugger.Read<Room1>(path.pRoom1);
+            var room2 = game.Debugger.Read<Room2>(room1.pRoom2);
+            var lev = game.Debugger.Read<Level>(room2.pLevel);
+
+            InitLayer(lev.dwLevelNo);
+            game.Debugger.Call(D2Common.UnloadAct,
+                CallingConventionEx.StdCall,
+                pAct);
+        }
+
         public void RevealAct()
         {
             UnitAny unit;
@@ -100,29 +232,14 @@ namespace Itchy
                 return;
             }
 
-            var act = game.Debugger.Read<Act>(unit.pAct);
-            var expCharFlag = game.Debugger.ReadUInt(D2Client.pExpCharFlag);
-            var diff = game.Debugger.ReadByte(D2Client.pDifficulty);
-
-            var pAct = game.Debugger.Call(D2Common.LoadAct,
-                CallingConventionEx.StdCall,
-                unit.dwAct,
-                act.dwMapSeed,
-                expCharFlag,
-                0,
-                diff,
-                0,
-                (uint)m_ActLevels[unit.dwAct],
-                game.Debugger.GetAddress(D2Client.LoadAct_1),
-                game.Debugger.GetAddress(D2Client.LoadAct_2));
-
+            var pAct = LoadAct(unit);
             if (pAct == 0)
             {
                 game.Log("Failed to reveal act");
                 return;
             }
 
-            act = game.Debugger.Read<Act>(pAct);
+            var act = game.Debugger.Read<Act>(pAct);
             if (act.pMisc == 0)
             {
                 game.Log("Failed to reveal act");
@@ -137,91 +254,10 @@ namespace Itchy
             }
 
             for (var i = m_ActLevels[unit.dwAct]; i < m_ActLevels[unit.dwAct + 1]; ++i)
-            {
-                var pLevel = GetLevel(i);
-                if (pLevel == 0)
-                    continue;
+                if (!revealedLevels.Contains(i))
+                    _RevealLevel(i, false);
 
-                var collisionMap = new CollisionMap(game, i);
-
-                var lvl = game.Debugger.Read<Level>(pLevel);
-                if (lvl.dwLevelNo > 255)
-                    continue;
-
-                if (lvl.pRoom2First == 0)
-                    InitLevel(pLevel);
-
-                InitLayer(lvl.dwLevelNo);
-                lvl = game.Debugger.Read<Level>(pLevel);
-
-                collisionMap.LevelOrigin.X = (int)(lvl.dwPosX * 5);
-                collisionMap.LevelOrigin.Y = (int)(lvl.dwPosY * 5);
-                var collisionOk = collisionMap.m_map.Create((int)lvl.dwSizeX * 5, (int)lvl.dwSizeY * 5, (ushort)MapData.Invalid);
-
-                for (var pRoom = lvl.pRoom2First; pRoom != 0; )
-                {
-                    var room = game.Debugger.Read<Room2>(pRoom);
-
-                    var actMisc2 = game.Debugger.Read<ActMisc>(lvl.pMisc);
-                    var roomData = false;
-                    if (room.pRoom1 == 0)
-                    {
-                        roomData = true;
-                        game.Debugger.Call(D2Common.AddRoomData,
-                            CallingConventionEx.ThisCall,
-                            0, actMisc2.pAct, lvl.dwLevelNo, room.dwPosX, room.dwPosY, room.pRoom1);
-                    }
-
-                    room = game.Debugger.Read<Room2>(pRoom);
-                    if (room.pRoom1 == 0)
-                    {
-                        pRoom = room.pRoom2Next;
-                        continue;
-                    }
-
-                    var pAutomapLayer = game.Debugger.ReadUInt(D2Client.pAutoMapLayer);
-
-                    game.Debugger.Call(D2Client.RevealAutomapRoom,
-                        CallingConventionEx.StdCall,
-                        room.pRoom1,
-                        1,
-                        pAutomapLayer);
-
-                    if (collisionOk)
-                    {
-                        var l = game.Debugger.Read<Level>(room.pLevel);
-                        if (l.dwLevelNo == i)
-                        {
-                            var r = game.Debugger.Read<Room1>(room.pRoom1);
-                            collisionMap.AddCollisionData(r.Coll);
-                        }
-                    }
-
-                    LoopPresets(pRoom, room, lvl);
-
-                    if (roomData)
-                        game.Debugger.Call(D2Common.RemoveRoomData,
-                            CallingConventionEx.StdCall,
-                            actMisc2.pAct, lvl.dwLevelNo, room.dwPosX, room.dwPosY, room.pRoom1);
-
-                    pRoom = room.pRoom2Next;
-                }
-
-                if (collisionOk)
-                    collisionMap.FillGaps();
-
-                FillLevelExits(lvl, collisionMap);
-                levelCollisions.Add(lvl.dwLevelNo, collisionMap);
-            }
-
-            var path = game.Debugger.Read<Path>(unit.pPath);
-            var room1 = game.Debugger.Read<Room1>(path.pRoom1);
-            var room2 = game.Debugger.Read<Room2>(room1.pRoom2);
-            var lev = game.Debugger.Read<Level>(room2.pLevel);
-            InitLayer(lev.dwLevelNo);
-            game.Debugger.Call(D2Common.UnloadAct,
-                CallingConventionEx.StdCall,
-                pAct);
+            UnloadAct(pAct, unit);
 
             //PrintGameString("Revealed act", D2Color.Red);
 
@@ -329,7 +365,8 @@ namespace Itchy
                     if (!levelExits.ContainsKey(lvl.dwLevelNo))
                         levelExits.Add(lvl.dwLevelNo, new List<LevelExit>());
 
-                    levelExits[lvl.dwLevelNo].Add(exit);
+                    if (levelExits[lvl.dwLevelNo].Find(it => it.dwTargetLevel == tileLevelNo) == null)
+                        levelExits[lvl.dwLevelNo].Add(exit);
                 }
 
                 DrawPreset(room, lvl, preset);
@@ -373,7 +410,8 @@ namespace Itchy
                                     if (!levelExits.ContainsKey(level.dwLevelNo))
                                         levelExits.Add(level.dwLevelNo, new List<LevelExit>());
 
-                                    levelExits[level.dwLevelNo].Add(exit);
+                                    if (levelExits[level.dwLevelNo].Find(it => it.dwTargetLevel == lvl.dwLevelNo) == null)
+                                        levelExits[level.dwLevelNo].Add(exit);
                                 }
                             }
                         }
@@ -430,6 +468,31 @@ namespace Itchy
             }
 
             return 0;
+        }
+
+        public CollisionMap GetCollisionData(params uint[] dwLevelIds)
+        {
+            CollisionMap result = null;
+            foreach(var dwLevelId in dwLevelIds)
+            {
+                if (!levelCollisions.ContainsKey(dwLevelId))
+                    game.MapHandler.RevealLevel(dwLevelId);
+
+                if (result == null)
+                    result = levelCollisions[dwLevelId];
+                else
+                    result = result.Merge(levelCollisions[dwLevelId]);
+            }
+
+            return result;
+        }
+
+        public List<LevelExit> GetLevelExits(uint dwLevelId)
+        {
+            if (!levelExits.ContainsKey(dwLevelId))
+                game.MapHandler.RevealLevel(dwLevelId);
+
+            return levelExits[dwLevelId];
         }
     }
 }

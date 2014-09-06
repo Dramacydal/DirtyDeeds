@@ -386,7 +386,7 @@ namespace Itchy
             return llGetUnitStat(pUnit, StatType.Health) == 0;
         }
 
-        public ushort GetUnitX(uint pUnit)
+        /*public ushort GetUnitX(uint pUnit)
         {
             return (ushort)pd.Call(D2Client.GetUnitX,
                 CallingConventionEx.FastCall,
@@ -398,16 +398,17 @@ namespace Itchy
             return (ushort)pd.Call(D2Client.GetUnitY,
                 CallingConventionEx.FastCall,
                 pUnit);
-        }
+        }*/
 
         public void RefreshUnitPosition()
         {
-            var pUnit = GetPlayerUnit();
-            if (pUnit == 0)
+            UnitAny unit;
+            if (!GetPlayerUnit(out unit))
                 return;
 
-            CurrentX = GetUnitX(pUnit);
-            CurrentY = GetUnitY(pUnit);
+            var path = pd.Read<Path>(unit.pPath);
+            CurrentX = path.xPos;
+            CurrentY = path.yPos;
         }
     }
 }

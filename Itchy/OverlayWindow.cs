@@ -220,6 +220,11 @@ namespace Itchy
             townPortalKeybindButton.Key = settings.FastPortal.Key;
             goToTownCheckBox.Checked = settings.FastPortal.GoToTown;
 
+            autoTeleNextKeybindButton.Key = settings.AutoteleNext.Key;
+            autoTeleMiscKeybindButton.Key = settings.AutoteleMisc.Key;
+            autoTeleWpKeybindButton.Key = settings.AutoteleWP.Key;
+            autoTelePrevkeybindButton.Key = settings.AutotelePrev.Key;
+
             enableChickenCheckBox.Checked = settings.Chicken.Enabled;
             chickenToTownCheckBox.Checked = settings.Chicken.ChickenToTown;
             chickenOnHostileTextBox.Checked = settings.Chicken.ChickenOnHostile;
@@ -273,6 +278,11 @@ namespace Itchy
             settings.FastExit.Key = fastExitKeybindButton.Key;
             settings.FastPortal.Key = townPortalKeybindButton.Key;
             settings.FastPortal.GoToTown = goToTownCheckBox.Checked;
+
+            settings.AutoteleNext.Key = autoTeleNextKeybindButton.Key;
+            settings.AutoteleMisc.Key = autoTeleMiscKeybindButton.Key;
+            settings.AutoteleWP.Key = autoTeleWpKeybindButton.Key;
+            settings.AutotelePrev.Key = autoTelePrevkeybindButton.Key;
 
             settings.Chicken.Enabled = enableChickenCheckBox.Checked;
             settings.Chicken.ChickenToTown = chickenToTownCheckBox.Checked;

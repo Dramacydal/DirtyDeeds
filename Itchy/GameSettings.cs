@@ -114,6 +114,11 @@ namespace Itchy
         public KeySettings FastExit = new KeySettings();
         public FastPortalSettings FastPortal = new FastPortalSettings();
         public ChickenSettings Chicken = new ChickenSettings();
+
+        public KeySettings AutoteleNext = new KeySettings();
+        public KeySettings AutoteleMisc = new KeySettings();
+        public KeySettings AutoteleWP = new KeySettings();
+        public KeySettings AutotelePrev = new KeySettings();
     }
 
     [Serializable]

@@ -476,9 +476,9 @@ namespace Itchy
                     using (var suspender = new GameSuspender(this))
                     {
                         ResumeStormThread();
-                        //MapHandler.RevealAct();
+                        MapHandler.RevealAct();
                         //ItemStorage.LoadCodes(this);
-                        Test();
+                        //Test();
                     }
                 }
                 if (key == Settings.FastPortal.Key)
@@ -504,6 +504,42 @@ namespace Itchy
                 {
                     if (pickit != null)
                         pickit.ToggleEnabled();
+                }
+
+                if (key == Settings.AutoteleNext.Key)
+                {
+                    using (var suspender = new GameSuspender(this))
+                    {
+                        ResumeStormThread();
+                        AutoTeleport.ManageTele(AutoTeleHandler.TeleType.Next);
+                    }
+                }
+
+                if (key == Settings.AutoteleMisc.Key)
+                {
+                    using (var suspender = new GameSuspender(this))
+                    {
+                        ResumeStormThread();
+                        AutoTeleport.ManageTele(AutoTeleHandler.TeleType.Misc);
+                    }
+                }
+
+                if (key == Settings.AutoteleWP.Key)
+                {
+                    using (var suspender = new GameSuspender(this))
+                    {
+                        ResumeStormThread();
+                        AutoTeleport.ManageTele(AutoTeleHandler.TeleType.WP);
+                    }
+                }
+
+                if (key == Settings.AutotelePrev.Key)
+                {
+                    using (var suspender = new GameSuspender(this))
+                    {
+                        ResumeStormThread();
+                        AutoTeleport.ManageTele(AutoTeleHandler.TeleType.Prev);
+                    }
                 }
             }
 
