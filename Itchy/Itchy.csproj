@@ -81,6 +81,7 @@
     <Compile Include="D2Enums\UIVars.cs" />
     <Compile Include="D2Enums\UnitType.cs" />
     <Compile Include="GameSuspender.cs" />
+    <Compile Include="Log\Logger.cs" />
     <Compile Include="PlayerInfo.cs" />
     <Compile Include="D2Api\GameApi.cs" />
     <Compile Include="D2Api\LowLevel.cs" />

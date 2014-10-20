@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Itchy.D2Enums;
+using Itchy.Log;
 using WhiteMagic;
 
 namespace Itchy
@@ -487,7 +488,7 @@ namespace Itchy
             if (i.IsEth)
                 message += " (Eth)";
 
-            Log(message, color);
+            Logger.Pickit.Log(this, LogType.None, message, color);
         }
 
         public void ItemGoneHandler(byte[] data)

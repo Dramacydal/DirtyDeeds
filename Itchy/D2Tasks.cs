@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Itchy.D2Enums;
+using Itchy.Log;
 using WhiteMagic;
 
 namespace Itchy
@@ -30,7 +31,7 @@ namespace Itchy
                     return;
 
                 if (Settings.Chicken.ChickenToTown)
-                    LogWarning("Chickening to town because of hostility");
+                    Logger.Chicken.Log(this, LogType.Warning, "Chickening to town because of hostility.");
             }
             else
             {
@@ -56,12 +57,12 @@ namespace Itchy
                 if (hpPct < Settings.Chicken.ChickenLifePercent)
                 {
                     if (Settings.Chicken.ChickenToTown)
-                        LogWarning("Chickening to town at {0:0.00}% health", hpPct);
+                        Logger.Chicken.Log(this, LogType.Warning, "Chickening to town at {0:0.00}% health.", hpPct);
                 }
                 else if (manaPct < Settings.Chicken.ChickenManaPercent)
                 {
                     if (Settings.Chicken.ChickenToTown)
-                        LogWarning("Chickening to town at {0:0.00}% mana", manaPct);
+                        Logger.Chicken.Log(this, LogType.Warning, "Chickening to town at {0:0.00}% mana.", manaPct);
                 }
                 else
                     return;
@@ -131,7 +132,7 @@ namespace Itchy
                             {
                                 socketsPerItem[dwItemId] = GetUnitStat(pItem, StatType.Sockets);
                             }
-                            catch (Exception) { }
+                            catch { }
                         }
 
                         hasPendingTask = false;
@@ -170,7 +171,7 @@ namespace Itchy
 
                                 pricePerItem[item.dwUnitId] = price;
                             }
-                            catch (Exception) { }
+                            catch { }
                         }
 
                         hasPendingTask = false;

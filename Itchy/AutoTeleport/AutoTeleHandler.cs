@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Itchy.D2Enums;
+using Itchy.Log;
 using WhiteMagic;
 
 namespace Itchy.AutoTeleport
@@ -13,16 +14,16 @@ namespace Itchy.AutoTeleport
     using PointList = List<Point>;
     using WordMatrix = CMatrix<ushort>;
 
+    public enum TeleType
+    {
+        Next = 0,
+        Misc = 1,
+        WP = 2,
+        Prev = 3
+    }
+
     public class AutoTeleHandler
     {
-        public enum TeleType
-        {
-            Next = 0,
-            Misc = 1,
-            WP = 2,
-            Prev = 3
-        }
-
         protected static uint[] CS = new uint[] { 392, 394, 396, 255 };
         protected static uint[] waypoints = new uint[] { 119, 157, 156, 323, 288, 402, 324, 237, 238, 398, 496, 511, 494 };
 
@@ -46,8 +47,18 @@ namespace Itchy.AutoTeleport
             th.Start();
         }
 
+        public void Reset()
+        {
+            TPath.Clear();
+            doInteract = false;
+            interactType = TeleportTargetType.None;
+            interactRoom = 0;
+            interactId = 0;
+        }
+
         public void Terminate()
         {
+            Reset();
             if (th != null)
             {
                 th.Abort();
@@ -57,20 +68,14 @@ namespace Itchy.AutoTeleport
 
         public void ManageTele(TeleType type)
         {
-            Level level;
-            if (!game.GetPlayerLevel(out level))
+            if (IsTeleporting)
                 return;
 
-            ManageTele(TeleportInfo.Vectors[level.dwLevelNo * 4 + (uint)type]);
-        }
-
-        public void ManageTele(TeleportInfo path)
-        {
             Level lvl;
             if (!game.GetPlayerLevel(out lvl))
                 return;
 
-            var p = path.Clone();
+            var p = TeleportInfo.Vectors[lvl.dwLevelNo * 4 + (uint)type].Clone();
 
             var areas = new List<uint>();
             areas.Add(lvl.dwLevelNo);
@@ -106,7 +111,7 @@ namespace Itchy.AutoTeleport
 
             if (p.Id == 0)
             {
-                game.LogWarning("Autotele: invalid destination");
+                Logger.AutoTele.Log(game, LogType.Warning, "There is no \"{0}\" path for current level.", type.Name());
                 return;
             }
 
@@ -143,7 +148,10 @@ namespace Itchy.AutoTeleport
                         }
 
                         var nodes = MakePath(exit.ptPos.X, exit.ptPos.Y, areas, exit.dwType == (uint)ExitType.Level);
-                        game.Log("Autotele: Going to {0}, {1} nodes.", lvltext.szName, nodes);
+                        if (nodes != 0)
+                            Logger.AutoTele.Log(game, LogType.None, "Going to {0}, {1} nodes.", lvltext.szName, nodes);
+                        else
+                            Logger.AutoTele.Log(game, LogType.Warning, "Failed to calculate path to {0}.", lvltext.szName);
                         break;
                     }
                 }
@@ -156,12 +164,15 @@ namespace Itchy.AutoTeleport
                 doInteract = false;
                 if (p.Id == 0 || p.Id2 == 0)
                 {
-                    game.Log("Autotele: No X/Y value found.");
+                    Logger.AutoTele.Log(game, LogType.Warning, "Failed to make path to \"{0}\" point.", type.Name());
                     return;
                 }
 
                 var nodes = MakePath((int)p.Id, (int)p.Id2, areas, false);
-                game.Log("Autotele: Going to X: {0}, Y: {1}, {2} nodes", p.Id, p.Id2, nodes);
+                if (nodes != 0)
+                    Logger.AutoTele.Log(game, LogType.None, "Going to \"{0}\" X: {1}, Y: {2}, {3} nodes.", type.Name(), p.Id, p.Id2, nodes);
+                else
+                    Logger.AutoTele.Log(game, LogType.Warning, "Failed to make path to \"{0}\" point.", type.Name());
                 return;
             }
 
@@ -170,9 +181,8 @@ namespace Itchy.AutoTeleport
             {
                 if (p.Type == TeleportTargetType.Tile || p.Type == TeleportTargetType.Object && p.Id == 298)
                     doInteract = true;
-                else if (p.Type == TeleportTargetType.Object)
-                    if (waypoints.Contains(p.Id))
-                        doInteract = true;
+                else if (p.Type == TeleportTargetType.Object && waypoints.Contains(p.Id))
+                    doInteract = true;
 
                 var nodes = MakePath(presetUnit.X, presetUnit.Y, areas, false);
                 if (nodes != 0)
@@ -181,14 +191,16 @@ namespace Itchy.AutoTeleport
                     {
                         var pObjectTxt = game.Debugger.Call(D2Common.GetObjectTxt, CallingConventionEx.StdCall, p.Id);
                         var txt = game.Debugger.Read<ObjectTxt>(pObjectTxt);
-                        game.Log("Autotele: Going to {0}, {1} nodes", txt.szName, nodes);
+                        Logger.AutoTele.Log(game, LogType.None, "Going to {0}, {1} nodes.", txt.szName, nodes);
                     }
                     interactType = p.Type;
                 }
+                else
+                    Logger.AutoTele.Log(game, LogType.Warning, "Failed to make path to \"{0}\" point.", type.Name());
             }
             else
             {
-                game.Log("Autotele: Can't find target object");
+                Logger.AutoTele.Log(game, LogType.Warning, "Failed to make path to \"{0}\" point.", type.Name());
             }
         }
 
@@ -254,12 +266,14 @@ namespace Itchy.AutoTeleport
                             }
                         }
 
-                        loc.X = (int)(preset.dwPosX + preset.dwPosX * 5);
-                        loc.Y = (int)(preset.dwPosY + preset.dwPosY * 5);
+                        loc.X = (int)(preset.dwPosX + room.dwPosX * 5);
+                        loc.Y = (int)(preset.dwPosY + room.dwPosY * 5);
 
                         stoploop = true;//stop looping over the rooms
                         break;
                     }
+
+                    pUnit = preset.pPresetNext;
                 }
 
                 if (bAddedRoom)
@@ -393,7 +407,7 @@ namespace Itchy.AutoTeleport
                             if (!game.GameReady() || game.IsDead() || game.IsInTown() || !game.TeleportTo((ushort)TPath[0].X, (ushort)TPath[0].Y))
                             {
                                 TPath.Clear();
-                                game.LogWarning("Autotele: Failed to cast teleport.");
+                                Logger.AutoTele.Log(game, LogType.Warning, "Failed to cast teleport.");
                                 continue;
                             }
                         }
@@ -403,7 +417,7 @@ namespace Itchy.AutoTeleport
                     {
                         if (tryCount >= 5)
                         {
-                            game.LogWarning("Autotele: Failed to teleport after {0} tries.", tryCount);
+                            Logger.AutoTele.Log(game, LogType.Warning, "Failed to teleport after {0} tries.", tryCount);
                             TPath.Clear();
                             tryCount = 0;
                             doInteract = false;
@@ -442,7 +456,7 @@ namespace Itchy.AutoTeleport
                         }
                     }
                 }
-                catch (Exception)
+                catch
                 {
                     ///
                 }

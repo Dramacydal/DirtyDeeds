@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Itchy.AutoTeleport;
 using Itchy.D2Enums;
+using Itchy.Log;
 using WhiteMagic;
 
 using System.Xml.Serialization;
@@ -64,6 +65,9 @@ namespace Itchy
         protected Thread syncThread = null;
         protected Thread gameCheckThread = null;
 
+        public int MainThreadId { get { return mainThreadId; } }
+        protected int mainThreadId = 0;
+
         public D2Game() { }
 
         public void Dispose()
@@ -115,9 +119,16 @@ namespace Itchy
                 while (!pd.WaitForComeUp(50) && now.MSecToNow() < 1000)
                 { }
 
+                foreach (ProcessThread pT in process.Threads)
+                    if (pd.GetThreadStartAddress(pT.Id) == pd.GetAddress(Game.mainThread))
+                    {
+                        mainThreadId = pT.Id;
+                        break;
+                    }
+
                 ApplySettings();
             }
-            catch (Exception)
+            catch
             {
                 return false;
             }
@@ -192,7 +203,7 @@ namespace Itchy
                     pd.Join();
                     pd = null;
                 }
-                catch (Exception)
+                catch
                 {
                     return false;
                 }
@@ -221,7 +232,7 @@ namespace Itchy
                         });
                     }
                 }
-                catch (Exception)
+                catch
                 {
                     //MessageBox.Show(e.ToString());
                 }
@@ -237,7 +248,7 @@ namespace Itchy
                 {
                     g.CheckInGame();
                 }
-                catch (Exception)
+                catch
                 {
                     //MessageBox.Show(e.ToString());
                 }
@@ -264,7 +275,7 @@ namespace Itchy
                 {
                     using (var suspender = new GameSuspender(this))
                     {
-                        RefreshUnitPosition();
+                        //RefreshUnitPosition();
                     }
                 }
 
@@ -295,9 +306,9 @@ namespace Itchy
                         overlay.InGameStateChanged(InGame);
                     });
                 }
-                catch (Exception) { }
+                catch { }
             }
-            catch (Exception) { }
+            catch { }
         }
 
         public void Test()
@@ -308,32 +319,29 @@ namespace Itchy
 
             using (var suspender = new GameSuspender(this))
             {
-                ResumeStormThread();
-
-                Level level;
-                if (!GetPlayerLevel(out level))
-                    return;
-
-                AutoTeleport.ManageTele(TeleportInfo.Vectors[level.dwLevelNo * 4]);
+                Thread.Sleep(15000);
             }
         }
 
         public void ResumeStormThread()
         {
-            var hModule = WinApi.GetModuleHandle("kernel32.dll");
-            if (hModule == 0)
-                hModule = WinApi.LoadLibraryA("kernel32.dll");
-            if (hModule == 0)
-                throw new DebuggerException("Failed to get kernel32.dll module");
+            lock ("moduleLoad")
+            {
+                var hModule = WinApi.GetModuleHandle("kernel32.dll");
+                if (hModule == 0)
+                    hModule = WinApi.LoadLibraryA("kernel32.dll");
+                if (hModule == 0)
+                    throw new DebuggerException("Failed to get kernel32.dll module");
 
-            var funcAddress = WinApi.GetProcAddress(hModule, "ResumeThread");
+                var funcAddress = WinApi.GetProcAddress(hModule, "ResumeThread");
 
-            var handle = pd.ReadUInt(Storm.pHandle);
+                var handle = pd.ReadUInt(Storm.pHandle);
 
-            pd.Call(pd.GetModuleAddress("kernel32.dll") + funcAddress - hModule, CallingConventionEx.StdCall, handle);
+                pd.Call(pd.GetModuleAddress("kernel32.dll") + funcAddress - hModule, CallingConventionEx.StdCall, handle);
+            }
         }
 
-        public void Log(string message, Color color, params object[] args)
+        /*public void Log(string message, Color color, params object[] args)
         {
             this.overlay.logTextBox.LogLine(message, color, args);
         }
@@ -346,7 +354,7 @@ namespace Itchy
         public void LogWarning(string message, params object[] args)
         {
             Log(message, Color.Red, args);
-        }
+        }*/
 
         public void ExitedGame()
         {
@@ -363,7 +371,7 @@ namespace Itchy
                 PlayerInfo.Reset();
 
             if (AutoTeleport != null)
-                AutoTeleport.Terminate();
+                AutoTeleport.Reset();
         }
 
         public void EnteredGame()
@@ -475,7 +483,6 @@ namespace Itchy
                 {
                     using (var suspender = new GameSuspender(this))
                     {
-                        ResumeStormThread();
                         MapHandler.RevealAct();
                         //ItemStorage.LoadCodes(this);
                         //Test();
@@ -510,8 +517,7 @@ namespace Itchy
                 {
                     using (var suspender = new GameSuspender(this))
                     {
-                        ResumeStormThread();
-                        AutoTeleport.ManageTele(AutoTeleHandler.TeleType.Next);
+                        AutoTeleport.ManageTele(TeleType.Next);
                     }
                 }
 
@@ -519,8 +525,7 @@ namespace Itchy
                 {
                     using (var suspender = new GameSuspender(this))
                     {
-                        ResumeStormThread();
-                        AutoTeleport.ManageTele(AutoTeleHandler.TeleType.Misc);
+                        AutoTeleport.ManageTele(TeleType.Misc);
                     }
                 }
 
@@ -528,8 +533,7 @@ namespace Itchy
                 {
                     using (var suspender = new GameSuspender(this))
                     {
-                        ResumeStormThread();
-                        AutoTeleport.ManageTele(AutoTeleHandler.TeleType.WP);
+                        AutoTeleport.ManageTele(TeleType.WP);
                     }
                 }
 
@@ -537,8 +541,7 @@ namespace Itchy
                 {
                     using (var suspender = new GameSuspender(this))
                     {
-                        ResumeStormThread();
-                        AutoTeleport.ManageTele(AutoTeleHandler.TeleType.Prev);
+                        AutoTeleport.ManageTele(TeleType.Prev);
                     }
                 }
             }
@@ -562,9 +565,9 @@ namespace Itchy
             {
                 pd.AddBreakPoint(bp, pd.GetModuleAddress(bp.ModuleName));
             }
-            catch (Exception)
+            catch
             {
-                LogWarning("Failed to apply hacks. Try again");
+                Logger.Generic.Log(this, LogType.Warning, "Failed to apply hacks. Try again");
             }
         }
 

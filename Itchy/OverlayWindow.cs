@@ -293,14 +293,14 @@ namespace Itchy
                 var val = Convert.ToDouble(chickenLifePctTextBox.Text);
                 settings.Chicken.ChickenLifePercent = val;
             }
-            catch (Exception) { }
+            catch { }
 
             try
             {
                 var val = Convert.ToDouble(chickenManaPctTextBox.Text);
                 settings.Chicken.ChickenManaPercent = val;
             }
-            catch (Exception) { }
+            catch { }
 
             return settings;
         }
@@ -675,6 +675,12 @@ namespace Itchy
         private void logExpandButton_Click(object sender, EventArgs e)
         {
             SetForegroundWindow(game.Process.MainWindowHandle);
+            logClearButton.Visible = logExpandButton.Expanded;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            logTextBox.Clear();
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Itchy
     public class D2Common : ModulePointer    // 0x6FD50000
     {
         public D2Common(uint offset)
-            : base("d2common.dll", offset)
+            : base("D2Common.dll", offset)
         { }
 
         public static D2Common GetLevel = new D2Common(0x6D440);  // fastcall (ActMisc *pMisc, DWORD dwLevelNo)
@@ -37,7 +37,7 @@ namespace Itchy
     public class D2Client : ModulePointer    // 0x6FAB0000
     {
         public D2Client(uint offset)
-            : base("d2client.dll", offset)
+            : base("D2Client.dll", offset)
         { }
 
         public static D2Client GetPlayerUnit = new D2Client(0x613C0); // stdcall ()
@@ -72,7 +72,7 @@ namespace Itchy
     public class D2Net : ModulePointer   // 0x6FBF0000
     {
         public D2Net(uint offset)
-            : base("d2net.dll", offset)
+            : base("D2Net.dll", offset)
         { }
 
         public static D2Net ReceivePacket = new D2Net(0x6FBF64A0 - 0x6FBF0000);  // stdcall (BYTE *aPacket, DWORD aLen)
@@ -82,7 +82,7 @@ namespace Itchy
     public class Storm : ModulePointer   // 0x6FBF0000
     {
         public Storm(uint offset)
-            : base("storm.dll", offset)
+            : base("Storm.dll", offset)
         { }
 
         public static Storm pHandle = new Storm(0x6FC42A50 - 0x6FBF0000);
@@ -91,9 +91,18 @@ namespace Itchy
     public class Fog : ModulePointer     // 0x6FF50000
     {
         public Fog(uint offset)
-            : base("fog.dll", offset)
+            : base("Fog.dll", offset)
         { }
 
         public static Fog gdwBitMasks = new Fog(0x6FF77020 - 0x6FF50000);
-    }    
+    }
+
+    public class Game : ModulePointer   // 0x400000
+    {
+        public Game(uint offset)
+            : base("Game.exe", offset)
+        { }
+
+        public static Game mainThread = new Game(0x401227 - 0x400000);
+    }
 }

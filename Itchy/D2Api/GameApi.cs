@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Itchy.D2Enums;
+using Itchy.Log;
 using WhiteMagic;
 
 namespace Itchy
@@ -68,7 +69,7 @@ namespace Itchy
                 var data = pd.Read<PlayerData>(unit.pPlayerData);
                 return data.szName;
             }
-            catch (Exception)
+            catch
             {
             }
 
@@ -151,7 +152,7 @@ namespace Itchy
 
                 pd.FreeMemory(addr);
             }
-            catch (Exception)
+            catch
             {
             }
         }
@@ -316,13 +317,13 @@ namespace Itchy
 
             if (lvl.IsTown())
             {
-                Log("You are in town");
+                Logger.Generic.Log(this, LogType.None, "You are in town.");
                 return false;
             }
 
             if (lvl.IsUberTristram())
             {
-                Log("Can't open portal in Uber Tristram!");
+                Logger.Generic.Log(this, LogType.None, "Can't open portal in Uber Tristram!");
                 return false;
             }
 
@@ -341,7 +342,7 @@ namespace Itchy
 
             if (pItem == 0)
             {
-                Log("Failed to find any town portal scrolls or books");
+                Logger.Generic.Log(this, LogType.Warning, "Failed to find any town portal scrolls or books.");
                 return false;
             }
 
@@ -349,9 +350,7 @@ namespace Itchy
             {
                 var cnt = GetUnitStat(pItem, StatType.AmmoQuantity);
                 if (cnt <= 5)
-                {
-                    LogWarning("Warning: {0} TP's left", cnt - 1);
-                }
+                    Logger.Generic.Log(this, LogType.Warning, "Warning: {0} TP's left", cnt - 1);
             }
 
             UseItem(pItem);
@@ -386,19 +385,19 @@ namespace Itchy
             return llGetUnitStat(pUnit, StatType.Health) == 0;
         }
 
-        /*public ushort GetUnitX(uint pUnit)
+        public ushort GetUnitX(uint pUnit)
         {
             return (ushort)pd.Call(D2Client.GetUnitX,
-                CallingConventionEx.FastCall,
+                CallingConventionEx.ThisCall,
                 pUnit);
         }
 
         public ushort GetUnitY(uint pUnit)
         {
             return (ushort)pd.Call(D2Client.GetUnitY,
-                CallingConventionEx.FastCall,
+                CallingConventionEx.ThisCall,
                 pUnit);
-        }*/
+        }
 
         public void RefreshUnitPosition()
         {
@@ -409,6 +408,12 @@ namespace Itchy
             var path = pd.Read<Path>(unit.pPath);
             CurrentX = path.xPos;
             CurrentY = path.yPos;
+            /*var pUnit = GetPlayerUnit();
+            if (pUnit == 0)
+                return;
+
+            CurrentX = GetUnitX(pUnit);
+            CurrentY = GetUnitY(pUnit);*/
         }
     }
 }

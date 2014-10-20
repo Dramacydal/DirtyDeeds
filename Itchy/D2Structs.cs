@@ -598,8 +598,8 @@ namespace Itchy
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct ObjectTxt
     {
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x40, ArraySubType = UnmanagedType.U1)]
-        public byte[] szName;           // 0x00
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 0x40)]
+        public string szName;           // 0x00
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x40, ArraySubType = UnmanagedType.U1)]
         public byte[] wszName;          // 0x40
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4, ArraySubType = UnmanagedType.U1)]

@@ -1,4 +1,5 @@
 ﻿using System;
+using WhiteMagic;
 
 namespace Itchy
 {
@@ -9,7 +10,10 @@ namespace Itchy
         public GameSuspender(D2Game game)
         {
             this.game = game;
+
+            //game.Debugger.SuspendAllThreads(game.MainThreadId);
             game.Debugger.SuspendAllThreads();
+            game.ResumeStormThread();
         }
 
         public void Dispose()

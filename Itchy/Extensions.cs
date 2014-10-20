@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Itchy.D2Enums;
+using Itchy.AutoTeleport;
 using WhiteMagic;
 
 namespace Itchy
@@ -38,11 +39,14 @@ namespace Itchy
             box.AppendText("\n" + text, color == Color.Empty ? box.ForeColor : color, args);
         }
 
-        public static void LogLine(this RichTextBox box, string text, Color color, params object[] args)
+        public static void InvokeAppendText(this RichTextBox box, string text, Color color, params object[] args)
         {
-            var time = DateTime.Now;
-            var str = string.Format("[{0:D2}:{1:D2}:{2:D2}] ", time.Hour, time.Minute, time.Second);
-            box.Invoke((MethodInvoker)delegate { box.AppendLine(str + text, color, args); });
+            box.Invoke((MethodInvoker)delegate { box.AppendText(text, color, args); });
+        }
+
+        public static void InvokeAppendLine(this RichTextBox box, string text, Color color, params object[] args)
+        {
+            box.Invoke((MethodInvoker)delegate { box.AppendLine(text, color, args); });
         }
 
         public static char GetCode(this D2Color color)
@@ -156,6 +160,25 @@ namespace Itchy
         public static Point Clone(this Point p)
         {
             return new Point(p.X, p.Y);
+        }
+
+        public static string Name(this TeleType type)
+        {
+            switch (type)
+            {
+                case TeleType.Next:
+                    return "Next Level";
+                case TeleType.Misc:
+                    return "Misc Location";
+                case TeleType.WP:
+                    return "Waypoint";
+                case TeleType.Prev:
+                    return "Previous Level";
+                default:
+                    break;
+            }
+
+            return "<Unknown>";
         }
     }
 }

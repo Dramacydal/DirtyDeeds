@@ -33,6 +33,15 @@
             this.settingsTranslucentPanel = new ItchyControls.TranslucentPanel();
             this.settingsTabControl = new System.Windows.Forms.TabControl();
             this.settingsTab = new System.Windows.Forms.TabPage();
+            this.autoTeleGroupBox = new System.Windows.Forms.GroupBox();
+            this.autoTelePrevLabel = new System.Windows.Forms.Label();
+            this.autoTeleWpLabel = new System.Windows.Forms.Label();
+            this.autoTeleOtherLabel = new System.Windows.Forms.Label();
+            this.autoTeleNextLabel = new System.Windows.Forms.Label();
+            this.autoTelePrevkeybindButton = new ItchyControls.KeybindButton();
+            this.autoTeleWpKeybindButton = new ItchyControls.KeybindButton();
+            this.autoTeleMiscKeybindButton = new ItchyControls.KeybindButton();
+            this.autoTeleNextKeybindButton = new ItchyControls.KeybindButton();
             this.reloadItemIniButton = new System.Windows.Forms.Button();
             this.helpersGroupBox = new System.Windows.Forms.GroupBox();
             this.revealActKeybindButton = new ItchyControls.KeybindButton();
@@ -100,22 +109,15 @@
             this.statsRefreshButton = new System.Windows.Forms.Button();
             this.statsExpandButton = new ItchyControls.ExpandButton();
             this.logHolder = new ItchyControls.TranslucentPanel();
+            this.logClearButton = new System.Windows.Forms.Button();
             this.logExpandButton = new ItchyControls.ExpandButton();
             this.logTranslucentPanel = new ItchyControls.TranslucentPanel();
             this.logTextBox = new ItchyControls.TransparentRichTextBox();
-            this.autoTeleGroupBox = new System.Windows.Forms.GroupBox();
-            this.autoTeleNextKeybindButton = new ItchyControls.KeybindButton();
-            this.autoTeleMiscKeybindButton = new ItchyControls.KeybindButton();
-            this.autoTeleWpKeybindButton = new ItchyControls.KeybindButton();
-            this.autoTelePrevkeybindButton = new ItchyControls.KeybindButton();
-            this.autoTeleNextLabel = new System.Windows.Forms.Label();
-            this.autoTeleOtherLabel = new System.Windows.Forms.Label();
-            this.autoTeleWpLabel = new System.Windows.Forms.Label();
-            this.autoTelePrevLabel = new System.Windows.Forms.Label();
             this.settingsHolder.SuspendLayout();
             this.settingsTranslucentPanel.SuspendLayout();
             this.settingsTabControl.SuspendLayout();
             this.settingsTab.SuspendLayout();
+            this.autoTeleGroupBox.SuspendLayout();
             this.helpersGroupBox.SuspendLayout();
             this.hacksGroupBox.SuspendLayout();
             this.chickenSettingsGroupBox.SuspendLayout();
@@ -124,7 +126,6 @@
             this.statsTranslucentPanel.SuspendLayout();
             this.logHolder.SuspendLayout();
             this.logTranslucentPanel.SuspendLayout();
-            this.autoTeleGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // itchyLabel
@@ -187,6 +188,103 @@
             this.settingsTab.TabIndex = 0;
             this.settingsTab.Text = "Settings";
             this.settingsTab.UseVisualStyleBackColor = true;
+            // 
+            // autoTeleGroupBox
+            // 
+            this.autoTeleGroupBox.Controls.Add(this.autoTelePrevLabel);
+            this.autoTeleGroupBox.Controls.Add(this.autoTeleWpLabel);
+            this.autoTeleGroupBox.Controls.Add(this.autoTeleOtherLabel);
+            this.autoTeleGroupBox.Controls.Add(this.autoTeleNextLabel);
+            this.autoTeleGroupBox.Controls.Add(this.autoTelePrevkeybindButton);
+            this.autoTeleGroupBox.Controls.Add(this.autoTeleWpKeybindButton);
+            this.autoTeleGroupBox.Controls.Add(this.autoTeleMiscKeybindButton);
+            this.autoTeleGroupBox.Controls.Add(this.autoTeleNextKeybindButton);
+            this.autoTeleGroupBox.Location = new System.Drawing.Point(200, 181);
+            this.autoTeleGroupBox.Name = "autoTeleGroupBox";
+            this.autoTeleGroupBox.Size = new System.Drawing.Size(177, 121);
+            this.autoTeleGroupBox.TabIndex = 64;
+            this.autoTeleGroupBox.TabStop = false;
+            this.autoTeleGroupBox.Text = "Autoteleport";
+            // 
+            // autoTelePrevLabel
+            // 
+            this.autoTelePrevLabel.AutoSize = true;
+            this.autoTelePrevLabel.Location = new System.Drawing.Point(66, 100);
+            this.autoTelePrevLabel.Name = "autoTelePrevLabel";
+            this.autoTelePrevLabel.Size = new System.Drawing.Size(108, 13);
+            this.autoTelePrevLabel.TabIndex = 7;
+            this.autoTelePrevLabel.Text = "Tele to previous level";
+            // 
+            // autoTeleWpLabel
+            // 
+            this.autoTeleWpLabel.AutoSize = true;
+            this.autoTeleWpLabel.Location = new System.Drawing.Point(66, 74);
+            this.autoTeleWpLabel.Name = "autoTeleWpLabel";
+            this.autoTeleWpLabel.Size = new System.Drawing.Size(61, 13);
+            this.autoTeleWpLabel.TabIndex = 6;
+            this.autoTeleWpLabel.Text = "Tele to WP";
+            // 
+            // autoTeleOtherLabel
+            // 
+            this.autoTeleOtherLabel.AutoSize = true;
+            this.autoTeleOtherLabel.Location = new System.Drawing.Point(66, 51);
+            this.autoTeleOtherLabel.Name = "autoTeleOtherLabel";
+            this.autoTeleOtherLabel.Size = new System.Drawing.Size(90, 13);
+            this.autoTeleOtherLabel.TabIndex = 5;
+            this.autoTeleOtherLabel.Text = "Tele to misc point";
+            // 
+            // autoTeleNextLabel
+            // 
+            this.autoTeleNextLabel.AutoSize = true;
+            this.autoTeleNextLabel.Location = new System.Drawing.Point(66, 25);
+            this.autoTeleNextLabel.Name = "autoTeleNextLabel";
+            this.autoTeleNextLabel.Size = new System.Drawing.Size(94, 13);
+            this.autoTeleNextLabel.TabIndex = 4;
+            this.autoTeleNextLabel.Text = "Tele to Next Level";
+            // 
+            // autoTelePrevkeybindButton
+            // 
+            this.autoTelePrevkeybindButton.Key = System.Windows.Forms.Keys.None;
+            this.autoTelePrevkeybindButton.Location = new System.Drawing.Point(6, 94);
+            this.autoTelePrevkeybindButton.Name = "autoTelePrevkeybindButton";
+            this.autoTelePrevkeybindButton.Size = new System.Drawing.Size(50, 20);
+            this.autoTelePrevkeybindButton.TabIndex = 3;
+            this.autoTelePrevkeybindButton.Text = "None";
+            this.autoTelePrevkeybindButton.UseVisualStyleBackColor = true;
+            this.autoTelePrevkeybindButton.WaitingKeyPress = false;
+            // 
+            // autoTeleWpKeybindButton
+            // 
+            this.autoTeleWpKeybindButton.Key = System.Windows.Forms.Keys.None;
+            this.autoTeleWpKeybindButton.Location = new System.Drawing.Point(6, 71);
+            this.autoTeleWpKeybindButton.Name = "autoTeleWpKeybindButton";
+            this.autoTeleWpKeybindButton.Size = new System.Drawing.Size(50, 20);
+            this.autoTeleWpKeybindButton.TabIndex = 2;
+            this.autoTeleWpKeybindButton.Text = "None";
+            this.autoTeleWpKeybindButton.UseVisualStyleBackColor = true;
+            this.autoTeleWpKeybindButton.WaitingKeyPress = false;
+            // 
+            // autoTeleMiscKeybindButton
+            // 
+            this.autoTeleMiscKeybindButton.Key = System.Windows.Forms.Keys.None;
+            this.autoTeleMiscKeybindButton.Location = new System.Drawing.Point(6, 45);
+            this.autoTeleMiscKeybindButton.Name = "autoTeleMiscKeybindButton";
+            this.autoTeleMiscKeybindButton.Size = new System.Drawing.Size(50, 20);
+            this.autoTeleMiscKeybindButton.TabIndex = 1;
+            this.autoTeleMiscKeybindButton.Text = "None";
+            this.autoTeleMiscKeybindButton.UseVisualStyleBackColor = true;
+            this.autoTeleMiscKeybindButton.WaitingKeyPress = false;
+            // 
+            // autoTeleNextKeybindButton
+            // 
+            this.autoTeleNextKeybindButton.Key = System.Windows.Forms.Keys.None;
+            this.autoTeleNextKeybindButton.Location = new System.Drawing.Point(6, 19);
+            this.autoTeleNextKeybindButton.Name = "autoTeleNextKeybindButton";
+            this.autoTeleNextKeybindButton.Size = new System.Drawing.Size(50, 20);
+            this.autoTeleNextKeybindButton.TabIndex = 0;
+            this.autoTeleNextKeybindButton.Text = "None";
+            this.autoTeleNextKeybindButton.UseVisualStyleBackColor = true;
+            this.autoTeleNextKeybindButton.WaitingKeyPress = false;
             // 
             // reloadItemIniButton
             // 
@@ -363,7 +461,8 @@
             // showItemCodeTextBox
             // 
             this.showItemCodeTextBox.AutoSize = true;
-            this.showItemCodeTextBox.Location = new System.Drawing.Point(22, 331);
+            this.showItemCodeTextBox.Enabled = false;
+            this.showItemCodeTextBox.Location = new System.Drawing.Point(22, 330);
             this.showItemCodeTextBox.Name = "showItemCodeTextBox";
             this.showItemCodeTextBox.Size = new System.Drawing.Size(104, 17);
             this.showItemCodeTextBox.TabIndex = 44;
@@ -571,7 +670,7 @@
             // 
             this.changeColorCheckBox.AutoSize = true;
             this.changeColorCheckBox.Enabled = false;
-            this.changeColorCheckBox.Location = new System.Drawing.Point(21, 353);
+            this.changeColorCheckBox.Location = new System.Drawing.Point(22, 353);
             this.changeColorCheckBox.Name = "changeColorCheckBox";
             this.changeColorCheckBox.Size = new System.Drawing.Size(90, 17);
             this.changeColorCheckBox.TabIndex = 13;
@@ -880,7 +979,7 @@
             this.statsHolder.Controls.Add(this.statsExpandButton);
             this.statsHolder.Location = new System.Drawing.Point(645, 30);
             this.statsHolder.Name = "statsHolder";
-            this.statsHolder.Size = new System.Drawing.Size(157, 369);
+            this.statsHolder.Size = new System.Drawing.Size(165, 369);
             this.statsHolder.TabIndex = 8;
             this.statsHolder.Visible = false;
             // 
@@ -913,7 +1012,7 @@
             // statsRefreshButton
             // 
             this.statsRefreshButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.statsRefreshButton.Location = new System.Drawing.Point(84, 3);
+            this.statsRefreshButton.Location = new System.Drawing.Point(95, 3);
             this.statsRefreshButton.Name = "statsRefreshButton";
             this.statsRefreshButton.Size = new System.Drawing.Size(50, 19);
             this.statsRefreshButton.TabIndex = 2;
@@ -927,7 +1026,7 @@
             this.statsExpandButton.ChildPanel = this.statsTranslucentPanel;
             this.statsExpandButton.Expanded = false;
             this.statsExpandButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.statsExpandButton.Location = new System.Drawing.Point(134, 3);
+            this.statsExpandButton.Location = new System.Drawing.Point(145, 3);
             this.statsExpandButton.Name = "statsExpandButton";
             this.statsExpandButton.Size = new System.Drawing.Size(19, 19);
             this.statsExpandButton.TabIndex = 0;
@@ -938,6 +1037,7 @@
             // logHolder
             // 
             this.logHolder.BackColor = System.Drawing.Color.Transparent;
+            this.logHolder.Controls.Add(this.logClearButton);
             this.logHolder.Controls.Add(this.logExpandButton);
             this.logHolder.Controls.Add(this.logTranslucentPanel);
             this.logHolder.Location = new System.Drawing.Point(87, 405);
@@ -945,6 +1045,17 @@
             this.logHolder.Size = new System.Drawing.Size(537, 97);
             this.logHolder.TabIndex = 7;
             this.logHolder.Visible = false;
+            // 
+            // logClearButton
+            // 
+            this.logClearButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 5F);
+            this.logClearButton.Location = new System.Drawing.Point(0, 62);
+            this.logClearButton.Name = "logClearButton";
+            this.logClearButton.Size = new System.Drawing.Size(19, 20);
+            this.logClearButton.TabIndex = 9;
+            this.logClearButton.Text = "O";
+            this.logClearButton.UseVisualStyleBackColor = true;
+            this.logClearButton.Click += new System.EventHandler(this.button1_Click);
             // 
             // logExpandButton
             // 
@@ -988,99 +1099,6 @@
             this.logTextBox.Text = "lol wtf hz omg";
             this.logTextBox.WordWrap = false;
             // 
-            // autoTeleGroupBox
-            // 
-            this.autoTeleGroupBox.Controls.Add(this.autoTelePrevLabel);
-            this.autoTeleGroupBox.Controls.Add(this.autoTeleWpLabel);
-            this.autoTeleGroupBox.Controls.Add(this.autoTeleOtherLabel);
-            this.autoTeleGroupBox.Controls.Add(this.autoTeleNextLabel);
-            this.autoTeleGroupBox.Controls.Add(this.autoTelePrevkeybindButton);
-            this.autoTeleGroupBox.Controls.Add(this.autoTeleWpKeybindButton);
-            this.autoTeleGroupBox.Controls.Add(this.autoTeleMiscKeybindButton);
-            this.autoTeleGroupBox.Controls.Add(this.autoTeleNextKeybindButton);
-            this.autoTeleGroupBox.Location = new System.Drawing.Point(200, 181);
-            this.autoTeleGroupBox.Name = "autoTeleGroupBox";
-            this.autoTeleGroupBox.Size = new System.Drawing.Size(177, 121);
-            this.autoTeleGroupBox.TabIndex = 64;
-            this.autoTeleGroupBox.TabStop = false;
-            this.autoTeleGroupBox.Text = "Autoteleport";
-            // 
-            // autoTeleNextKeybindButton
-            // 
-            this.autoTeleNextKeybindButton.Key = System.Windows.Forms.Keys.None;
-            this.autoTeleNextKeybindButton.Location = new System.Drawing.Point(6, 19);
-            this.autoTeleNextKeybindButton.Name = "autoTeleNextKeybindButton";
-            this.autoTeleNextKeybindButton.Size = new System.Drawing.Size(50, 20);
-            this.autoTeleNextKeybindButton.TabIndex = 0;
-            this.autoTeleNextKeybindButton.UseVisualStyleBackColor = true;
-            this.autoTeleNextKeybindButton.WaitingKeyPress = false;
-            // 
-            // autoTeleOtherKeybindButton
-            // 
-            this.autoTeleMiscKeybindButton.Key = System.Windows.Forms.Keys.None;
-            this.autoTeleMiscKeybindButton.Location = new System.Drawing.Point(6, 45);
-            this.autoTeleMiscKeybindButton.Name = "autoTeleOtherKeybindButton";
-            this.autoTeleMiscKeybindButton.Size = new System.Drawing.Size(50, 20);
-            this.autoTeleMiscKeybindButton.TabIndex = 1;
-            this.autoTeleMiscKeybindButton.UseVisualStyleBackColor = true;
-            this.autoTeleMiscKeybindButton.WaitingKeyPress = false;
-            // 
-            // autoTeleWpKeybindButton
-            // 
-            this.autoTeleWpKeybindButton.Key = System.Windows.Forms.Keys.None;
-            this.autoTeleWpKeybindButton.Location = new System.Drawing.Point(6, 71);
-            this.autoTeleWpKeybindButton.Name = "autoTeleWpKeybindButton";
-            this.autoTeleWpKeybindButton.Size = new System.Drawing.Size(50, 20);
-            this.autoTeleWpKeybindButton.TabIndex = 2;
-            this.autoTeleWpKeybindButton.UseVisualStyleBackColor = true;
-            this.autoTeleWpKeybindButton.WaitingKeyPress = false;
-            // 
-            // autoTelePrevkeybindButton
-            // 
-            this.autoTelePrevkeybindButton.Key = System.Windows.Forms.Keys.None;
-            this.autoTelePrevkeybindButton.Location = new System.Drawing.Point(6, 94);
-            this.autoTelePrevkeybindButton.Name = "autoTelePrevkeybindButton";
-            this.autoTelePrevkeybindButton.Size = new System.Drawing.Size(50, 20);
-            this.autoTelePrevkeybindButton.TabIndex = 3;
-            this.autoTelePrevkeybindButton.UseVisualStyleBackColor = true;
-            this.autoTelePrevkeybindButton.WaitingKeyPress = false;
-            // 
-            // autoTeleNextLabel
-            // 
-            this.autoTeleNextLabel.AutoSize = true;
-            this.autoTeleNextLabel.Location = new System.Drawing.Point(66, 25);
-            this.autoTeleNextLabel.Name = "autoTeleNextLabel";
-            this.autoTeleNextLabel.Size = new System.Drawing.Size(94, 13);
-            this.autoTeleNextLabel.TabIndex = 4;
-            this.autoTeleNextLabel.Text = "Tele to Next Level";
-            // 
-            // autoTeleOtherLabel
-            // 
-            this.autoTeleOtherLabel.AutoSize = true;
-            this.autoTeleOtherLabel.Location = new System.Drawing.Point(66, 51);
-            this.autoTeleOtherLabel.Name = "autoTeleOtherLabel";
-            this.autoTeleOtherLabel.Size = new System.Drawing.Size(90, 13);
-            this.autoTeleOtherLabel.TabIndex = 5;
-            this.autoTeleOtherLabel.Text = "Tele to misc point";
-            // 
-            // autoTeleWpLabel
-            // 
-            this.autoTeleWpLabel.AutoSize = true;
-            this.autoTeleWpLabel.Location = new System.Drawing.Point(66, 74);
-            this.autoTeleWpLabel.Name = "autoTeleWpLabel";
-            this.autoTeleWpLabel.Size = new System.Drawing.Size(61, 13);
-            this.autoTeleWpLabel.TabIndex = 6;
-            this.autoTeleWpLabel.Text = "Tele to WP";
-            // 
-            // autoTelePrevLabel
-            // 
-            this.autoTelePrevLabel.AutoSize = true;
-            this.autoTelePrevLabel.Location = new System.Drawing.Point(66, 100);
-            this.autoTelePrevLabel.Name = "autoTelePrevLabel";
-            this.autoTelePrevLabel.Size = new System.Drawing.Size(108, 13);
-            this.autoTelePrevLabel.TabIndex = 7;
-            this.autoTelePrevLabel.Text = "Tele to previous level";
-            // 
             // OverlayWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1104,6 +1122,8 @@
             this.settingsTranslucentPanel.ResumeLayout(false);
             this.settingsTabControl.ResumeLayout(false);
             this.settingsTab.ResumeLayout(false);
+            this.autoTeleGroupBox.ResumeLayout(false);
+            this.autoTeleGroupBox.PerformLayout();
             this.helpersGroupBox.ResumeLayout(false);
             this.helpersGroupBox.PerformLayout();
             this.hacksGroupBox.ResumeLayout(false);
@@ -1116,8 +1136,6 @@
             this.statsTranslucentPanel.ResumeLayout(false);
             this.logHolder.ResumeLayout(false);
             this.logTranslucentPanel.ResumeLayout(false);
-            this.autoTeleGroupBox.ResumeLayout(false);
-            this.autoTeleGroupBox.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1209,5 +1227,6 @@
         private System.Windows.Forms.Label autoTeleWpLabel;
         private System.Windows.Forms.Label autoTeleOtherLabel;
         private System.Windows.Forms.Label autoTeleNextLabel;
+        private System.Windows.Forms.Button logClearButton;
     }
 }

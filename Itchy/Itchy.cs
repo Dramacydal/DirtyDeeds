@@ -118,7 +118,7 @@ namespace Itchy
                             games.Add(new D2Game(process, this));
                     }
                 }
-                catch (Exception) { }
+                catch { }
             }
         }
 
@@ -200,15 +200,17 @@ namespace Itchy
                 s = new StreamReader(OverlayConfigFileName);
                 x = new XmlSerializer(typeof(OverlaySettings));
                 OverlaySettings = (OverlaySettings)x.Deserialize(s);
-                s.Close();
             }
-            catch (Exception)
+            catch
             {
-                if (s != null)
-                    s.Close();
                 Settings = new GameSettings();
                 OverlaySettings = new OverlaySettings();
                 SaveSettings();
+            }
+            finally
+            {
+                if (s != null)
+                    s.Close();
             }
         }
 
@@ -228,9 +230,11 @@ namespace Itchy
                 s = new StreamWriter(OverlayConfigFileName);
                 x = new XmlSerializer(typeof(OverlaySettings));
                 x.Serialize(s, OverlaySettings);
-                s.Close();
             }
-            catch (Exception)
+            catch
+            {
+            }
+            finally
             {
                 if (s != null)
                     s.Close();

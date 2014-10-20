@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Itchy.AutoTeleport;
 using Itchy.D2Enums;
+using Itchy.Log;
 using WhiteMagic;
 
 namespace Itchy
@@ -216,40 +217,40 @@ namespace Itchy
             UnitAny unit;
             if (!game.InGame || !game.GameReady() || !game.GetPlayerUnit(out unit))
             {
-                game.Log("Failed to reveal act");
+                Logger.MapHack.Log(game, LogType.Warning, "Failed to reveal act.");
                 return;
             }
 
             if (revealedActs.Contains(unit.dwAct))
             {
-                game.Log("Act {0} is already revealed", unit.dwAct + 1);
+                Logger.MapHack.Log(game, LogType.None, "Act {0} is already revealed.", unit.dwAct + 1);
                 return;
             }
 
             if (unit.pAct == 0)
             {
-                game.Log("Failed to reveal act {0}", unit.dwAct + 1);
+                Logger.MapHack.Log(game, LogType.Warning, "Failed to reveal act {0}.", unit.dwAct + 1);
                 return;
             }
 
             var pAct = LoadAct(unit);
             if (pAct == 0)
             {
-                game.Log("Failed to reveal act");
+                Logger.MapHack.Log(game, LogType.Warning, "Failed to reveal act.");
                 return;
             }
 
             var act = game.Debugger.Read<Act>(pAct);
             if (act.pMisc == 0)
             {
-                game.Log("Failed to reveal act");
+                Logger.MapHack.Log(game, LogType.Warning, "Failed to reveal act.");
                 return;
             }
 
             var actMisc = game.Debugger.Read<ActMisc>(act.pMisc);
             if (actMisc.pLevelFirst == 0)
             {
-                game.Log("Failed to reveal act");
+                Logger.MapHack.Log(game, LogType.Warning, "Failed to reveal act.");
                 return;
             }
 
@@ -263,7 +264,7 @@ namespace Itchy
 
             revealedActs.Add(unit.dwAct);
 
-            game.Log("Revealed act {0}", unit.dwAct + 1);
+            Logger.MapHack.Log(game, LogType.None, "Revealed act {0}.", unit.dwAct + 1);
         }
 
         protected void DrawPreset(Room2 room, Level lvl, PresetUnit preset)

@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Itchy.D2Enums;
+using Itchy.Log;
 
 namespace Itchy
 {
@@ -74,7 +75,7 @@ namespace Itchy
 
             isDisabled = false;
 
-            game.LogWarning("Pickit: Pickit enabled.");
+            Logger.Pickit.Log(game, LogType.None, "Pickit enabled.");
         }
 
         public void Disable(PickitDisableReason reason)
@@ -82,7 +83,7 @@ namespace Itchy
             if (isDisabled)
                 return;
 
-            var str = "Pickit: ";
+            var str = "";
             if (reason == PickitDisableReason.Died)
                 str += "You have died! ";
             else if (reason == PickitDisableReason.InventoryFull)
@@ -95,7 +96,7 @@ namespace Itchy
                     str += " Press " + game.Settings.ReceivePacketHack.ItemTracker.ReactivatePickit.Key.ToString() +
                         " to reenable pickit.";
 
-            game.LogWarning(str);
+            Logger.Pickit.Log(game, LogType.Warning, str);
             isDisabled = true;
         }
 
@@ -253,7 +254,7 @@ namespace Itchy
                         ++item.pickTryCount;
                         if (item.pickTryCount >= maxPickTries)
                         {
-                            game.Log("Pickit: failed to pick {0} after {1} retries", item.uid, item.pickTryCount);
+                            Logger.Pickit.Log(game, LogType.Warning, "Failed to pick {0} after {1} retries.", item.uid, item.pickTryCount);
                             itemsToPick.Remove(item.uid);
                         }
                         else if (Pick(item, true, false))
@@ -269,7 +270,7 @@ namespace Itchy
                             ++item.pickTryCount;
                             if (item.pickTryCount >= maxPickTries)
                             {
-                                game.Log("Pickit: failed to pick {0} after {1} retries", item.uid, item.pickTryCount);
+                                Logger.Pickit.Log(game, LogType.Warning, "Failed to pick {0} after {1} retries.", item.uid, item.pickTryCount);
                                 itemsToPick.Remove(item.uid);
                             }
                             else if (Pick(item, false, true))
@@ -295,7 +296,7 @@ namespace Itchy
                         Thread.Sleep(400);
                     }
                 }
-                catch (Exception) { }
+                catch { }
             }
         }
     }

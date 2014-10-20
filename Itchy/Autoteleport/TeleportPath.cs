@@ -54,7 +54,7 @@ namespace Itchy.AutoTeleport
             if (m_ppTable == null)
                 return false;
 
-            for (var x=0;x<m_nCX;++x)
+            for (var x = 0; x < m_nCX; ++x)
             {
                 for (int y = 0; y < m_nCY; y++)
                 {
@@ -158,16 +158,16 @@ namespace Itchy.AutoTeleport
 
             MakeDistanceTable();
 
-            lpBuffer[0]= ptStart;
+            lpBuffer[0] = ptStart;
             uint dwFound = 1;
 
             var pos = ptStart.Clone();
 
             var ok = false;
             var nRes = GetBestMove(ref pos);
-            while(nRes != PathfindResult.Fail && dwFound < dwMaxCount)
+            while (nRes != PathfindResult.Fail && dwFound < dwMaxCount)
             {
-                if (nRes==PathfindResult.Reached)
+                if (nRes == PathfindResult.Reached)
                 {
                     ok = true;
                     lpBuffer[dwFound] = ptEnd;

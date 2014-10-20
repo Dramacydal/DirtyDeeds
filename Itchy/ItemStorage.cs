@@ -170,7 +170,7 @@ namespace Itchy
                     codeByIds.Add(Convert.ToUInt32(a[0]), a[1]);
                     idByCodes.Add(a[1], Convert.ToUInt32(a[0]));
                 }
-                catch (Exception)
+                catch
                 {
                     hasErrors = true;
                 }

@@ -248,7 +248,7 @@ namespace Itchy
                                 if (val > 0)
                                     info.PickRadius = val;
                             }
-                            catch (Exception) { }
+                            catch { }
                             break;
                         }
                         case "sock":
@@ -262,7 +262,7 @@ namespace Itchy
                                     if (val >= 0 && val <= 6)
                                         info.SocketNum.Add(val);
                                 }
-                                catch (Exception) { }
+                                catch { }
                             }
                             break;
                         }
