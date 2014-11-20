@@ -7,10 +7,11 @@ using DD.AutoTeleport;
 using DD.D2Enums;
 using DD.Log;
 using WhiteMagic;
-
 using WhiteMagic.WinAPI;
 using DD.D2Pointers;
 using DD.D2Structs;
+using DD.Settings;
+using DD.Breakpoints;
 
 namespace DD
 {
@@ -553,7 +554,7 @@ namespace DD
 
         private void AddBreakPoint(D2BreakPoint bp)
         {
-            if (pd.Breakpoints.Count >= 4)
+            if (pd.Breakpoints.Count >= Kernel32.MaxHardwareBreakpoints)
                 return;
 
             try

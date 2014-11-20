@@ -8,7 +8,7 @@ using WhiteMagic;
 
 namespace DD
 {
-    public static class Extensions
+    public static class DDExtensions
     {
         public static void AppendText(this RichTextBox box, string text, Color color, params object[] args)
         {

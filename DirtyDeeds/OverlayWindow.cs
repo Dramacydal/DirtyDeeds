@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using DD.D2Enums;
 using DirtyDeedsControls;
+using DD.Settings;
 
 namespace DD
 {

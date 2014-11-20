@@ -55,6 +55,15 @@
     <Compile Include="Breakpoints.cs" />
     <Compile Include="AutoTeleport\CMatrix.cs" />
     <Compile Include="AutoTeleport\CollisionMap.cs" />
+    <Compile Include="Breakpoints\D2BreakPoint.cs" />
+    <Compile Include="Breakpoints\InfravisionBreakPoint.cs" />
+    <Compile Include="Breakpoints\ItemNameBreakPoint.cs" />
+    <Compile Include="Breakpoints\LightBreakPoint.cs" />
+    <Compile Include="Breakpoints\ReceivePacketBreakPoint.cs" />
+    <Compile Include="Breakpoints\ViewInventoryBp1.cs" />
+    <Compile Include="Breakpoints\ViewInventoryBp2.cs" />
+    <Compile Include="Breakpoints\ViewInventoryBp3.cs" />
+    <Compile Include="Breakpoints\WeatherBreakPoint.cs" />
     <Compile Include="ByteConverter.cs" />
     <Compile Include="Controls\D2ToolstipMenuItem.cs">
       <SubType>Component</SubType>
@@ -86,7 +95,21 @@
     <Compile Include="D2Pointers\Storm.cs" />
     <Compile Include="D2Structs\Collmap.cs" />
     <Compile Include="D2Structs\SkillInfo.cs" />
+    <Compile Include="Settings\ChickenSettings.cs" />
+    <Compile Include="Settings\FastPortalSettings.cs" />
+    <Compile Include="Settings\GameSettings.cs" />
+    <Compile Include="Settings\HackSettings.cs" />
+    <Compile Include="Settings\InfravisionSettings.cs" />
+    <Compile Include="Settings\ItemNameHackSettings.cs" />
+    <Compile Include="Settings\ItemProcessingSettings.cs" />
+    <Compile Include="Settings\ItemTrackerSettings.cs" />
+    <Compile Include="Settings\KeySettings.cs" />
+    <Compile Include="Settings\OverlaySettings.cs" />
+    <Compile Include="Settings\PacketReceivedHackSettings.cs" />
+    <Compile Include="Settings\ViewInventorySettings.cs" />
     <Compile Include="GameSuspender.cs" />
+    <Compile Include="Ini\InitParser.cs" />
+    <Compile Include="ItemProcessingInfo.cs" />
     <Compile Include="Log\Logger.cs" />
     <Compile Include="PlayerInfo.cs" />
     <Compile Include="D2Api\GameApi.cs" />
@@ -98,9 +121,7 @@
     <Compile Include="D2ItemActionHandler.cs" />
     <Compile Include="D2Tasks.cs" />
     <Compile Include="Extensions.cs" />
-    <Compile Include="GameSettings.cs" />
     <Compile Include="Hook.cs" />
-    <Compile Include="IniParser.cs" />
     <Compile Include="DirtyDeeds.cs">
       <SubType>Form</SubType>
     </Compile>

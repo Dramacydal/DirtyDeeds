@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DD.D2Enums;
-using WhiteMagic;
 using DD.D2Structs;
 using DD.D2Pointers;
 

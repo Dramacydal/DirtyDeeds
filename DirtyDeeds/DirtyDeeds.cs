@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Xml.Serialization;
 using DirtyDeedsControls;
 using WhiteMagic;
+using DD.Settings;
 
 namespace DD
 {

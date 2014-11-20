@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using DD.D2Enums;
 using DD.Log;
 using WhiteMagic;
@@ -12,7 +10,6 @@ using WhiteMagic;
 namespace DD.AutoTeleport
 {
     using PointList = List<Point>;
-    using WordMatrix = CMatrix<ushort>;
     using DD.D2Pointers;
     using DD.D2Structs;
 

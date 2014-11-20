@@ -1,6 +1,6 @@
-﻿using System.Collections.Concurrent;
+﻿using DD.D2Enums;
+using System.Collections.Concurrent;
 using System.Linq;
-using DD.D2Enums;
 
 namespace DD
 {

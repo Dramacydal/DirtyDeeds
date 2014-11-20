@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Runtime.InteropServices;
 
-namespace IniParser
+namespace DD.Ini
 {
+    using System.Runtime.InteropServices;
     using IniKeyDictionary = Dictionary<string, string>;
     using IniSectionList = List<IniSection>;
 
@@ -48,7 +48,7 @@ namespace IniParser
 
         public IniReader(string path)
         {
-            this.path = System.IO.Directory.GetCurrentDirectory() + "\\" +  path;
+            this.path = System.IO.Directory.GetCurrentDirectory() + "\\" + path;
         }
 
         public void Parse()
