@@ -1,0 +1,196 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{63D8163E-9FB2-492E-BDDE-B89D97E45879}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DD</RootNamespace>
+    <AssemblyName>DirtyDeeds</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="fasmdll_managed">
+      <HintPath>..\..\Win32HWBP\fasmdll_managed.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WhiteMagic">
+      <HintPath>..\..\WhiteMagic\WhiteMagic\bin\Debug\WhiteMagic.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AutoTeleport\AutoTeleHandler.cs" />
+    <Compile Include="AutoTeleport\TeleportPath.cs" />
+    <Compile Include="Breakpoints.cs" />
+    <Compile Include="AutoTeleport\CMatrix.cs" />
+    <Compile Include="AutoTeleport\CollisionMap.cs" />
+    <Compile Include="ByteConverter.cs" />
+    <Compile Include="Controls\D2ToolstipMenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\DragExtension.cs" />
+    <Compile Include="Controls\KeybindButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="D2Enums\ItemActionType.cs" />
+    <Compile Include="D2Enums\ItemCategory.cs" />
+    <Compile Include="D2Enums\D2Color.cs" />
+    <Compile Include="D2Enums\EquipmentLocation.cs" />
+    <Compile Include="D2Enums\Inventory.cs" />
+    <Compile Include="D2Enums\ItemContainer.cs" />
+    <Compile Include="D2Enums\ItemFlag.cs" />
+    <Compile Include="D2Enums\ItemQuality.cs" />
+    <Compile Include="D2Enums\Map.cs" />
+    <Compile Include="D2Enums\Modes.cs" />
+    <Compile Include="D2Enums\Packets.cs" />
+    <Compile Include="D2Enums\SkillType.cs" />
+    <Compile Include="D2Enums\StatType.cs" />
+    <Compile Include="D2Enums\UIVars.cs" />
+    <Compile Include="D2Enums\UnitType.cs" />
+    <Compile Include="D2Pointers\D2Client.cs" />
+    <Compile Include="D2Pointers\D2Common.cs" />
+    <Compile Include="D2Pointers\D2Net.cs" />
+    <Compile Include="D2Pointers\Fog.cs" />
+    <Compile Include="D2Pointers\Game.cs" />
+    <Compile Include="D2Pointers\Storm.cs" />
+    <Compile Include="D2Structs\Collmap.cs" />
+    <Compile Include="D2Structs\SkillInfo.cs" />
+    <Compile Include="GameSuspender.cs" />
+    <Compile Include="Log\Logger.cs" />
+    <Compile Include="PlayerInfo.cs" />
+    <Compile Include="D2Api\GameApi.cs" />
+    <Compile Include="D2Api\LowLevel.cs" />
+    <Compile Include="D2Game.cs" />
+    <Compile Include="Controls\ExpandButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="D2ItemActionHandler.cs" />
+    <Compile Include="D2Tasks.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="GameSettings.cs" />
+    <Compile Include="Hook.cs" />
+    <Compile Include="IniParser.cs" />
+    <Compile Include="DirtyDeeds.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DirtyDeeds.Designer.cs">
+      <DependentUpon>DirtyDeeds.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ItemStorage.cs" />
+    <Compile Include="MapHandler.cs" />
+    <Compile Include="Misc.cs" />
+    <Compile Include="OverlayWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="OverlayWindow.Designer.cs">
+      <DependentUpon>OverlayWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Packets.cs" />
+    <Compile Include="Pickit.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Controls\TranslucentPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\TransparentRichTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="AutoTeleport\TeleportInfo.cs" />
+    <Compile Include="D2Structs\Act.cs" />
+    <Compile Include="D2Structs\ActMisc.cs" />
+    <Compile Include="D2Structs\AutomapCell.cs" />
+    <Compile Include="D2Structs\AutomapLayer.cs" />
+    <Compile Include="D2Structs\AutomapLayer2.cs" />
+    <Compile Include="D2Structs\Info.cs" />
+    <Compile Include="D2Structs\Inventory.cs" />
+    <Compile Include="D2Structs\ItemData.cs" />
+    <Compile Include="D2Structs\ItemTxt.cs" />
+    <Compile Include="D2Structs\Level.cs" />
+    <Compile Include="D2Structs\LevelTxt.cs" />
+    <Compile Include="D2Structs\ObjectPath.cs" />
+    <Compile Include="D2Structs\ObjectTxt.cs" />
+    <Compile Include="D2Structs\Path.cs" />
+    <Compile Include="D2Structs\PlayerData.cs" />
+    <Compile Include="D2Structs\PresetUnit.cs" />
+    <Compile Include="D2Structs\Room1.cs" />
+    <Compile Include="D2Structs\Room2.cs" />
+    <Compile Include="D2Structs\RoomTile.cs" />
+    <Compile Include="D2Structs\RosterUnit.cs" />
+    <Compile Include="D2Structs\Skill.cs" />
+    <Compile Include="D2Structs\Type2Info.cs" />
+    <Compile Include="D2Structs\UnitAny.cs" />
+    <EmbeddedResource Include="DirtyDeeds.resx">
+      <DependentUpon>DirtyDeeds.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OverlayWindow.resx">
+      <DependentUpon>OverlayWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Resources\diablo_h.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
