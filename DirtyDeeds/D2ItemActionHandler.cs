@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DD.D2Enums;
 using DD.Log;
+using DD.Extensions;
 
 namespace DD
 {

@@ -6,6 +6,7 @@ using System.Threading;
 using System.Windows.Forms;
 using DD.D2Enums;
 using DD.Log;
+using DD.Extensions;
 
 namespace DD
 {
@@ -211,7 +212,7 @@ namespace DD
         protected ItemActionInfo GetClosestItem(double range = double.MaxValue)
         {
             ItemActionInfo temp = null;
-            double dist = range;
+            var dist = range;
 
             foreach (var item in itemsToPick)
             {

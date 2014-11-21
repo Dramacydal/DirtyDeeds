@@ -6,6 +6,7 @@ using System.Threading;
 using DD.D2Enums;
 using DD.Log;
 using WhiteMagic;
+using DD.Extensions;
 
 namespace DD.AutoTeleport
 {
@@ -19,6 +20,28 @@ namespace DD.AutoTeleport
         Misc = 1,
         WP = 2,
         Prev = 3
+    }
+
+    public static class TeleTypeExtensions
+    {
+        public static string Name(this TeleType type)
+        {
+            switch (type)
+            {
+                case TeleType.Next:
+                    return "Next Level";
+                case TeleType.Misc:
+                    return "Misc Location";
+                case TeleType.WP:
+                    return "Waypoint";
+                case TeleType.Prev:
+                    return "Previous Level";
+                default:
+                    break;
+            }
+
+            return "<Unknown>";
+        }
     }
 
     public class AutoTeleHandler

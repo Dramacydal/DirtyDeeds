@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using DD.D2Enums;
 using DirtyDeedsControls;
 using DD.Settings;
+using DD.Extensions;
 
 namespace DD
 {

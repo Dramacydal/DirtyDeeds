@@ -12,6 +12,7 @@ using DD.D2Pointers;
 using DD.D2Structs;
 using DD.Settings;
 using DD.Breakpoints;
+using DD.Extensions;
 
 namespace DD
 {

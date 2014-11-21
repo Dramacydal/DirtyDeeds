@@ -6,6 +6,7 @@ using DD.Log;
 using WhiteMagic;
 using DD.D2Structs;
 using DD.D2Pointers;
+using DD.Extensions;
 
 namespace DD
 {

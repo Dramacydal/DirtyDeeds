@@ -4,6 +4,7 @@ using System.Drawing;
 using DD.AutoTeleport;
 using DD.D2Enums;
 using DD.Log;
+using DD.Extensions;
 using WhiteMagic;
 
 namespace DD

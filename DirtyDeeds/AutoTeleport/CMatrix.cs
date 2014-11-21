@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using DD.Extensions;
 
 namespace DD.AutoTeleport
 {

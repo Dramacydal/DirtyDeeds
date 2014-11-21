@@ -3,6 +3,7 @@ using DD.D2Structs;
 using System.Linq;
 using WhiteMagic;
 using WhiteMagic.WinAPI;
+using DD.Extensions;
 
 namespace DD.Breakpoints
 {

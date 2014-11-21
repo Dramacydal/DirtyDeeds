@@ -52,7 +52,6 @@
   <ItemGroup>
     <Compile Include="AutoTeleport\AutoTeleHandler.cs" />
     <Compile Include="AutoTeleport\TeleportPath.cs" />
-    <Compile Include="Breakpoints.cs" />
     <Compile Include="AutoTeleport\CMatrix.cs" />
     <Compile Include="AutoTeleport\CollisionMap.cs" />
     <Compile Include="Breakpoints\D2BreakPoint.cs" />
@@ -95,6 +94,12 @@
     <Compile Include="D2Pointers\Storm.cs" />
     <Compile Include="D2Structs\Collmap.cs" />
     <Compile Include="D2Structs\SkillInfo.cs" />
+    <Compile Include="Extensions\DateTimeExtensions.cs" />
+    <Compile Include="Extensions\DebuggerExtensions.cs" />
+    <Compile Include="Extensions\DictionaryExtensions.cs" />
+    <Compile Include="Extensions\PointExtensions.cs" />
+    <Compile Include="Extensions\RichTextBoxExtensions.cs" />
+    <Compile Include="Extensions\ColorExtensions.cs" />
     <Compile Include="Settings\ChickenSettings.cs" />
     <Compile Include="Settings\FastPortalSettings.cs" />
     <Compile Include="Settings\GameSettings.cs" />
@@ -120,7 +125,6 @@
     </Compile>
     <Compile Include="D2ItemActionHandler.cs" />
     <Compile Include="D2Tasks.cs" />
-    <Compile Include="Extensions.cs" />
     <Compile Include="Hook.cs" />
     <Compile Include="DirtyDeeds.cs">
       <SubType>Form</SubType>

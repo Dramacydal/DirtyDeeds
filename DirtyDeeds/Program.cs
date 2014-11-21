@@ -13,8 +13,7 @@ namespace DD
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            var dd = new DirtyDeeds();
-            Application.Run(dd);
+            Application.Run(new DirtyDeeds());
         }
     }
 }
