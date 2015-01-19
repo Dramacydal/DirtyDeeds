@@ -320,21 +320,29 @@ namespace DD
             }
         }
 
+        private static uint ResumeThreadOffset = 0;
+
+        private static uint GetResumeThreadAddr()
+        {
+            var hModule = Kernel32.GetModuleHandle("kernel32.dll");
+            if (hModule == IntPtr.Zero)
+                hModule = Kernel32.LoadLibraryA("kernel32.dll");
+            if (hModule == IntPtr.Zero)
+                throw new DebuggerException("Failed to get kernel32.dll module");
+
+            return Kernel32.GetProcAddress(hModule, "ResumeThread").ToUInt32() - hModule.ToUInt32();
+        }
+
         public void ResumeStormThread()
         {
             lock ("moduleLoad")
             {
-                var hModule = Kernel32.GetModuleHandle("kernel32.dll");
-                if (hModule == 0)
-                    hModule = Kernel32.LoadLibraryA("kernel32.dll");
-                if (hModule == 0)
-                    throw new DebuggerException("Failed to get kernel32.dll module");
-
-                var funcAddress = Kernel32.GetProcAddress(hModule, "ResumeThread");
+                if (ResumeThreadOffset == 0)
+                    ResumeThreadOffset = GetResumeThreadAddr();
 
                 var handle = pd.ReadUInt(Storm.pHandle);
 
-                pd.Call(pd.GetModuleAddress("kernel32.dll") + funcAddress - hModule, CallingConventionEx.StdCall, handle);
+                pd.Call(pd.GetModuleAddress("kernel32.dll").ToUInt32() + ResumeThreadOffset, CallingConventionEx.StdCall, handle);
             }
         }
 

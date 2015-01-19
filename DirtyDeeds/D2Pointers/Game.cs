@@ -1,10 +1,11 @@
 ﻿using WhiteMagic;
+using WhiteMagic.Modules;
 
 namespace DD.D2Pointers
 {
     public class Game : ModulePointer   // 0x400000
     {
-        public Game(uint offset)
+        public Game(int offset)
             : base("Game.exe", offset)
         { }
 

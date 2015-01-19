@@ -1,10 +1,11 @@
 ﻿using WhiteMagic;
+using WhiteMagic.Modules;
 
 namespace DD.D2Pointers
 {
     public class D2Common : ModulePointer    // 0x6FD50000
     {
-        public D2Common(uint offset)
+        public D2Common(int offset)
             : base("D2Common.dll", offset)
         { }
 

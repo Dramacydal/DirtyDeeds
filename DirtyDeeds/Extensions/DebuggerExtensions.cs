@@ -1,4 +1,5 @@
 ﻿using WhiteMagic;
+using WhiteMagic.Modules;
 
 namespace DD.Extensions
 {

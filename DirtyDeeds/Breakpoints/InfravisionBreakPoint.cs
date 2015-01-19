@@ -1,5 +1,6 @@
 ﻿using DD.D2Enums;
 using DD.D2Structs;
+using DD.Extensions;
 using System.Linq;
 using WhiteMagic;
 using WhiteMagic.WinAPI;

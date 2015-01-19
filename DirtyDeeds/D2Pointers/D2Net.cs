@@ -1,10 +1,11 @@
 ﻿using WhiteMagic;
+using WhiteMagic.Modules;
 
 namespace DD.D2Pointers
 {
     public class D2Net : ModulePointer   // 0x6FBF0000
     {
-        public D2Net(uint offset)
+        public D2Net(int offset)
             : base("D2Net.dll", offset)
         { }
 

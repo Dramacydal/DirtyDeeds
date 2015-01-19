@@ -1,5 +1,6 @@
 ﻿using DD.D2Enums;
 using DD.D2Structs;
+using DD.Extensions;
 using System;
 using System.Linq;
 using System.Threading.Tasks;

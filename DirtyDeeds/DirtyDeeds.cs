@@ -34,7 +34,7 @@ namespace DD
         {
             InitializeComponent();
 
-            if (!Helpers.SetDebugPrivileges())
+            if (!MagicHelpers.SetDebugPrivileges())
             {
                 MessageBox.Show("Failed to set debug privileges. Run as Administrator.");
                 return;

@@ -133,11 +133,11 @@
             this.dirtyDeedsLabel.AutoSize = true;
             this.dirtyDeedsLabel.Font = new System.Drawing.Font("Franklin Gothic Medium", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.dirtyDeedsLabel.ForeColor = System.Drawing.Color.Maroon;
-            this.dirtyDeedsLabel.Location = new System.Drawing.Point(594, 893);
+            this.dirtyDeedsLabel.Location = new System.Drawing.Point(605, 893);
             this.dirtyDeedsLabel.Name = "dirtyDeedsLabel";
-            this.dirtyDeedsLabel.Size = new System.Drawing.Size(67, 28);
+            this.dirtyDeedsLabel.Size = new System.Drawing.Size(40, 28);
             this.dirtyDeedsLabel.TabIndex = 3;
-            this.dirtyDeedsLabel.Text = "DIRTYDEEDS";
+            this.dirtyDeedsLabel.Text = "DD";
             this.dirtyDeedsLabel.Visible = false;
             // 
             // settingsHolder
@@ -961,13 +961,13 @@
             // settingsExpandButton
             // 
             this.settingsExpandButton.ChildPanel = this.settingsTranslucentPanel;
-            this.settingsExpandButton.Expanded = true;
+            this.settingsExpandButton.Expanded = false;
             this.settingsExpandButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.settingsExpandButton.Location = new System.Drawing.Point(3, 3);
             this.settingsExpandButton.Name = "settingsExpandButton";
             this.settingsExpandButton.Size = new System.Drawing.Size(18, 16);
             this.settingsExpandButton.TabIndex = 5;
-            this.settingsExpandButton.Text = " \\/";
+            this.settingsExpandButton.Text = " /\\";
             this.settingsExpandButton.UseVisualStyleBackColor = true;
             this.settingsExpandButton.Click += new System.EventHandler(this.settingsExpandButton_Click);
             // 
@@ -1096,7 +1096,7 @@
             this.logTextBox.ShortcutsEnabled = false;
             this.logTextBox.Size = new System.Drawing.Size(516, 95);
             this.logTextBox.TabIndex = 1;
-            this.logTextBox.Text = "lol wtf hz omg";
+            this.logTextBox.Text = "";
             this.logTextBox.WordWrap = false;
             // 
             // OverlayWindow

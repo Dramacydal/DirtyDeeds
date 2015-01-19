@@ -1,10 +1,11 @@
 ﻿using WhiteMagic;
+using WhiteMagic.Modules;
 
 namespace DD.D2Pointers
 {
     public class D2Client : ModulePointer    // 0x6FAB0000
     {
-        public D2Client(uint offset)
+        public D2Client(int offset)
             : base("D2Client.dll", offset)
         { }
 
