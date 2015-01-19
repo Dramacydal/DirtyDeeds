@@ -1,0 +1,402 @@
+The Gnasher	hax
+Deathspade	axe
+Bladebone	2ax
+Mindrend	mpi
+Rakescar	wax
+Fechmars Axe	lax
+Goreshovel	bax
+The Chieftan	btx
+Brainhew	gax
+The Humongous	gix
+Iros Torch	wnd
+Maelstromwrath	ywn
+Gravenspine	bwn
+Umes Lament	gwn
+Felloak	clb
+Knell Striker	scp
+Rusthandle	gsc
+Stormeye	wsp
+Stoutnail	spc
+Crushflange	mac
+Bloodrise	mst
+The Generals Tan Do Li Ga	fla
+Ironstone	whm
+Bonesob	mau
+Steeldriver	gma
+Rixots Keen	ssd
+Blood Crescent	scm
+Krintizs Skewer	sbr
+Gleamscythe	flc
+Azurewrath	crs
+Griswolds Edge	bsd
+Hellplague	lsd
+Culwens Point	wsd
+Shadowfang	2hs
+Soulflay	clm
+Kinemils Awl	gis
+Blacktongue	bsw
+Ripsaw	flb
+The Patriarch	gsd
+Gull	dgr
+The Diggler	dir
+The Jade Tan Do	kri
+Irices Shard	bld
+The Dragon Chang	spr
+Razortine	tri
+Bloodthief	brn
+Lance of Yaggai	spt
+The Tannr Gorerod	pik
+Dimoaks Hew	bar
+Steelgoad	vou
+Soul Harvest	scy
+The Battlebranch	pax
+Woestave	hal
+The Grim Reaper	wsc
+Bane Ash	sst
+Serpent Lord	lst
+Lazarus Spire	cst
+The Salamander	bst
+The Iron Jang Bong	wst
+Pluckeye	sbw
+Witherstring	hbw
+Rimeraven	lbw
+Piercerib	cbw
+Pullspite	sbb
+Wizendraw	lbb
+Hellclap	swb
+Blastbark	lwb
+Leadcrow	lxb
+Ichorsting	mxb
+Hellcast	hxb
+Doomspittle	rxb
+War Bonnet	cap
+Tarnhelm	skp
+Coif of Glory	hlm
+Duskdeep	fhl
+Wormskull	bhm
+Howltusk	ghm
+Undead Crown	crn
+The Face of Horror	msk
+Greyform	qui
+Blinkbats Form	lea
+The Centurion	hla
+Twitchthroe	stu
+Darkglow	rng
+Hawkmail	scl
+Sparking Mail	chn
+Venomsward	brs
+Iceblink	spl
+Boneflesh	plt
+Rockfleece	fld
+Rattlecage	gth
+Goldskin	ful
+Victors Silk	aar
+Heavenly Garb	ltp
+Pelta Lunata	buc
+Umbral Disk	sml
+Stormguild	lrg
+Wall of the Eyeless	bsh
+Swordback Hold	spk
+Steelclash	kit
+Bverrit Keep	tow
+The Ward	gts
+The Hand of Broc	lgl
+Bloodfist	vgl
+Chance Guards	mgl
+Magefist	tgl
+Frostburn	hgl
+Hotspur	lbt
+Gorefoot	vbt
+Treads of Cthon	mbt
+Goblin Toe	tbt
+Tearhaunch	hbt
+Lenyms Cord	lbl
+Snakecord	vbl
+Nightsmoke	mbl
+Goldwrap	tbl
+Bladebuckle	hbl
+Nokozan Relic	amu
+The Eye of Etlich	amu
+The Mahim-Oak Curio	amu
+Nagelring	rin
+Manald Heal	rin
+The Stone of Jordan	rin
+Amulet of the Viper	vip
+Staff of Kings	msf
+Horadric Staff	hst
+Hell Forge Hammer	hfh
+KhalimFlail	qf1
+SuperKhalimFlail	qf2
+Expansion	
+Coldkill	9ha
+Butcher's Pupil	9ax
+Islestrike	92a
+Pompe's Wrath	9mp
+Guardian Naga	9wa
+Warlord's Trust	9la
+Spellsteel	9ba
+Stormrider	9bt
+Boneslayer Blade	9ga
+The Minataur	9gi
+Suicide Branch	9wn
+Carin Shard	9yw
+Arm of King Leoric	9bw
+Blackhand Key	9gw
+Dark Clan Crusher	9cl
+Zakarum's Hand	9sc
+The Fetid Sprinkler	9qs
+Hand of Blessed Light	9ws
+Fleshrender	9sp
+Sureshrill Frost	9ma
+Moonfall	9mt
+Baezil's Vortex	9fl
+Earthshaker	9wh
+Bloodtree Stump	9m9
+The Gavel of Pain	9gm
+Bloodletter	9ss
+Coldsteel Eye	9sm
+Hexfire	9sb
+Blade of Ali Baba	9fc
+Ginther's Rift	9cr
+Headstriker	9bs
+Plague Bearer	9ls
+The Atlantian	9wd
+Crainte Vomir	92h
+Bing Sz Wang	9cm
+The Vile Husk	9gs
+Cloudcrack	9b9
+Todesfaelle Flamme	9fb
+Swordguard	9gd
+Spineripper	9dg
+Heart Carver	9di
+Blackbog's Sharp	9kr
+Stormspike	9bl
+The Impaler	9sr
+Kelpie Snare	9tr
+Soulfeast Tine	9br
+Hone Sundan	9st
+Spire of Honor	9p9
+The Meat Scraper	9b7
+Blackleach Blade	9vo
+Athena's Wrath	9s8
+Pierre Tombale Couant	9pa
+Husoldal Evo	9h9
+Grim's Burning Dead	9wc
+Razorswitch	8ss
+Ribcracker	8ls
+Chromatic Ire	8cs
+Warpspear	8bs
+Skullcollector	8ws
+Skystrike	8sb
+Riphook	8hb
+Kuko Shakaku	8lb
+Endlesshail	8cb
+Whichwild String	8s8
+Cliffkiller	8l8
+Magewrath	8sw
+Godstrike Arch	8lw
+Langer Briser	8lx
+Pus Spiter	8mx
+Buriza-Do Kyanon	8hx
+Demon Machine	8rx
+Armor	
+Peasent Crown	xap
+Rockstopper	xkp
+Stealskull	xlm
+Darksight Helm	xhl
+Valkiry Wing	xhm
+Crown of Thieves	xrn
+Blackhorn's Face	xsk
+Vampiregaze	xh9
+The Spirit Shroud	xui
+Skin of the Vipermagi	xea
+Skin of the Flayerd One	xla
+Ironpelt	xtu
+Spiritforge	xng
+Crow Caw	xcl
+Shaftstop	xhn
+Duriel's Shell	xrs
+Skullder's Ire	xpl
+Guardian Angel	xlt
+Toothrow	xld
+Atma's Wail	xth
+Black Hades	xul
+Corpsemourn	xar
+Que-Hegan's Wisdon	xtp
+Visceratuant	xuc
+Mosers Blessed Circle	xml
+Stormchaser	xrg
+Tiamat's Rebuke	xit
+Kerke's Sanctuary	xow
+Radimant's Sphere	xts
+Lidless Wall	xsh
+Lance Guard	xpk
+Venom Grip	xlg
+Gravepalm	xvg
+Ghoulhide	xmg
+Lavagout	xtg
+Hellmouth	xhg
+Infernostride	xlb
+Waterwalk	xvb
+Silkweave	xmb
+Wartraveler	xtb
+Gorerider	xhb
+String of Ears	zlb
+Razortail	zvb
+Gloomstrap	zmb
+Snowclash	ztb
+Thudergod's Vigor	zhb
+Elite Uniques	
+Harlequin Crest	uap
+Veil of Steel	uhm
+The Gladiator's Bane	utu
+Arkaine's Valor	upl
+Blackoak Shield	uml
+Stormshield	uit
+Hellslayer	7bt
+Messerschmidt's Reaver	7ga
+Baranar's Star	7mt
+Schaefer's Hammer	7wh
+The Cranium Basher	7gm
+Lightsabre	7cr
+Doombringer	7b7
+The Grandfather	7gd
+Wizardspike	7dg
+Constricting Ring	rin
+Stormspire	7wc
+Eaglehorn	6l7
+Windforce	6lw
+Rings	
+Bul Katho's Wedding Band	rin
+The Cat's Eye	amu
+The Rising Sun	amu
+Crescent Moon	amu
+Mara's Kaleidoscope	amu
+Atma's Scarab	amu
+Dwarf Star	rin
+Raven Frost	rin
+Highlord's Wrath	amu
+Saracen's Chance	amu
+Class Specific	
+Arreat's Face	baa
+Homunculus	nea
+Titan's Revenge	ama
+Lycander's Aim	am7
+Lycander's Flank	am9
+The Oculus	oba
+Herald of Zakarum	pa9
+Cutthroat1	9tw
+Jalal's Mane	dra
+The Scalper	9ta
+Bloodmoon	7sb
+Djinnslayer	7sm
+Deathbit	9tk
+Warshrike	7bk
+Gutsiphon	6rx
+Razoredge	7ha
+Gore Ripper	
+Demonlimb	7sp
+Steelshade	ulm
+Tomb Reaver	7pa
+Deaths's Web	7gw
+Nature's Peace	rin
+Azurewrath	7cr
+Seraph's Hymn	amu
+Zakarum's Salvation	
+Fleshripper	7kr
+Odium	
+Horizon's Tornado	7fl
+Stone Crusher	7wh
+Jadetalon	7wb
+Shadowdancer	uhb
+Cerebus	drb
+Tyrael's Might	uar
+Souldrain	umg
+Runemaster	72a
+Deathcleaver	7wa
+Executioner's Justice	7gi
+Stoneraven	amd
+Leviathan	uld
+Larzuk's Champion	
+Wisp	rin
+Gargoyle's Bite	7ts
+Lacerator	7b8
+Mang Song's Lesson	6ws
+Viperfork	7br
+Ethereal Edge	7ba
+Demonhorn's Edge	bad
+The Reaper's Toll	7s8
+Spiritkeeper	drd
+Hellrack	6hx
+Alma Negra	pac
+Darkforge Spawn	nef
+Widowmaker	6sw
+Bloodraven's Charge	amb
+Ghostflame	7bl
+Shadowkiller	7cs
+Gimmershred	7ta
+Griffon's Eye	ci3
+Windhammer	7m7
+Thunderstroke	amf
+Giantmaimer	
+Demon's Arch	7s7
+Boneflame	nee
+Steelpillar	7p7
+Nightwing's Veil	uhm
+Crown of Ages	urn
+Andariel's Visage	usk
+Darkfear	ulm
+Dragonscale	pae
+Steel Carapice	uul
+Medusa's Gaze	uow
+Ravenlore	dre
+Boneshade	7bw
+Nethercrow	
+Flamebellow	7gs
+Fathom	obf
+Wolfhowl	bac
+Spirit Ward	uts
+Kira's Guardian	ci2
+Ormus' Robes	uui
+Gheed's Fortune	cm3
+Stormlash	7fl
+Halaberd's Reign	bae
+Warriv's Warder	
+Spike Thorn	upk
+Dracul's Grasp	uvg
+Frostwind	7ls
+Templar's Might	uar
+Eschuta's temper	obc
+Firelizard's Talons	7lw
+Sandstorm Trek	uvb
+Marrowwalk	umb
+Heaven's Light	7sc
+Merman's Speed	
+Arachnid Mesh	ulc
+Nosferatu's Coil	uvc
+Metalgrid	amu
+Verdugo's Hearty Cord	umc
+Sigurd's Staunch	
+Carrion Wind	rin
+Giantskull	uh9
+Ironward	7ws
+Annihilus	cm1
+Arioc's Needle	7sr
+Cranebeak	7mp
+Nord's Tenderizer	7cl
+Earthshifter	7gm
+Wraithflight	7gl
+Bonehew	7o7
+Ondal's Wisdom	6cs
+The Reedeemer	7sc
+Headhunter's Glory	ush
+Steelrend	uhg
+Rainbow Facet	jew
+Rainbow Facet	jew
+Rainbow Facet	jew
+Rainbow Facet	jew
+Rainbow Facet	jew
+Rainbow Facet	jew
+Rainbow Facet	jew
+Rainbow Facet	jew
+Hellfire Torch	cm2

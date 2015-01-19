@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<OverlaySettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <LogFontSize>8.5</LogFontSize>
+  <SettingsPosition>
+    <X>299</X>
+    <Y>323</Y>
+  </SettingsPosition>
+  <LogPosition>
+    <X>407</X>
+    <Y>772</Y>
+  </LogPosition>
+  <StatsPosition>
+    <X>933</X>
+    <Y>396</Y>
+  </StatsPosition>
+</OverlaySettings>

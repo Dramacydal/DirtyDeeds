@@ -1,0 +1,151 @@
+elixir	elx
+Healing Potion	hpo
+Mana Potion	mpo
+Full Healing Potion	hpf
+Full Mana Potion	mpf
+Stamina Potion	vps
+Antidote Potion	yps
+Rejuv Potion	rvs
+Full Rejuv Potion	rvl
+Thawing Potion	wms
+Town Portal Book	tbk
+Identify Book	ibk
+Amulet	amu
+Viper amulet	vip
+Ring	rin
+Gold	gld
+Bark Scroll	bks
+deciphered Bark Scroll	bkd
+Arrows	aqv
+Torch	tch
+Bolts	cqv
+Town Portal Scroll	tsc
+Identify Scroll	isc
+Not used	hrt
+Not used	brz
+Not used	jaw
+Not used	eyz
+Not used	hrn
+Not used	tal
+Not used	flg
+Not used	fng
+Not used	qll
+Not used	sol
+Not used	scz
+Not used	spe
+Skeleton Key	key
+Mephisto Key	luv
+scroll of self resurrect	xyz
+Jade figurine	j34
+gold bird	g34
+lam esen's tome	bbb
+Horadric Cube	box
+Scroll of Horadric Quest Info	tr1
+Mephisto SoulStone	mss
+Book of Skill	ass
+KhalimEye	qey
+KhalimHeart	qhr
+KhalimBrain	qbr
+Player Ear	ear
+Chipped Amethyst	gcv
+Flawed Amethyst	gfv
+Amethyst	gsv
+Flawless Amethyst	gzv
+Perfect Amethyst	gpv
+Chipped Topaz	gcy
+Flawed Topaz	gfy
+Topaz	gsy
+Flawless Topaz	gly
+Perfect Topaz	gpy
+Chipped Saphire	gcb
+Flawed Saphire	gfb
+Saphire	gsb
+Flawless Saphire	glb
+Perfect Saphire	gpb
+Chipped Emerald	gcg
+Flawed Emerald	gfg
+Emerald	gsg
+Flawless Emerald	glg
+Perfect Emerald	gpg
+Chipped Ruby	gcr
+Flawed Ruby	gfr
+Ruby	gsr
+Flawless Ruby	glr
+Perfect Ruby	gpr
+Chipped Diamond	gcw
+Flawed Diamond	gfw
+Diamond	gsw
+Flawless Diamond	glw
+Perfect Diamond	gpw
+Lesser Healing Potion	hp1
+Light Healing Potion	hp2
+Healing Potion	hp3
+Strong Healing Potion	hp4
+Greater Healing Potion	hp5
+Lesser Mana Potion	mp1
+Light Mana Potion	mp2
+Mana Potion	mp3
+Strong Mana Potion	mp4
+Greater Mana Potion	mp5
+Chipped Skull	skc
+Flawed Skull	skf
+Skull	sku
+Flawless Skull	skl
+Perfect Skull	skz
+herb	hrb
+Small Charm	cm1
+Medium Charm	cm2
+Large Charm	cm3
+Small Red Potion	rps
+Large Red Potion	rpl
+Small Blue Potion	bps
+Large Blue Potion	bpl
+El Rune	r01
+Eld Rune	r02
+Tir Rune	r03
+Nef Rune	r04
+Eth Rune	r05
+Ith Rune	r06
+Tal Rune	r07
+Ral Rune	r08
+Ort Rune	r09
+Thul Rune	r10
+Amn Rune	r11
+Sol Rune	r12
+Shael Rune	r13
+Dol Rune	r14
+Hel Rune	r15
+Io Rune	r16
+Lum Rune	r17
+Ko Rune	r18
+Fal Rune	r19
+Lem Rune	r20
+Pul Rune	r21
+Um Rune	r22
+Mal Rune	r23
+Ist Rune	r24
+Gul Rune	r25
+Vex Rune	r26
+Ohm Rune	r27
+Lo Rune	r28
+Sur Rune	r29
+Ber Rune	r30
+Jah Rune	r31
+Cham Rune	r32
+Zod Rune	r33
+Jewel	jew
+Maguffin	ice
+Scroll	0sc
+Scroll of Malah - Boost Resistances	tr2
+Pandemonium Key 1	pk1
+Pandemonium Key 2	pk2
+Pandemonium Key 3	pk3
+Diablo's Horn	dhn
+Baal's Eye	bey
+Mephisto's Brain	mbr
+Token of Absolution	toa
+Twisted Essence of Suffering	tes
+Charged Essense of Hatred	ceh
+Burning Essence of Terror	bet
+Festering Essence of Destruction	fed
+Standard	std

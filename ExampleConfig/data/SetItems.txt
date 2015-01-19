@@ -1,0 +1,127 @@
+Civerb's Ward	lrg
+Civerb's Icon	amu
+Civerb's Cudgel	gsc
+Hsarus' Iron Heel	mbt
+Hsarus' Iron Fist	buc
+Hsarus' Iron Stay	mbl
+Cleglaw's Tooth	lsd
+Cleglaw's Claw	sml
+Cleglaw's Pincers	mgl
+Iratha's Collar	amu
+Iratha's Cuff	tgl
+Iratha's Coil	crn
+Iratha's Cord	tbl
+Isenhart's Lightbrand	bsd
+Isenhart's Parry	gts
+Isenhart's Case	brs
+Isenhart's Horns	fhl
+Vidala's Barb	lbb
+Vidala's Fetlock	tbt
+Vidala's Ambush	lea
+Vidala's Snare	amu
+Milabrega's Orb	kit
+Milabrega's Rod	wsp
+Milabrega's Diadem	crn
+Milabrega's Robe	aar
+Cathan's Rule	bst
+Cathan's Mesh	chn
+Cathan's Visage	msk
+Cathan's Sigil	amu
+Cathan's Seal	rin
+Tancred's Crowbill	mpi
+Tancred's Spine	ful
+Tancred's Hobnails	lbt
+Tancred's Weird	amu
+Tancred's Skull	bhm
+Sigon's Gage	hgl
+Sigon's Visor	ghm
+Sigon's Shelter	gth
+Sigon's Sabot	hbt
+Sigon's Wrap	hbl
+Sigon's Guard	tow
+Infernal Cranium	cap
+Infernal Torch	gwn
+Infernal Sign	tbl
+Berserker's Headgear	hlm
+Berserker's Hauberk	spl
+Berserker's Hatchet	2ax
+Death's Hand	lgl
+Death's Guard	lbl
+Death's Touch	wsd
+Angelic Sickle	sbr
+Angelic Mantle	rng
+Angelic Halo	rin
+Angelic Wings	amu
+Arctic Horn	swb
+Arctic Furs	qui
+Arctic Binding	vbl
+Arctic Mitts	tgl
+Arcanna's Sign	amu
+Arcanna's Deathwand	wst
+Arcanna's Head	skp
+Arcanna's Flesh	ltp
+Natalya's Totem	xh9
+Natalya's Mark	7qr
+Natalya's Shadow	ucl
+Natalya's Soul	xmb
+Aldur's Stony Gaze	dr8
+Aldur's Deception	uul
+Aldur's Gauntlet	9mt
+Aldur's Advance	xtb
+Immortal King's Will	ba5
+Immortal King's Soul Cage 	uar
+Immortal King's Detail	zhb
+Immortal King's Forge	xhg
+Immortal King's Pillar	xhb
+Immortal King's Stone Crusher	7m7
+Tal Rasha's Fire-Spun Cloth	zmb
+Tal Rasha's Adjudication	amu
+Tal Rasha's Lidless Eye	oba
+Tal Rasha's Howling Wind	uth
+Tal Rasha's Horadric Crest	xsk
+Griswold's Valor	urn
+Griswold's Heart	xar
+Griswolds's Redemption	7ws
+Griswold's Honor	paf
+Trang-Oul's Guise	uh9
+Trang-Oul's Scales	xul
+Trang-Oul's Wing	ne9
+Trang-Oul's Claws	xmg
+Trang-Oul's Girth	utc
+M'avina's True Sight	ci3
+M'avina's Embrace	uld
+M'avina's Icy Clutch	xtg
+M'avina's Tenet	zvb
+M'avina's Caster	amc
+Telling of Beads	amu
+Laying of Hands	ulg
+Rite of Passage	xlb
+Spiritual Custodian	uui
+Credendum	umc
+Dangoon's Teaching	7ma
+Heaven's Taebaek	uts
+Haemosu's Adament	xrs
+Ondal's Almighty	uhm
+Guillaume's Face	xhm
+Wilhelm's Pride	ztb
+Magnus' Skin	xvg
+Wihtstan's Guard	xml
+Hwanin's Splendor	xrn
+Hwanin's Refuge	xcl
+Hwanin's Seal	mbl
+Hwanin's Justice	9vo
+Sazabi's Cobalt Redeemer	7ls
+Sazabi's Ghost Liberator	upl
+Sazabi's Mental Sheath	xhl
+Bul-Kathos' Sacred Charge	7gd
+Bul-Kathos' Tribal Guardian	7wd
+Cow King's Horns	xap
+Cow King's Hide	stu
+Cow King's Hoofs	vbt
+Naj's Puzzler	6cs
+Naj's Light Plate	ult
+Naj's Circlet	ci0
+McAuley's Paragon	cap
+McAuley's Riprap	vbt
+McAuley's Taboo	vgl
+McAuley's Superstition	bwn
