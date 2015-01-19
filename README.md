@@ -3,6 +3,14 @@ Breakpoint-based Diablo 2 1.13d multihack
 
 Potentially undetectable
 
+*How to use:*
+* Compile with latest WhiteMagic https://github.com/Dramacydal/WhiteMagic
+* Copy files from ExampleConfig to binaries directory
+* Run as administrator, attach to D2 from tray.
+* Ctrl+click to interact with overlay buttons
+* Only for windowed 800x600 game.
+
+
 ##### Features:
 ###### Hacks
 Each hack has it's cost. Summary cost cannot be more that 4.
@@ -54,3 +62,4 @@ Each hack has it's cost. Summary cost cannot be more that 4.
   * Log set
   * Log unique
   * Log items specified in item config
+* Screen overlay with player stats
