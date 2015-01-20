@@ -272,7 +272,7 @@ namespace DD
                 {
                     using (var suspender = new GameSuspender(this))
                     {
-                        //RefreshUnitPosition();
+                        RefreshUnitPosition();
                     }
                 }
 
