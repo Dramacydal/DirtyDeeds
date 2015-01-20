@@ -63,3 +63,10 @@ Each hack has it's cost. Summary cost cannot be more that 4.
   * Log unique
   * Log items specified in item config
 * Screen overlay with player stats
+
+# Credits
+* E.T. for D2Smells
+* Whiteevil for AutoTele
+* < insert here any crappy WTFPK rip-offs >
+
+Perhaps someone else, will add as long I remember them
