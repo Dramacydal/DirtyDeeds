@@ -342,7 +342,7 @@ namespace DD
 
                 var handle = pd.ReadUInt(Storm.pHandle);
 
-                pd.Call(pd.GetModuleAddress("kernel32.dll").ToUInt32() + ResumeThreadOffset, CallingConventionEx.StdCall, handle);
+                pd.Call(pd.GetModuleAddress("kernel32.dll").Add(ResumeThreadOffset), CallingConventionEx.StdCall, handle);
             }
         }
 
@@ -419,10 +419,10 @@ namespace DD
             if (!GameReady())
                 return;
 
-            var pSelected = pd.Call(D2Client.GetSelectedUnit,
+            var pSelected = pd.Call<IntPtr>(D2Client.GetSelectedUnit,
                 CallingConventionEx.StdCall);
 
-            if (pSelected == 0)
+            if (pSelected == IntPtr.Zero)
                 return;
 
             var unit = pd.Read<UnitAny>(pSelected);
@@ -563,7 +563,7 @@ namespace DD
 
         private void AddBreakPoint(D2BreakPoint bp)
         {
-            if (pd.Breakpoints.Count >= Kernel32.MaxHardwareBreakpoints)
+            if (pd.Breakpoints.Length >= Kernel32.MaxHardwareBreakpoints)
                 return;
 
             try

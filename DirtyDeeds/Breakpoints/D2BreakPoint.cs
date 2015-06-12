@@ -1,5 +1,6 @@
 ﻿using System;
 using WhiteMagic;
+using WhiteMagic.WinAPI.Types;
 
 namespace DD.Breakpoints
 {
@@ -11,7 +12,7 @@ namespace DD.Breakpoints
         protected string moduleName;
 
         public D2BreakPoint(D2Game game, string moduleName, uint address)
-            : base(new IntPtr(address), 1, Condition.Code)
+            : base(new IntPtr(address), 1, BreakpointCondition.Code)
         {
             this.Game = game;
             this.moduleName = moduleName;

@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Text;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Linq;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Xml.Serialization;
@@ -80,40 +81,13 @@ namespace DD
             });
             games.RemoveAll(g => !g.Exists());
 
-            var processes = Process.GetProcesses();
+            var processes = MagicHelpers.FindProcessesByInternalName("diablo ii");
             foreach (var process in processes)
             {
-                try
-                {
-                    //bool retVal = false;
-                    //if (!IsWow64Process(process.Handle, out retVal))
-                    //    continue;
+                if (games.Any(g => g.Process.Id == process.Id))
+                    continue;
 
-                    //if (retVal)
-                    //    continue;
-                    //if (!process.ProcessName.Contains("d2"))
-                    //     continue;
-
-                    /*if (process.HasExited)
-                        continue;*/
-
-                    if (process.MainModule.FileVersionInfo.InternalName.ToLower().Contains("diablo ii"))
-                    {
-                        bool found = false;
-                        foreach (var g in games)
-                        {
-                            if (g.Process.Id == process.Id)
-                            {
-                                found = true;
-                                break;
-                            }
-                        }
-
-                        if (!found)
-                            games.Add(new D2Game(process, this));
-                    }
-                }
-                catch { }
+                games.Add(new D2Game(process, this));
             }
         }
 

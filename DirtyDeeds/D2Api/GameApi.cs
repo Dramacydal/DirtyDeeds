@@ -360,14 +360,14 @@ namespace DD
 
         public uint GetUnitStat(uint pUnit, StatType stat)
         {
-            return pd.Call(D2Common.GetUnitStat,
+            return pd.Call<uint>(D2Common.GetUnitStat,
                 CallingConventionEx.StdCall,
                 pUnit, (uint)stat, 0);
         }
 
         public uint GetBaseUnitStat(uint pUnit, StatType stat)
         {
-            return pd.Call(D2Common.GetBaseUnitStat,
+            return pd.Call<uint>(D2Common.GetBaseUnitStat,
                 CallingConventionEx.StdCall,
                 pUnit, (uint)stat, 0);
         }
@@ -387,14 +387,14 @@ namespace DD
 
         public ushort GetUnitX(uint pUnit)
         {
-            return (ushort)pd.Call(D2Client.GetUnitX,
+            return pd.Call<ushort>(D2Client.GetUnitX,
                 CallingConventionEx.ThisCall,
                 pUnit);
         }
 
         public ushort GetUnitY(uint pUnit)
         {
-            return (ushort)pd.Call(D2Client.GetUnitY,
+            return pd.Call<ushort>(D2Client.GetUnitY,
                 CallingConventionEx.ThisCall,
                 pUnit);
         }

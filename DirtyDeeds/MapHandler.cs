@@ -13,6 +13,7 @@ namespace DD
     using LevelExitsDictionary = ConcurrentDictionary<uint, List<LevelExit>>;
     using DD.D2Structs;
     using DD.D2Pointers;
+    using System;
 
     public class MapHandler
     {
@@ -63,7 +64,7 @@ namespace DD
                     return pLevel;
             }
 
-            pLevel = game.Debugger.Call(D2Common.GetLevel,
+            pLevel = game.Debugger.Call<uint>(D2Common.GetLevel,
                 CallingConventionEx.FastCall,
                 act.pMisc, dwLevel);
 
@@ -185,7 +186,7 @@ namespace DD
             var expCharFlag = game.Debugger.ReadUInt(D2Client.pExpCharFlag);
             var diff = game.Debugger.ReadByte(D2Client.pDifficulty);
 
-            return game.Debugger.Call(D2Common.LoadAct,
+            return game.Debugger.Call<uint>(D2Common.LoadAct,
                 CallingConventionEx.StdCall,
                 player.dwAct,
                 act.dwMapSeed,
@@ -309,10 +310,10 @@ namespace DD
 
                 if (cellNo == -1 && preset.dwTxtFileNo <= 572)
                 {
-                    var pTxt = game.Debugger.Call(D2Common.GetObjectTxt,
+                    var pTxt = game.Debugger.Call<IntPtr>(D2Common.GetObjectTxt,
                         CallingConventionEx.StdCall,
                         preset.dwTxtFileNo);
-                    if (pTxt != 0)
+                    if (pTxt != IntPtr.Zero)
                     {
                         var txt = game.Debugger.Read<ObjectTxt>(pTxt);
                         cellNo = (int)txt.nAutoMap;
@@ -322,7 +323,7 @@ namespace DD
 
             if (cellNo > 0/* && cellNo < 1258*/)
             {
-                var pCell = game.Debugger.Call(D2Client.NewAutomapCell,
+                var pCell = game.Debugger.Call<IntPtr>(D2Client.NewAutomapCell,
                     CallingConventionEx.FastCall);
 
                 var cell = game.Debugger.Read<AutomapCell>(pCell);
@@ -426,10 +427,10 @@ namespace DD
 
         protected void InitLayer(uint levelNo)
         {
-            var pLayer = game.Debugger.Call(D2Common.GetLayer,
+            var pLayer = game.Debugger.Call<IntPtr>(D2Common.GetLayer,
                 CallingConventionEx.FastCall,
                 levelNo);
-            if (pLayer == 0)
+            if (pLayer == IntPtr.Zero)
                 return;
 
             var layer = game.Debugger.Read<AutomapLayer2>(pLayer);

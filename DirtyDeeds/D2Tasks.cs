@@ -165,7 +165,7 @@ namespace DD
                                 var diff = GetDifficulty();
                                 var pItemPriceList = pd.ReadUInt(D2Client.pItemPriceList);
 
-                                var price = pd.Call(D2Common.GetItemPrice,
+                                var price = pd.Call<uint>(D2Common.GetItemPrice,
                                     CallingConventionEx.StdCall,
                                     pUnit, pItem, diff, pItemPriceList, 0x9A, 1);
 

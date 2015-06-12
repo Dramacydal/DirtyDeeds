@@ -64,9 +64,9 @@ namespace DD.Extensions
             return m.ReadArray<T>(new IntPtr(addr), count);
         }
 
-        public static uint Call(this MemoryHandler m, uint addr, CallingConventionEx cv, params object[] args)
+        /*public static uint Call(this MemoryHandler m, uint addr, CallingConventionEx cv, params object[] args)
         {
             return m.Call(new IntPtr(addr), cv, args);
-        }
+        }*/
     }
 }
