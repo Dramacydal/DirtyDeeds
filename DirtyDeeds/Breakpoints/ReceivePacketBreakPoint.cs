@@ -32,8 +32,7 @@ namespace DD.Breakpoints
             {
                 case GameServerPacket.RemoveGroundUnit:
                     {
-                        if (!Game.Settings.ReceivePacketHack.ItemTracker.Enabled ||
-                            !Game.Settings.ReceivePacketHack.ItemTracker.EnablePickit)
+                        if (!Game.Settings.ReceivePacketHack.ItemTracker.EnablePickit.IsEnabled())
                             break;
 
                         Game.ItemGoneHandler(packet);
@@ -41,7 +40,7 @@ namespace DD.Breakpoints
                     }
                 case GameServerPacket.GameObjectModeChange:
                     {
-                        if (!Game.Settings.ReceivePacketHack.FastPortal)
+                        if (!Game.Settings.ReceivePacketHack.NoTownPortalAnim.IsEnabled())
                             break;
 
                         // no portal anim #1
@@ -57,10 +56,9 @@ namespace DD.Breakpoints
                     }
                 case GameServerPacket.PlayerReassign:
                     {
-                        if (!Game.Settings.ReceivePacketHack.BlockFlash &&
-                            !Game.Settings.ReceivePacketHack.FastTele &&
-                            !(Game.Settings.ReceivePacketHack.ItemTracker.Enabled &&
-                            Game.Settings.ReceivePacketHack.ItemTracker.EnablePickit))
+                        if (!Game.Settings.ReceivePacketHack.BlockFlash.IsEnabled() &&
+                            !Game.Settings.ReceivePacketHack.FastTele.IsEnabled() &&
+                            !Game.Settings.ReceivePacketHack.ItemTracker.EnablePickit.IsEnabled())
                             break;
 
                         var unitType = (UnitType)packet[1];
@@ -74,7 +72,7 @@ namespace DD.Breakpoints
                         var unit = pd.Read<UnitAny>(pPlayer);
                         if (BitConverter.ToUInt32(packet, 2) == unit.dwUnitId)
                         {
-                            if (Game.Settings.ReceivePacketHack.ItemTracker.Enabled && Game.Settings.ReceivePacketHack.ItemTracker.EnablePickit)
+                            if (Game.Settings.ReceivePacketHack.ItemTracker.EnablePickit.IsEnabled())
                             {
                                 Game.CurrentX = BitConverter.ToUInt16(packet, 6);
                                 Game.CurrentY = BitConverter.ToUInt16(packet, 8);
@@ -82,11 +80,11 @@ namespace DD.Breakpoints
                             }
 
                             // no flash
-                            if (Game.Settings.ReceivePacketHack.BlockFlash)
+                            if (Game.Settings.ReceivePacketHack.BlockFlash.IsEnabled())
                                 pd.WriteByte(pPacket + 10, 0);
 
                             // fast teleport
-                            if (Game.Settings.ReceivePacketHack.FastTele && !allowableModes.Contains((PlayerMode)unit.dwMode))
+                            if (Game.Settings.ReceivePacketHack.FastTele.IsEnabled() && !allowableModes.Contains((PlayerMode)unit.dwMode))
                             {
                                 unit.dwFrameRemain = 0;
                                 pd.Write<UnitAny>(pPlayer, unit);
@@ -110,7 +108,7 @@ namespace DD.Breakpoints
                         if ((UnitType)packet[1] == UnitType.Object && BitConverter.ToUInt16(packet, 6) == 0x3B)
                         {
                             // no portal anim #2
-                            if (Game.Settings.ReceivePacketHack.FastPortal)
+                            if (Game.Settings.ReceivePacketHack.NoTownPortalAnim.IsEnabled())
                                 pd.WriteByte(pPacket + 12, 2);
 
                             UnitAny unit;
@@ -134,7 +132,7 @@ namespace DD.Breakpoints
                         var relationType = packet[7];
                         if (type == 0x7 && infoType == 8 && relationType == 3)
                         {
-                            if (!Game.Settings.Chicken.Enabled || !Game.Settings.Chicken.ChickenOnHostile || Game.chickening)
+                            if (!Game.Settings.Chicken.ChickenOnHostility.IsEnabled() || Game.chickening)
                                 break;
 
                             Task.Factory.StartNew(() => Game.TryChicken(0, 0, true));
@@ -150,14 +148,13 @@ namespace DD.Breakpoints
                 case GameServerPacket.DelayedState:
                     {
                         // skip delay between entering portals
-                        if (Game.Settings.ReceivePacketHack.FastPortal && packet[6] == 102)
+                        if (Game.Settings.ReceivePacketHack.NoTownPortalAnim.IsEnabled() && packet[6] == 102)
                             skip = true;
                         break;
                     }
                 case GameServerPacket.TriggerSound:
                     {
-                        if (Game.Settings.ReceivePacketHack.ItemTracker.Enabled &&
-                            Game.Settings.ReceivePacketHack.ItemTracker.EnablePickit)
+                        if (Game.Settings.ReceivePacketHack.ItemTracker.EnablePickit.IsEnabled())
                         {
                             if (packet[1] == 0 && packet[6] == 0x17)
                                 Game.Pickit.Disable(PickitDisableReason.InventoryFull);

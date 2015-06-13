@@ -140,7 +140,7 @@ namespace DD
                     continue;
                 }
 
-                var pAutomapLayer = game.Debugger.ReadUInt(D2Client.pAutoMapLayer);
+                var pAutomapLayer = game.Debugger.Read<uint>(D2Client.pAutoMapLayer);
 
                 game.Debugger.Call(D2Client.RevealAutomapRoom,
                     CallingConventionEx.StdCall,
@@ -183,8 +183,8 @@ namespace DD
         protected uint LoadAct(UnitAny player)
         {
             var act = game.Debugger.Read<Act>(player.pAct);
-            var expCharFlag = game.Debugger.ReadUInt(D2Client.pExpCharFlag);
-            var diff = game.Debugger.ReadByte(D2Client.pDifficulty);
+            var expCharFlag = game.Debugger.Read<uint>(D2Client.pExpCharFlag);
+            var diff = game.Debugger.Read<byte>(D2Client.pDifficulty);
 
             return game.Debugger.Call<uint>(D2Common.LoadAct,
                 CallingConventionEx.StdCall,
@@ -337,7 +337,7 @@ namespace DD
 
                 game.Debugger.Write<AutomapCell>(pCell, cell);
 
-                var pAutomapLayer = game.Debugger.ReadUInt(D2Client.pAutoMapLayer);
+                var pAutomapLayer = game.Debugger.Read<uint>(D2Client.pAutoMapLayer);
                 game.Debugger.Call(D2Client.AddAutomapCell,
                     CallingConventionEx.FastCall,
                     pCell,

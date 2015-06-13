@@ -30,8 +30,6 @@ namespace DD
             MakeTransparent(true);
             MakeNonInteractive(true);
 
-            SetupSettings(game.Settings);
-
             SetupControlPositions();
 
             //translucentPanel1.BackColor = Color.FromArgb(127, Color.White);
@@ -77,7 +75,7 @@ namespace DD
 
         public void UpdateOverlay()
         {
-            if (!this.ClickThrough && !this.settingsExpandButton.Expanded)
+            if (!this.ClickThrough)
                 MakeNonInteractive(true);
 
             var foreGroundWindow = GetForegroundWindow();
@@ -133,12 +131,9 @@ namespace DD
         private void SetupControlPositions()
         {
             logExpandButton.SetDraggable(true);
-            settingsExpandButton.SetDraggable(true);
             statsExpandButton.SetDraggable(true);
             statsRefreshButton.SetDraggable(true);
 
-            if (!game.OverlaySettings.SettingsPosition.IsEmpty)
-                settingsHolder.Location = game.OverlaySettings.SettingsPosition;
             if (!game.OverlaySettings.LogPosition.IsEmpty)
                 logHolder.Location = game.OverlaySettings.LogPosition;
             if (!game.OverlaySettings.StatsPosition.IsEmpty)
@@ -157,7 +152,6 @@ namespace DD
         private void OverlayWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
             game.OverlaySettings.LogFontSize = logTextBox.Font.Size;
-            game.OverlaySettings.SettingsPosition = settingsHolder.Location;
             game.OverlaySettings.LogPosition = logHolder.Location;
             game.OverlaySettings.StatsPosition = statsHolder.Location;
         }
@@ -166,288 +160,6 @@ namespace DD
         {
             //var hb = new HatchBrush(HatchStyle.Percent90, this.TransparencyKey);
             //e.Graphics.FillRectangle(hb, this.DisplayRectangle);
-        }
-
-        private void SetupSettings(GameSettings settings)
-        {
-            lightHackCheckBox.Checked = settings.LightHack.Enabled;
-            weatherHackCheckBox.Checked = settings.WeatherHack.Enabled;
-
-            packetReceiveHackCheckBox.Checked = settings.ReceivePacketHack.Enabled;
-            blockFlashCheckBox.Checked = settings.ReceivePacketHack.BlockFlash;
-            fastTeleCheckBox.Checked = settings.ReceivePacketHack.FastTele;
-            fastPortalCheckBox.Checked = settings.ReceivePacketHack.FastPortal;
-            itemTrackerCheckBox.Checked = settings.ReceivePacketHack.ItemTracker.Enabled;
-            enablePickitCheckBox.Checked = settings.ReceivePacketHack.ItemTracker.EnablePickit;
-            useTelekinesisCheckBox.Checked = settings.ReceivePacketHack.ItemTracker.UseTelekinesis;
-            enableTelepickCheckBox.Checked = settings.ReceivePacketHack.ItemTracker.EnableTelepick;
-            teleBackCheckBox.Checked = settings.ReceivePacketHack.ItemTracker.TeleBack;
-            pickInTownCheckBox.Checked = settings.ReceivePacketHack.ItemTracker.TownPick;
-            logRunesCheckBox.Checked = settings.ReceivePacketHack.ItemTracker.LogRunes;
-            logSetsCheckBox.Checked = settings.ReceivePacketHack.ItemTracker.LogSets;
-            logUniquesCheckBox.Checked = settings.ReceivePacketHack.ItemTracker.LogUniques;
-            logItemsCheckBox.Checked = settings.ReceivePacketHack.ItemTracker.LogItems;
-            resetPickitKeyBindButton.Key = settings.ReceivePacketHack.ItemTracker.ReactivatePickit.Key;
-
-            itemNameHackCheckBox.Checked = settings.ItemNameHack.Enabled;
-            showEthCheckBox.Checked = settings.ItemNameHack.ShowEth;
-            showItemLevelCheckBox.Checked = settings.ItemNameHack.ShowItemLevel;
-            showItemPriceCheckBox.Checked = settings.ItemNameHack.ShowItemPrice;
-            showRuneNumberCheckBox.Checked = settings.ItemNameHack.ShowRuneNumber;
-            showSocketsCheckBox.Checked = settings.ItemNameHack.ShowSockets;
-            showItemCodeTextBox.Checked = settings.ItemNameHack.ShowItemCode;
-            changeColorCheckBox.Checked = settings.ItemNameHack.ChangeItemColor;
-
-            viewInventoryHackCheckBox.Checked = settings.ViewInventory.Enabled;
-            viewInventoryKeybindButton.Key = settings.ViewInventory.ViewInventoryKey;
-
-            infravisionHackCheckBox.Checked = settings.Infravision.Enabled;
-            hideCorpsesCheckBox.Checked = settings.Infravision.HideCorpses;
-            hideDyingCheckBox.Checked = settings.Infravision.HideDying;
-            hideItemCheckBox.Checked = settings.Infravision.HideItems;
-
-            revealActKeybindButton.Key = settings.RevealAct.Key;
-            openStashKeybindButton.Key = settings.OpenStash.Key;
-            openCubeKeybindButton.Key = settings.OpenCube.Key;
-            fastExitKeybindButton.Key = settings.FastExit.Key;
-            townPortalKeybindButton.Key = settings.FastPortal.Key;
-            goToTownCheckBox.Checked = settings.FastPortal.GoToTown;
-
-            autoTeleNextKeybindButton.Key = settings.AutoteleNext.Key;
-            autoTeleMiscKeybindButton.Key = settings.AutoteleMisc.Key;
-            autoTeleWpKeybindButton.Key = settings.AutoteleWP.Key;
-            autoTelePrevkeybindButton.Key = settings.AutotelePrev.Key;
-
-            enableChickenCheckBox.Checked = settings.Chicken.Enabled;
-            chickenToTownCheckBox.Checked = settings.Chicken.ChickenToTown;
-            chickenOnHostileTextBox.Checked = settings.Chicken.ChickenOnHostile;
-            chickenLifePctTextBox.Text = settings.Chicken.ChickenLifePercent.ToString();
-            chickenManaPctTextBox.Text = settings.Chicken.ChickenManaPercent.ToString();
-        }
-
-        private GameSettings GetSettings()
-        {
-            var settings = new GameSettings();
-
-            settings.LightHack.Enabled = lightHackCheckBox.Checked;
-            settings.WeatherHack.Enabled = weatherHackCheckBox.Checked;
-
-            settings.ReceivePacketHack.Enabled = packetReceiveHackCheckBox.Checked;
-            settings.ReceivePacketHack.BlockFlash = blockFlashCheckBox.Checked;
-            settings.ReceivePacketHack.FastTele = fastTeleCheckBox.Checked;
-            settings.ReceivePacketHack.FastPortal = fastPortalCheckBox.Checked;
-            settings.ReceivePacketHack.ItemTracker.Enabled = itemTrackerCheckBox.Checked;
-            settings.ReceivePacketHack.ItemTracker.EnablePickit = enablePickitCheckBox.Checked;
-            settings.ReceivePacketHack.ItemTracker.UseTelekinesis = useTelekinesisCheckBox.Checked;
-            settings.ReceivePacketHack.ItemTracker.EnableTelepick = enableTelepickCheckBox.Checked;
-            settings.ReceivePacketHack.ItemTracker.TownPick = pickInTownCheckBox.Checked;
-            settings.ReceivePacketHack.ItemTracker.TeleBack = teleBackCheckBox.Checked;
-            settings.ReceivePacketHack.ItemTracker.LogRunes = logRunesCheckBox.Checked;
-            settings.ReceivePacketHack.ItemTracker.LogSets = logSetsCheckBox.Checked;
-            settings.ReceivePacketHack.ItemTracker.LogUniques = logUniquesCheckBox.Checked;
-            settings.ReceivePacketHack.ItemTracker.LogItems = logItemsCheckBox.Checked;
-            settings.ReceivePacketHack.ItemTracker.ReactivatePickit.Key = resetPickitKeyBindButton.Key;
-
-            settings.ItemNameHack.Enabled = itemNameHackCheckBox.Checked;
-            settings.ItemNameHack.ShowEth = showEthCheckBox.Checked;
-            settings.ItemNameHack.ShowItemLevel = showItemLevelCheckBox.Checked;
-            settings.ItemNameHack.ShowItemPrice = showItemPriceCheckBox.Checked;
-            settings.ItemNameHack.ShowRuneNumber = showRuneNumberCheckBox.Checked;
-            settings.ItemNameHack.ShowSockets = showSocketsCheckBox.Checked;
-            settings.ItemNameHack.ShowItemCode = showItemCodeTextBox.Checked;
-            settings.ItemNameHack.ChangeItemColor = changeColorCheckBox.Checked;
-
-            settings.ViewInventory.Enabled = viewInventoryHackCheckBox.Checked;
-            settings.ViewInventory.ViewInventoryKey = viewInventoryKeybindButton.Key;
-
-            settings.Infravision.Enabled = infravisionHackCheckBox.Checked;
-            settings.Infravision.HideCorpses = hideCorpsesCheckBox.Checked;
-            settings.Infravision.HideDying = hideDyingCheckBox.Checked;
-            settings.Infravision.HideItems = hideItemCheckBox.Checked;
-
-            settings.RevealAct.Key = revealActKeybindButton.Key;
-            settings.OpenStash.Key = openStashKeybindButton.Key;
-            settings.OpenCube.Key = openCubeKeybindButton.Key;
-            settings.FastExit.Key = fastExitKeybindButton.Key;
-            settings.FastPortal.Key = townPortalKeybindButton.Key;
-            settings.FastPortal.GoToTown = goToTownCheckBox.Checked;
-
-            settings.AutoteleNext.Key = autoTeleNextKeybindButton.Key;
-            settings.AutoteleMisc.Key = autoTeleMiscKeybindButton.Key;
-            settings.AutoteleWP.Key = autoTeleWpKeybindButton.Key;
-            settings.AutotelePrev.Key = autoTelePrevkeybindButton.Key;
-
-            settings.Chicken.Enabled = enableChickenCheckBox.Checked;
-            settings.Chicken.ChickenToTown = chickenToTownCheckBox.Checked;
-            settings.Chicken.ChickenOnHostile = chickenOnHostileTextBox.Checked;
-
-            try
-            {
-                var val = Convert.ToDouble(chickenLifePctTextBox.Text);
-                settings.Chicken.ChickenLifePercent = val;
-            }
-            catch { }
-
-            try
-            {
-                var val = Convert.ToDouble(chickenManaPctTextBox.Text);
-                settings.Chicken.ChickenManaPercent = val;
-            }
-            catch { }
-
-            return settings;
-        }
-
-        private int GetHackCost()
-        {
-            int cost = 0;
-            if (lightHackCheckBox.Checked)
-                cost += HackSettings.Cost;
-            if (weatherHackCheckBox.Checked)
-                cost += HackSettings.Cost;
-            if (packetReceiveHackCheckBox.Checked)
-                cost += PacketReceivedHackSettings.Cost;
-            if (itemNameHackCheckBox.Checked)
-                cost += ItemNameHackSettings.Cost;
-            if (viewInventoryHackCheckBox.Checked)
-                cost += ViewInventorySettings.Cost;
-            if (infravisionHackCheckBox.Checked)
-                cost += InfravisionSettings.Cost;
-
-            return cost;
-        }
-
-        private bool ValidateSettings()
-        {
-            return GetHackCost() <= 4;
-        }
-
-        private void packetReceiveHackCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            var state = packetReceiveHackCheckBox.Checked;
-
-            blockFlashCheckBox.Enabled = state;
-            fastTeleCheckBox.Enabled = state;
-            fastPortalCheckBox.Enabled = state;
-            itemTrackerCheckBox.Enabled = state;
-
-            goToTownCheckBox.Enabled = state;
-
-            enableChickenCheckBox.Enabled = state;
-            chickenToTownCheckBox.Enabled = state && enableChickenCheckBox.Checked;
-            chickenOnHostileTextBox.Enabled = state && enableChickenCheckBox.Checked;
-            chickenLifePctTextBox.Enabled = state && enableChickenCheckBox.Checked;
-            chickenManaPctTextBox.Enabled = state && enableChickenCheckBox.Checked;
-
-            logRunesCheckBox.Enabled = state && itemTrackerCheckBox.Checked;
-            logSetsCheckBox.Enabled = state && itemTrackerCheckBox.Checked;
-            logUniquesCheckBox.Enabled = state && itemTrackerCheckBox.Checked;
-            logItemsCheckBox.Enabled = state && itemTrackerCheckBox.Checked;
-            enablePickitCheckBox.Enabled = state && itemTrackerCheckBox.Checked;
-            useTelekinesisCheckBox.Enabled = state && itemTrackerCheckBox.Checked && enablePickitCheckBox.Checked;
-            enableTelepickCheckBox.Enabled = state && itemTrackerCheckBox.Checked && enablePickitCheckBox.Checked;
-            teleBackCheckBox.Enabled = state && itemTrackerCheckBox.Checked && enablePickitCheckBox.Checked && enableTelepickCheckBox.Checked;
-            pickInTownCheckBox.Enabled = state && itemTrackerCheckBox.Checked && enablePickitCheckBox.Checked;
-            resetPickitKeyBindButton.Enabled = state && itemTrackerCheckBox.Checked && enablePickitCheckBox.Checked;
-        }
-
-        private void itemNameHackCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            var state = itemNameHackCheckBox.Checked;
-
-            showEthCheckBox.Enabled = state;
-            showItemLevelCheckBox.Enabled = state;
-            showItemPriceCheckBox.Enabled = state;
-            showRuneNumberCheckBox.Enabled = state;
-            showSocketsCheckBox.Enabled = state;
-            changeColorCheckBox.Enabled = state;
-            showItemCodeTextBox.Enabled = state;
-        }
-
-        private void viewInventoryHackCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            var state = viewInventoryHackCheckBox.Checked;
-
-            viewInventoryKeybindButton.Enabled = state;
-        }
-
-        private void infravisionHackCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            var state = infravisionHackCheckBox.Checked;
-
-            hideCorpsesCheckBox.Enabled = state;
-            hideDyingCheckBox.Enabled = state;
-            hideItemCheckBox.Enabled = state;
-        }
-
-        private void enableChickenCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            var state = enableChickenCheckBox.Checked;
-
-            chickenToTownCheckBox.Enabled = state && packetReceiveHackCheckBox.Checked;
-            chickenOnHostileTextBox.Enabled = state && packetReceiveHackCheckBox.Checked;
-            chickenLifePctTextBox.Enabled = state && packetReceiveHackCheckBox.Checked;
-            chickenManaPctTextBox.Enabled = state && packetReceiveHackCheckBox.Checked;
-        }
-
-
-        private void itemNotificationsCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            var state = itemTrackerCheckBox.Checked;
-
-            logRunesCheckBox.Enabled = state && packetReceiveHackCheckBox.Checked;
-            logSetsCheckBox.Enabled = state && packetReceiveHackCheckBox.Checked;
-            logUniquesCheckBox.Enabled = state && packetReceiveHackCheckBox.Checked;
-            logItemsCheckBox.Enabled = state && packetReceiveHackCheckBox.Checked;
-            enablePickitCheckBox.Enabled = state && packetReceiveHackCheckBox.Checked;
-            useTelekinesisCheckBox.Enabled = state && packetReceiveHackCheckBox.Checked && enablePickitCheckBox.Checked;
-            enableTelepickCheckBox.Enabled = state && packetReceiveHackCheckBox.Checked && enablePickitCheckBox.Checked;
-            pickInTownCheckBox.Enabled = state && packetReceiveHackCheckBox.Checked && enablePickitCheckBox.Checked;
-            teleBackCheckBox.Enabled = state && packetReceiveHackCheckBox.Checked && enablePickitCheckBox.Checked && enableTelepickCheckBox.Checked;
-            resetPickitKeyBindButton.Enabled = state && packetReceiveHackCheckBox.Checked && enablePickitCheckBox.Checked;
-        }
-
-        private void enablePickitCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            var state = enablePickitCheckBox.Checked;
-
-            useTelekinesisCheckBox.Enabled = state && packetReceiveHackCheckBox.Checked && itemTrackerCheckBox.Checked;
-            enableTelepickCheckBox.Enabled = state && packetReceiveHackCheckBox.Checked && itemTrackerCheckBox.Checked;
-            pickInTownCheckBox.Enabled = state && packetReceiveHackCheckBox.Checked && itemTrackerCheckBox.Checked;
-            teleBackCheckBox.Enabled = state && packetReceiveHackCheckBox.Checked && itemTrackerCheckBox.Checked && enableTelepickCheckBox.Checked;
-            resetPickitKeyBindButton.Enabled = state && packetReceiveHackCheckBox.Checked && itemTrackerCheckBox.Checked;
-        }
-
-        private void enableTelepickCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            var state = enableTelepickCheckBox.Checked;
-
-            teleBackCheckBox.Enabled = state && packetReceiveHackCheckBox.Checked && itemTrackerCheckBox.Checked && enablePickitCheckBox.Checked;
-        }
-
-        private void refreshButton_Click(object sender, EventArgs e)
-        {
-            SetupSettings(game.Settings);
-        }
-
-        private void closeButton_Click(object sender, EventArgs e)
-        {
-            settingsExpandButton.Expanded = false;
-            settingsExpandButton_Click(sender, e);
-
-            SetForegroundWindow(game.Process.MainWindowHandle);
-        }
-
-        private void applyButton_Click(object sender, EventArgs e)
-        {
-            if (!ValidateSettings())
-            {
-                MessageBox.Show(this, "Too many hacks selected", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            game.Settings = GetSettings();
-            game.ApplySettings();
         }
 
         public void InGameStateChanged(bool inGame)
@@ -465,51 +177,6 @@ namespace DD
                 statsHolder.Hide();
                 statsTextBox.Clear();
             }
-        }
-
-        public bool HandleMessage(Keys key, MessageEvent mEvent)
-        {
-            if (this.ClickThrough)
-                return true;
-
-            var t = this.GetType();
-
-            var changed = false;
-            foreach (var f in t.GetFields())
-            {
-                if (f.FieldType != typeof(KeybindButton))
-                    continue;
-
-                var b = f.GetValue(this) as KeybindButton;
-                if (b.WaitingKeyPress)
-                {
-                    changed = true;
-                    if (key == Keys.Escape)
-                        b.Reset();
-                    else
-                        b.Key = key;
-
-                    foreach (var f2 in t.GetFields())
-                    {
-                        if (f2.FieldType != typeof(KeybindButton))
-                            continue;
-
-                        if (f2.Name == f.Name)
-                            continue;
-
-                        var b2 = f2.GetValue(this) as KeybindButton;
-                        if (b2.Key == key)
-                            b2.Key = Keys.None;
-                    }
-                }
-            }
-
-            return !changed;
-        }
-
-        private void reloadItemIniButton_Click(object sender, EventArgs e)
-        {
-            game.ItemProcessingSettings.Load();
         }
 
         protected override void OnClick(EventArgs e) { }
@@ -530,16 +197,6 @@ namespace DD
             }
             else
                 statsRefreshButton.Hide();
-
-            SetForegroundWindow(game.Process.MainWindowHandle);
-        }
-
-        private void settingsExpandButton_Click(object sender, EventArgs e)
-        {
-            if (settingsExpandButton.Expanded)
-                settingsHolder.Size = new Size(620, 568);
-            else
-                settingsHolder.Size = new Size(20, 20);
 
             SetForegroundWindow(game.Process.MainWindowHandle);
         }

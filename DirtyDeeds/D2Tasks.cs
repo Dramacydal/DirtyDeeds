@@ -27,10 +27,10 @@ namespace DD
 
             if (hostile)
             {
-                if (!Settings.Chicken.ChickenOnHostile)
+                if (!Settings.Chicken.ChickenOnHostility.IsEnabled())
                     return;
 
-                if (Settings.Chicken.ChickenToTown)
+                if (Settings.Chicken.ChickenToTown.IsEnabled())
                     Logger.Chicken.Log(this, LogType.Warning, "Chickening to town because of hostility.");
             }
             else
@@ -56,12 +56,12 @@ namespace DD
                 var manaPct = mana * 100f / maxMana;
                 if (hpPct < Settings.Chicken.ChickenLifePercent)
                 {
-                    if (Settings.Chicken.ChickenToTown)
+                    if (Settings.Chicken.ChickenToTown.IsEnabled())
                         Logger.Chicken.Log(this, LogType.Warning, "Chickening to town at {0:0.00}% health.", hpPct);
                 }
                 else if (manaPct < Settings.Chicken.ChickenManaPercent)
                 {
-                    if (Settings.Chicken.ChickenToTown)
+                    if (Settings.Chicken.ChickenToTown.IsEnabled())
                         Logger.Chicken.Log(this, LogType.Warning, "Chickening to town at {0:0.00}% mana.", manaPct);
                 }
                 else
@@ -77,7 +77,7 @@ namespace DD
         {
             using (var suspender = new GameSuspender(this))
             {
-                if (!Settings.Chicken.ChickenToTown)
+                if (!Settings.Chicken.ChickenToTown.IsEnabled())
                 {
                     ExitGame();
                     return;
@@ -163,7 +163,7 @@ namespace DD
                                 var item = pd.Read<UnitAny>(pItem);
                                 var pUnit = GetPlayerUnit();
                                 var diff = GetDifficulty();
-                                var pItemPriceList = pd.ReadUInt(D2Client.pItemPriceList);
+                                var pItemPriceList = pd.Read<uint>(D2Client.pItemPriceList);
 
                                 var price = pd.Call<uint>(D2Common.GetItemPrice,
                                     CallingConventionEx.StdCall,

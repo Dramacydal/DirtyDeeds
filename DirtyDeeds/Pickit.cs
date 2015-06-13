@@ -219,7 +219,7 @@ namespace DD
                 if (item.Value.dropTime.MSecToNow() <= pickDelay)
                     continue;
 
-                var newDist = item.Value.Distance(game.CurrentX, game.CurrentY);
+                var newDist = item.Value.DistanceTo(game.CurrentX, game.CurrentY);
                 if (newDist < dist)
                 {
                     temp = item.Value;
@@ -237,9 +237,7 @@ namespace DD
                 Thread.Sleep(50);
 
                 if (!game.InGame ||
-                    !game.Settings.ReceivePacketHack.Enabled ||
-                    !game.Settings.ReceivePacketHack.ItemTracker.Enabled ||
-                    !game.Settings.ReceivePacketHack.ItemTracker.EnablePickit ||
+                    !game.Settings.ReceivePacketHack.ItemTracker.EnablePickit.IsEnabled() ||
                     isDisabled ||
                     game.AutoTeleport.IsTeleporting)
                     continue;
@@ -263,7 +261,7 @@ namespace DD
                     item = GetClosestItem(telePickupRadius);
                     if (item != null)
                     {
-                        if (game.Settings.ReceivePacketHack.ItemTracker.UseTelekinesis && item.info.CanBeTelekinesised())
+                        if (game.Settings.ReceivePacketHack.ItemTracker.UseTelekinesis.IsEnabled() && item.info.CanBeTelekinesised())
                         {
                             ++item.pickTryCount;
                             if (item.pickTryCount >= maxPickTries)
@@ -277,7 +275,7 @@ namespace DD
                                 continue;
                             }
                         }
-                        if (game.Settings.ReceivePacketHack.ItemTracker.EnableTelepick &&
+                        if (game.Settings.ReceivePacketHack.ItemTracker.EnableTelepick.IsEnabled() &&
                             item.processingInfo.Find(it => it.NoTele) == null &&
                             TelePick((ushort)item.x, (ushort)item.y))
                         {
@@ -286,8 +284,7 @@ namespace DD
                         }
                     }
 
-                    if (game.Settings.ReceivePacketHack.ItemTracker.EnableTelepick &&
-                        game.Settings.ReceivePacketHack.ItemTracker.TeleBack &&
+                    if (game.Settings.ReceivePacketHack.ItemTracker.TeleBack.IsEnabled() &&
                         teleHistory.Count != 0)
                     {
                         TeleBack();

@@ -5,9 +5,17 @@ namespace DD.Settings
     [Serializable]
     public class PacketReceivedHackSettings : HackSettings
     {
-        public bool BlockFlash = false;
-        public bool FastTele = false;
-        public bool FastPortal = false;
+        public PacketReceivedHackSettings() : base()
+        {
+            BlockFlash.AddDependency(this);
+            FastTele.AddDependency(this);
+            NoTownPortalAnim.AddDependency(this);
+            ItemTracker.AddDependency(this);
+        }
+
+        public HackSettings BlockFlash = new HackSettings();
+        public HackSettings FastTele = new HackSettings();
+        public HackSettings NoTownPortalAnim = new HackSettings();
         public ItemTrackerSettings ItemTracker = new ItemTrackerSettings();
     }
 }

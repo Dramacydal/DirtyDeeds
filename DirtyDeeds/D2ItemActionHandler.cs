@@ -28,7 +28,7 @@ namespace DD
 
         public bool IsEth { get { return flags.HasFlag(ItemFlag.Ethereal); } }
 
-        public double Distance(double x, double y)
+        public double DistanceTo(double x, double y)
         {
             return Math.Sqrt(Math.Pow(this.x - x, 2) + Math.Pow(this.y - y, 2));
         }
@@ -334,12 +334,12 @@ namespace DD
             i.processingInfo = matchingEntries.Where(it => it.Pick).ToList();
 
             var log = matchingEntries.Where(it => it.Log).Count() != 0;
-            var pick = Settings.ReceivePacketHack.ItemTracker.EnablePickit && (!IsInTown() || Settings.ReceivePacketHack.ItemTracker.TownPick) ? i.processingInfo.Count != 0 : false;
+            var pick = Settings.ReceivePacketHack.ItemTracker.EnablePickit.IsEnabled() && (!IsInTown() || Settings.ReceivePacketHack.ItemTracker.TownPick.IsEnabled()) ? i.processingInfo.Count != 0 : false;
 
-            if (i.quality == ItemQuality.Set && Settings.ReceivePacketHack.ItemTracker.LogSets
-                || i.quality == ItemQuality.Unique && Settings.ReceivePacketHack.ItemTracker.LogUniques
-                || itemInfo.IsRune() && Settings.ReceivePacketHack.ItemTracker.LogRunes
-                || log && Settings.ReceivePacketHack.ItemTracker.LogItems)
+            if (i.quality == ItemQuality.Set && Settings.ReceivePacketHack.ItemTracker.LogSets.IsEnabled()
+                || i.quality == ItemQuality.Unique && Settings.ReceivePacketHack.ItemTracker.LogUniques.IsEnabled()
+                || itemInfo.IsRune() && Settings.ReceivePacketHack.ItemTracker.LogRunes.IsEnabled()
+                || log && Settings.ReceivePacketHack.ItemTracker.LogItems.IsEnabled())
             {
                 LogDrop(i);
             }

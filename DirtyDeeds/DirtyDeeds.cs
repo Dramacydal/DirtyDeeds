@@ -102,15 +102,15 @@ namespace DD
         {
             clientsToolStripMenuItem.DropDownItems.Clear();
 
-            var attachItem = new D2ToolstripMenuItem(D2ToolstripType.AttachToAll);
+            var attachItem = new DDToolstripMenuItem(D2ToolstripType.AttachToAll);
             attachItem.Click += (sender, e) =>
             {
                 foreach (var obj in clientsToolStripMenuItem.DropDownItems)
                 {
-                    if (obj.GetType() != typeof(D2ToolstripMenuItem))
+                    if (obj.GetType() != typeof(DDToolstripMenuItem))
                         continue;
 
-                    var item = (D2ToolstripMenuItem)obj;
+                    var item = (DDToolstripMenuItem)obj;
                     if (item.Type != D2ToolstripType.Game)
                         continue;
 
@@ -118,15 +118,15 @@ namespace DD
                 }
             };
 
-            var detachItem = new D2ToolstripMenuItem(D2ToolstripType.DetachFromAll);
+            var detachItem = new DDToolstripMenuItem(D2ToolstripType.DetachFromAll);
             detachItem.Click += (sender, e) =>
             {
                 foreach (var obj in clientsToolStripMenuItem.DropDownItems)
                 {
-                    if (obj.GetType() != typeof(D2ToolstripMenuItem))
+                    if (obj.GetType() != typeof(DDToolstripMenuItem))
                         continue;
 
-                    var item = (D2ToolstripMenuItem)obj;
+                    var item = (DDToolstripMenuItem)obj;
                     if (item.Type != D2ToolstripType.Game)
                         continue;
 
@@ -146,7 +146,7 @@ namespace DD
 
             foreach (var g in games)
             {
-                var t = new D2ToolstripMenuItem(g);
+                var t = new DDToolstripMenuItem(g);
                 t.MouseDown += (sender, e) =>
                 {
                     needCloseToolstrip = false;
@@ -310,6 +310,9 @@ namespace DD
         {
             if (code >= 0)
             {
+                var key = (Keys)Marshal.ReadInt32(lParam);
+                var mEvent = (MessageEvent)wParam.ToInt32();
+
                 foreach (D2Game g in games)
                 {
                     if (g.Overlay == null)
@@ -319,11 +322,13 @@ namespace DD
                     if (foregroundWindow != g.Process.MainWindowHandle && foregroundWindow != g.Overlay.Handle)
                         continue;
 
-                    var key = (Keys)Marshal.ReadInt32(lParam);
-                    var mEvent = (MessageEvent)wParam.ToInt32();
                     if (!g.HandleMessage(key, mEvent))
                         return 1;   // block
                 }
+
+                if (settingsForm != null && mEvent == MessageEvent.WM_KEYUP)
+                    if (!settingsForm.HandleMessage(key, mEvent))
+                        return 1;
             }
             return Hook.CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
         }
@@ -344,6 +349,35 @@ namespace DD
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             games[0].Test();
+        }
+
+
+        SettingsForm settingsForm = null;
+
+        private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var settingsForm = new SettingsForm(this))
+            {
+                this.settingsForm = settingsForm;
+
+                var result = settingsForm.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    var settings = settingsForm.ProduceSettings();
+                    this.Settings = settings;
+
+                    ApplySettings();
+                }
+
+                this.settingsForm = null;
+            }
+        }
+
+        public void ApplySettings()
+        {
+            foreach (var game in games)
+                if (game.Installed)
+                    game.ApplySettings();
         }
     }
 }

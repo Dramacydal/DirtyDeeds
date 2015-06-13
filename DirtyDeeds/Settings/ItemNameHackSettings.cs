@@ -5,12 +5,23 @@ namespace DD.Settings
     [Serializable]
     public class ItemNameHackSettings : HackSettings
     {
-        public bool ShowEth = false;
-        public bool ShowItemLevel = false;
-        public bool ShowItemPrice = false;
-        public bool ShowRuneNumber = false;
-        public bool ShowSockets = false;
-        public bool ShowItemCode = false;
-        public bool ChangeItemColor = false;
+        public ItemNameHackSettings() : base()
+        {
+            ShowEth.AddDependency(this);
+            ShowItemLevel.AddDependency(this);
+            ShowItemPrice.AddDependency(this);
+            ShowRuneNumber.AddDependency(this);
+            ShowSockets.AddDependency(this);
+            ShowItemCode.AddDependency(this);
+            ChangeItemColor.AddDependency(this);
+        }
+
+        public HackSettings ShowEth = new HackSettings();
+        public HackSettings ShowItemLevel = new HackSettings();
+        public HackSettings ShowItemPrice = new HackSettings();
+        public HackSettings ShowRuneNumber = new HackSettings();
+        public HackSettings ShowSockets = new HackSettings();
+        public HackSettings ShowItemCode = new HackSettings();
+        public HackSettings ChangeItemColor = new HackSettings();
     }
 }

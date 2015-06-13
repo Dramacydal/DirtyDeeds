@@ -4,7 +4,7 @@ using System.Windows.Forms;
 namespace DD.Settings
 {
     [Serializable]
-    public class ViewInventorySettings : HackSettings
+    public class ViewInventoryHackSettings : HackSettings
     {
         public new static int Cost { get { return 3; } }
 

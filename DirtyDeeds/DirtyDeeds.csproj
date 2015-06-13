@@ -68,9 +68,7 @@
     <Compile Include="Controls\D2ToolstipMenuItem.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\DependentCheckBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Controls\DependencyExtension.cs" />
     <Compile Include="Controls\DragExtension.cs" />
     <Compile Include="Controls\KeybindButton.cs">
       <SubType>Component</SubType>
@@ -99,14 +97,18 @@
     <Compile Include="D2Structs\Collmap.cs" />
     <Compile Include="D2Structs\SkillInfo.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
-    <Compile Include="Extensions\DebuggerExtensions.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\DDExtensions.cs" />
     <Compile Include="Extensions\PointExtensions.cs" />
     <Compile Include="Extensions\RichTextBoxExtensions.cs" />
     <Compile Include="Extensions\ColorExtensions.cs" />
+    <Compile Include="SettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SettingsForm.Designer.cs">
+      <DependentUpon>SettingsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Settings\ChickenSettings.cs" />
-    <Compile Include="Settings\FastPortalSettings.cs" />
     <Compile Include="Settings\GameSettings.cs" />
     <Compile Include="Settings\HackSettings.cs" />
     <Compile Include="Settings\InfravisionSettings.cs" />
@@ -197,6 +199,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="SettingsForm.resx">
+      <DependentUpon>SettingsForm.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

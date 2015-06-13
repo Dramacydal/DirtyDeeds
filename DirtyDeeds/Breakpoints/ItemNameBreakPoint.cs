@@ -31,21 +31,21 @@ namespace DD.Breakpoints
 
             var appendix = "";
 
-            if (Game.Settings.ItemNameHack.ShowItemCode)
+            if (Game.Settings.ItemNameHack.ShowItemCode.IsEnabled())
             {
                 var pTxt = Game.GetItemText(item.dwTxtFileNo);
                 var txt = pd.Read<ItemTxt>(pTxt);
                 appendix += "(" + txt.GetCode() + ")";
             }
 
-            if (Game.Settings.ItemNameHack.ShowEth && (itemData.dwFlags & 0x400000) != 0)
+            if (Game.Settings.ItemNameHack.ShowEth.IsEnabled() && (itemData.dwFlags & 0x400000) != 0)
                 appendix += "{E}";
 
             var runeNumber = item.RuneNumber();
-            if (runeNumber > 0 && Game.Settings.ItemNameHack.ShowRuneNumber)
+            if (runeNumber > 0 && Game.Settings.ItemNameHack.ShowRuneNumber.IsEnabled())
                 appendix += "(" + runeNumber + ")";
 
-            if (Game.Settings.ItemNameHack.ShowSockets)
+            if (Game.Settings.ItemNameHack.ShowSockets.IsEnabled())
             {
                 var cnt = Game.GetItemSockets(pItem, item.dwUnitId);
 
@@ -53,10 +53,10 @@ namespace DD.Breakpoints
                     appendix += "(" + cnt + ")";
             }
 
-            if (Game.Settings.ItemNameHack.ShowItemLevel && itemData.dwItemLevel > 1)
+            if (Game.Settings.ItemNameHack.ShowItemLevel.IsEnabled() && itemData.dwItemLevel > 1)
                 appendix += "(L" + itemData.dwItemLevel + ")";
 
-            if (Game.Settings.ItemNameHack.ShowItemPrice)
+            if (Game.Settings.ItemNameHack.ShowItemPrice.IsEnabled())
             {
                 var price = Game.GetItemPrice(pItem, item.dwUnitId);
 
@@ -64,7 +64,7 @@ namespace DD.Breakpoints
                     appendix += "($" + price + ")";
             }
 
-            if (Game.Settings.ItemNameHack.ChangeItemColor)
+            if (Game.Settings.ItemNameHack.ChangeItemColor.IsEnabled())
             {
                 var itemInfo = ItemStorage.GetInfo(item.dwTxtFileNo);
                 if (itemInfo != null)

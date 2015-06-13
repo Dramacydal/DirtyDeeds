@@ -19,23 +19,23 @@ namespace DD.Breakpoints
             var pUnit = ctx.Esi;
             if (pUnit == 0)
                 hide = true;
-            else if (Game.Settings.Infravision.HideCorpses || Game.Settings.Infravision.HideDying || Game.Settings.Infravision.HideItems)
+            else if (Game.Settings.Infravision.HideCorpses.IsEnabled() || Game.Settings.Infravision.HideDying.IsEnabled() || Game.Settings.Infravision.HideItems.IsEnabled())
             {
                 var unit = pd.Read<UnitAny>(pUnit);
                 switch ((UnitType)unit.dwType)
                 {
                     case UnitType.Monster:
                         {
-                            if (Game.Settings.Infravision.HideCorpses &&
+                            if (Game.Settings.Infravision.HideCorpses.IsEnabled() &&
                                 unit.dwMode == (uint)NpcMode.Dead ||
-                                Game.Settings.Infravision.HideDying &&
+                                Game.Settings.Infravision.HideDying.IsEnabled() &&
                                 unit.dwMode == (uint)NpcMode.Death)
                                 hide = true;
                             break;
                         }
                     case UnitType.Item:
                         {
-                            if (!Game.Settings.Infravision.HideItems)
+                            if (!Game.Settings.Infravision.HideItems.IsEnabled())
                                 break;
 
                             var itemInfo = ItemStorage.GetInfo(unit.dwTxtFileNo);

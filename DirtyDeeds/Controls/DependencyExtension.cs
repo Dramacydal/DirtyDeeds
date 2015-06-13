@@ -36,17 +36,17 @@ namespace DD
 
         private static void DependencyAdded(object sender, EventArgs e)
         {
-            var control = sender as Control;
-            if (!childsForControls.ContainsKey(control))
+            var parent = sender as Control;
+            if (!childsForControls.ContainsKey(parent))
                 return;
 
-            foreach (var ctrl in childsForControls[control])
+            foreach (var ctrl in childsForControls[parent])
             {
                 if (ctrl.DependencyType == DependencyType.OnEnable)
-                    ctrl.Child.Enabled = control.Enabled;
+                    ctrl.Child.Enabled = parent.Enabled;
                 else if (ctrl.DependencyType == DependencyType.Complex)
-                    ctrl.Child.Enabled = control.Enabled &&
-                        control is CheckBox ? (control as CheckBox).Checked : true;
+                    ctrl.Child.Enabled = parent.Enabled &&
+                        (parent is CheckBox ? (parent as CheckBox).Checked : true);
             }
         }
 

@@ -3,10 +3,17 @@
 namespace DD.Settings
 {
     [Serializable]
-    public class InfravisionSettings : HackSettings
+    public class InfravisionHackSettings : HackSettings
     {
-        public bool HideCorpses = false;
-        public bool HideDying = false;
-        public bool HideItems = false;
+        public InfravisionHackSettings() : base()
+        {
+            HideCorpses.AddDependency(this);
+            HideDying.AddDependency(this);
+            HideItems.AddDependency(this);
+        }
+
+        public HackSettings HideCorpses = new HackSettings();
+        public HackSettings HideDying = new HackSettings();
+        public HackSettings HideItems = new HackSettings();
     }
 }

@@ -340,7 +340,7 @@ namespace DD
                 if (ResumeThreadOffset == 0)
                     ResumeThreadOffset = GetResumeThreadAddr();
 
-                var handle = pd.ReadUInt(Storm.pHandle);
+                var handle = pd.Read<uint>(Storm.pHandle);
 
                 pd.Call(pd.GetModuleAddress("kernel32.dll").Add(ResumeThreadOffset), CallingConventionEx.StdCall, handle);
             }
@@ -436,12 +436,12 @@ namespace DD
 
         public uint GetMouseX()
         {
-            return pd.ReadUInt(D2Client.pMouseX);
+            return pd.Read<uint>(D2Client.pMouseX);
         }
 
         public uint GetMouseY()
         {
-            return pd.ReadUInt(D2Client.pMouseY);
+            return pd.Read<uint>(D2Client.pMouseY);
         }
 
         public bool HandleMessage(Keys key, MessageEvent mEvent)
@@ -451,15 +451,11 @@ namespace DD
 
             if (key == Keys.LControlKey || key == Keys.RControlKey)
             {
-                if (mEvent == MessageEvent.WM_KEYUP && !overlay.ClickThrough && !overlay.settingsExpandButton.Expanded)
+                if (mEvent == MessageEvent.WM_KEYUP && !overlay.ClickThrough)
                         overlay.MakeNonInteractive(true);
                     else if (mEvent == MessageEvent.WM_KEYDOWN && overlay.ClickThrough)
                         overlay.MakeNonInteractive(false);
             }
-
-            if (mEvent == MessageEvent.WM_KEYUP && overlay.settingsExpandButton.Expanded)
-                if (!overlay.HandleMessage(key, mEvent))
-                    return false;
 
             if (mEvent == MessageEvent.WM_KEYUP && GetUIVar(UIVars.ChatInput) == 0)
             {
@@ -497,7 +493,7 @@ namespace DD
                 {
                     using (var suspender = new GameSuspender(this))
                     {
-                        if (OpenPortal() && Settings.FastPortal.GoToTown && Settings.ReceivePacketHack.Enabled)
+                        if (OpenPortal() && Settings.GoToTownAfterPortal.IsEnabled())
                             backToTown = true;
                     }
                 }
@@ -511,8 +507,7 @@ namespace DD
                 }
 
                 if (key == Settings.ReceivePacketHack.ItemTracker.ReactivatePickit.Key &&
-                    Settings.ReceivePacketHack.ItemTracker.Enabled &&
-                    Settings.ReceivePacketHack.ItemTracker.EnablePickit)
+                    Settings.ReceivePacketHack.ItemTracker.EnablePickit.IsEnabled())
                 {
                     if (pickit != null)
                         pickit.ToggleEnabled();
@@ -583,26 +578,26 @@ namespace DD
 
             pd.RemoveBreakPoints();
 
-            if (Settings.LightHack.Enabled)
+            if (Settings.LightHack.IsEnabled())
                 AddBreakPoint(new LightBreakPoint(this));
 
-            if (Settings.WeatherHack.Enabled)
+            if (Settings.WeatherHack.IsEnabled())
                 AddBreakPoint(new WeatherBreakPoint(this));
 
             if (Settings.ReceivePacketHack.Enabled)
                 AddBreakPoint(new ReceivePacketBreakPoint(this));
 
-            if (Settings.ItemNameHack.Enabled)
+            if (Settings.ItemNameHack.IsEnabled())
                 AddBreakPoint(new ItemNameBreakPoint(this));
 
-            if (Settings.ViewInventory.Enabled)
+            if (Settings.ViewInventory.IsEnabled())
             {
                 AddBreakPoint(new ViewInventoryBp1(this));
                 AddBreakPoint(new ViewInventoryBp2(this));
                 AddBreakPoint(new ViewInventoryBp3(this));
             }
 
-            if (Settings.Infravision.Enabled)
+            if (Settings.Infravision.IsEnabled())
                 AddBreakPoint(new InfravisionBreakPoint(this));
         }
     }

@@ -5,16 +5,30 @@ namespace DD.Settings
     [Serializable]
     public class ItemTrackerSettings : HackSettings
     {
-        public bool EnablePickit = false;
-        public bool UseTelekinesis = false;
-        public bool EnableTelepick = false;
-        public bool TeleBack = false;
-        public bool TownPick = false;
+        public ItemTrackerSettings() : base()
+        {
+            EnablePickit.AddDependency(this);
+            UseTelekinesis.AddDependency(EnablePickit);
+            EnableTelepick.AddDependency(EnablePickit);
+            TeleBack.AddDependency(EnableTelepick);
+            TownPick.AddDependency(EnablePickit);
 
-        public bool LogRunes = false;
-        public bool LogSets = false;
-        public bool LogUniques = false;
-        public bool LogItems = false;
+            LogRunes.AddDependency(this);
+            LogSets.AddDependency(this);
+            LogUniques.AddDependency(this);
+            LogItems.AddDependency(this);
+        }
+
+        public HackSettings EnablePickit = new HackSettings();
+        public HackSettings UseTelekinesis = new HackSettings();
+        public HackSettings EnableTelepick = new HackSettings();
+        public HackSettings TeleBack = new HackSettings();
+        public HackSettings TownPick = new HackSettings();
+
+        public HackSettings LogRunes = new HackSettings();
+        public HackSettings LogSets = new HackSettings();
+        public HackSettings LogUniques = new HackSettings();
+        public HackSettings LogItems = new HackSettings();
         public KeySettings ReactivatePickit = new KeySettings();
     }
 }

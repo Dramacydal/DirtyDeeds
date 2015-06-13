@@ -15,12 +15,12 @@ namespace DD
         {
             /*return pd.Call(pd.GetModuleAddress("d2client.dll") + D2Client.GetPlayerUnit,
                 CallingConventionEx.StdCall);*/
-            return pd.ReadUInt(D2Client.pPlayerUnit);
+            return pd.Read<uint>(D2Client.pPlayerUnit);
         }
 
         public byte GetDifficulty()
         {
-            return pd.ReadByte(D2Client.pDifficulty);
+            return pd.Read<byte>(D2Client.pDifficulty);
         }
 
         public uint GetUIVar(UIVars uiVar)
@@ -28,7 +28,7 @@ namespace DD
             if (uiVar > UIVars.Max)
                 return 0;
 
-            return pd.ReadUInt(D2Client.pUiVars + (uint)uiVar * 4);
+            return pd.Read<uint>(D2Client.pUiVars + (uint)uiVar * 4);
         }
 
         public void SetUIVar(UIVars uiVar, uint value)
