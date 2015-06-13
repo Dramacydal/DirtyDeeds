@@ -563,7 +563,7 @@ namespace DD
 
         private void AddBreakPoint(D2BreakPoint bp)
         {
-            if (pd.Breakpoints.Length >= Kernel32.MaxHardwareBreakpoints)
+            if (pd.GetFreeBreakpointSlots() >= Kernel32.MaxHardwareBreakpoints)
                 return;
 
             try

@@ -147,7 +147,7 @@
             this.settingsHolder.Controls.Add(this.settingsExpandButton);
             this.settingsHolder.Location = new System.Drawing.Point(12, 2);
             this.settingsHolder.Name = "settingsHolder";
-            this.settingsHolder.Size = new System.Drawing.Size(612, 443);
+            this.settingsHolder.Size = new System.Drawing.Size(612, 530);
             this.settingsHolder.TabIndex = 0;
             // 
             // settingsTranslucentPanel
@@ -961,13 +961,13 @@
             // settingsExpandButton
             // 
             this.settingsExpandButton.ChildPanel = this.settingsTranslucentPanel;
-            this.settingsExpandButton.Expanded = false;
+            this.settingsExpandButton.Expanded = true;
             this.settingsExpandButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.settingsExpandButton.Location = new System.Drawing.Point(3, 3);
             this.settingsExpandButton.Name = "settingsExpandButton";
             this.settingsExpandButton.Size = new System.Drawing.Size(18, 16);
             this.settingsExpandButton.TabIndex = 5;
-            this.settingsExpandButton.Text = " /\\";
+            this.settingsExpandButton.Text = " \\/";
             this.settingsExpandButton.UseVisualStyleBackColor = true;
             this.settingsExpandButton.Click += new System.EventHandler(this.settingsExpandButton_Click);
             // 

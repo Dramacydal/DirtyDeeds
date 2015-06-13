@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace DirtyDeedsControls
@@ -14,10 +15,20 @@ namespace DirtyDeedsControls
             set
             {
                 key = value;
-                this.Text = key.ToString();
+                this.Text = ProduceName(key);
                 WaitingKeyPress = false;
             }
         }
+
+        protected static string ProduceName(Keys key)
+        {
+            var value = key.ToString();
+            value = value.Replace("NumPad", "Num ");
+            value = Regex.Replace(value, "^D([0-9])$", "$1");
+
+            return value;
+        }
+
         public bool WaitingKeyPress { get; set; }
 
         protected Keys key = Keys.None;

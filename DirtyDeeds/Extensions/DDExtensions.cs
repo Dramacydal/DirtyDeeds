@@ -7,9 +7,9 @@ using WhiteMagic;
 
 namespace DD.Extensions
 {
-    public static class MagicExtensions
+    public static class DDExtensions
     {
-        public static T Read<T>(this MemoryHandler m, uint addr)
+        public static T Read<T>(this MemoryHandler m, uint addr) where T : struct
         {
             return m.Read<T>(new IntPtr(addr));
         }

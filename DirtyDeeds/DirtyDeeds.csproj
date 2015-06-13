@@ -68,6 +68,9 @@
     <Compile Include="Controls\D2ToolstipMenuItem.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\DependentCheckBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Controls\DragExtension.cs" />
     <Compile Include="Controls\KeybindButton.cs">
       <SubType>Component</SubType>
@@ -98,7 +101,7 @@
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\DebuggerExtensions.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
-    <Compile Include="Extensions\MagicExtensions.cs" />
+    <Compile Include="Extensions\DDExtensions.cs" />
     <Compile Include="Extensions\PointExtensions.cs" />
     <Compile Include="Extensions\RichTextBoxExtensions.cs" />
     <Compile Include="Extensions\ColorExtensions.cs" />
