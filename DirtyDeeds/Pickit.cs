@@ -29,25 +29,28 @@ namespace DD
 
         protected D2Game game;
         protected PickitDictionary itemsToPick = new PickitDictionary();
-        protected Thread th = null;
         protected volatile bool needStop = false;
 
         protected volatile bool isDisabled = false;
         protected TeleHistory teleHistory = new TeleHistory();
 
+        MyTimer loopTimer = new MyTimer();
+
         public Pickit(D2Game game)
         {
             this.game = game;
 
-            th = new Thread(() => Loop());
-            th.Start();
+            loopTimer.Interval = 50;
+            loopTimer.Tick += (object sender, EventArgs args) =>
+            {
+                OnLoop();
+            };
+            loopTimer.Start();
         }
 
         public void Stop()
         {
-            needStop = true;
-            if (th != null)
-                th.Join();
+            loopTimer.Stop();
         }
 
         public void Reset()
@@ -230,22 +233,34 @@ namespace DD
             return temp;
         }
 
-        public void Loop()
+        public void OnLoop()
         {
-            while (!needStop)
+            if (!game.InGame ||
+                !game.Settings.ReceivePacketHack.ItemTracker.EnablePickit.IsEnabled() ||
+                isDisabled ||
+                game.AutoTeleport.IsTeleporting)
+                return;
+
+            try
             {
-                Thread.Sleep(50);
-
-                if (!game.InGame ||
-                    !game.Settings.ReceivePacketHack.ItemTracker.EnablePickit.IsEnabled() ||
-                    isDisabled ||
-                    game.AutoTeleport.IsTeleporting)
-                    continue;
-
-                try
+                var item = GetClosestItem(pickupRadius);
+                if (item != null)
                 {
-                    var item = GetClosestItem(pickupRadius);
-                    if (item != null)
+                    ++item.pickTryCount;
+                    if (item.pickTryCount >= maxPickTries)
+                    {
+                        Logger.Pickit.Log(game, LogType.Warning, "Failed to pick {0} after {1} retries.", item.uid, item.pickTryCount);
+                        itemsToPick.Remove(item.uid);
+                    }
+                    else if (Pick(item, true, false))
+                        Thread.Sleep(pickDelay);
+                    return;
+                }
+
+                item = GetClosestItem(telePickupRadius);
+                if (item != null)
+                {
+                    if (game.Settings.ReceivePacketHack.ItemTracker.UseTelekinesis.IsEnabled() && item.info.CanBeTelekinesised())
                     {
                         ++item.pickTryCount;
                         if (item.pickTryCount >= maxPickTries)
@@ -253,46 +268,29 @@ namespace DD
                             Logger.Pickit.Log(game, LogType.Warning, "Failed to pick {0} after {1} retries.", item.uid, item.pickTryCount);
                             itemsToPick.Remove(item.uid);
                         }
-                        else if (Pick(item, true, false))
+                        else if (Pick(item, false, true))
+                        {
                             Thread.Sleep(pickDelay);
-                        continue;
-                    }
-
-                    item = GetClosestItem(telePickupRadius);
-                    if (item != null)
-                    {
-                        if (game.Settings.ReceivePacketHack.ItemTracker.UseTelekinesis.IsEnabled() && item.info.CanBeTelekinesised())
-                        {
-                            ++item.pickTryCount;
-                            if (item.pickTryCount >= maxPickTries)
-                            {
-                                Logger.Pickit.Log(game, LogType.Warning, "Failed to pick {0} after {1} retries.", item.uid, item.pickTryCount);
-                                itemsToPick.Remove(item.uid);
-                            }
-                            else if (Pick(item, false, true))
-                            {
-                                Thread.Sleep(pickDelay);
-                                continue;
-                            }
-                        }
-                        if (game.Settings.ReceivePacketHack.ItemTracker.EnableTelepick.IsEnabled() &&
-                            item.processingInfo.Find(it => it.NoTele) == null &&
-                            TelePick((ushort)item.x, (ushort)item.y))
-                        {
-                            Thread.Sleep(400);
-                            continue;
+                            return;
                         }
                     }
-
-                    if (game.Settings.ReceivePacketHack.ItemTracker.TeleBack.IsEnabled() &&
-                        teleHistory.Count != 0)
+                    if (game.Settings.ReceivePacketHack.ItemTracker.EnableTelepick.IsEnabled() &&
+                        item.processingInfo.Find(it => it.NoTele) == null &&
+                        TelePick((ushort)item.x, (ushort)item.y))
                     {
-                        TeleBack();
                         Thread.Sleep(400);
+                        return;
                     }
                 }
-                catch { }
+
+                if (game.Settings.ReceivePacketHack.ItemTracker.TeleBack.IsEnabled() &&
+                    teleHistory.Count != 0)
+                {
+                    TeleBack();
+                    Thread.Sleep(400);
+                }
             }
+            catch { }
         }
     }
 }

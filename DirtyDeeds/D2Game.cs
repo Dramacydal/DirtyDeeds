@@ -59,13 +59,11 @@ namespace DD
         public volatile ConcurrentDictionary<uint, uint> socketsPerItem = new ConcurrentDictionary<uint, uint>();
         public volatile ConcurrentDictionary<uint, uint> pricePerItem = new ConcurrentDictionary<uint, uint>();
 
-        protected Thread syncThread = null;
-        protected Thread gameCheckThread = null;
+        MyTimer gameCheckTimer = new MyTimer();
+        MyTimer syncTimer = new MyTimer();
 
         public int MainThreadId { get { return mainThreadId; } }
         protected int mainThreadId = 0;
-
-        public D2Game() { }
 
         public void Dispose()
         {
@@ -79,6 +77,18 @@ namespace DD
         {
             this.process = process;
             this.dirtyDeeds = dirtyDeeds;
+
+            syncTimer.Interval = 300;
+            syncTimer.Tick += (object sender, EventArgs args) =>
+            {
+                WindowChecker(this);
+            };
+
+            gameCheckTimer.Interval = 300;
+            gameCheckTimer.Tick += (object sender, EventArgs args) =>
+            {
+                GameChecker(this);
+            };
         }
 
         public override string ToString()
@@ -130,14 +140,7 @@ namespace DD
                 return false;
             }
 
-            syncThread = new Thread(() => WindowChecker(this));
-            syncThread.Start();
-
-            gameCheckThread = new Thread(() => GameChecker(this));
-            gameCheckThread.Start();
-
             CheckInGame(true);
-
 
             overlay = new OverlayWindow();
             overlay.game = this;
@@ -148,6 +151,9 @@ namespace DD
             PlayerInfo = new PlayerInfo(this);
             MapHandler = new MapHandler(this);
             AutoTeleport = new AutoTeleHandler(this);
+
+            syncTimer.Start();
+            gameCheckTimer.Start();
 
             return true;
         }
@@ -161,16 +167,8 @@ namespace DD
                 overlay = null;
             }
 
-            if (syncThread != null)
-            {
-                syncThread.Abort();
-                syncThread = null;
-            }
-            if (gameCheckThread != null)
-            {
-                gameCheckThread.Abort();
-                gameCheckThread = null;
-            }
+            syncTimer.Stop();
+            gameCheckTimer.Stop();
 
             if (pickit != null)
             {
@@ -211,45 +209,37 @@ namespace DD
 
         protected static void WindowChecker(D2Game game)
         {
-            while (true)
+            try
             {
-                try
+                if (game.Debugger.HasExited)
                 {
-                    if (game.Debugger.HasExited)
-                    {
-                        game.Detach();
-                        return;
-                    }
+                    game.Detach();
+                    return;
+                }
 
-                    if (game.Overlay != null)
-                    {
-                        game.Overlay.Invoke((MethodInvoker)delegate
-                        {
-                            game.Overlay.UpdateOverlay();
-                        });
-                    }
-                }
-                catch
+                if (game.Overlay != null)
                 {
-                    //MessageBox.Show(e.ToString());
+                    game.Overlay.Invoke((MethodInvoker)delegate
+                    {
+                        game.Overlay.UpdateOverlay();
+                    });
                 }
-                Thread.Sleep(300);
+            }
+            catch
+            {
+                //MessageBox.Show(e.ToString());
             }
         }
 
         protected static void GameChecker(D2Game g)
         {
-            while (true)
+            try
             {
-                try
-                {
-                    g.CheckInGame();
-                }
-                catch
-                {
-                    //MessageBox.Show(e.ToString());
-                }
-                Thread.Sleep(300);
+                g.CheckInGame();
+            }
+            catch
+            {
+                //MessageBox.Show(e.ToString());
             }
         }
 
