@@ -1,4 +1,4 @@
-﻿using DD.D2Enums;
+﻿using DD.Game.Enums;
 using System.Drawing;
 
 namespace DD.Extensions

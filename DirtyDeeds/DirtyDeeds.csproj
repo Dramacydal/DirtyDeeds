@@ -51,20 +51,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AutoTeleport\AutoTeleHandler.cs" />
-    <Compile Include="AutoTeleport\TeleportPath.cs" />
-    <Compile Include="AutoTeleport\CMatrix.cs" />
-    <Compile Include="AutoTeleport\CollisionMap.cs" />
-    <Compile Include="Breakpoints\D2BreakPoint.cs" />
-    <Compile Include="Breakpoints\InfravisionBreakPoint.cs" />
-    <Compile Include="Breakpoints\ItemNameBreakPoint.cs" />
-    <Compile Include="Breakpoints\LightBreakPoint.cs" />
-    <Compile Include="Breakpoints\ReceivePacketBreakPoint.cs" />
-    <Compile Include="Breakpoints\ViewInventoryBp1.cs" />
-    <Compile Include="Breakpoints\ViewInventoryBp2.cs" />
-    <Compile Include="Breakpoints\ViewInventoryBp3.cs" />
-    <Compile Include="Breakpoints\WeatherBreakPoint.cs" />
-    <Compile Include="ByteConverter.cs" />
+    <Compile Include="Game\AutoTeleport\AutoTeleHandler.cs" />
+    <Compile Include="Game\AutoTeleport\TeleportPath.cs" />
+    <Compile Include="Game\AutoTeleport\CMatrix.cs" />
+    <Compile Include="Game\AutoTeleport\CollisionMap.cs" />
+    <Compile Include="Game\Breakpoints\D2BreakPoint.cs" />
+    <Compile Include="Game\Breakpoints\InfravisionBreakPoint.cs" />
+    <Compile Include="Game\Breakpoints\ItemNameBreakPoint.cs" />
+    <Compile Include="Game\Breakpoints\LightBreakPoint.cs" />
+    <Compile Include="Game\Breakpoints\ReceivePacketBreakPoint.cs" />
+    <Compile Include="Game\Breakpoints\ViewInventoryBp1.cs" />
+    <Compile Include="Game\Breakpoints\ViewInventoryBp2.cs" />
+    <Compile Include="Game\Breakpoints\ViewInventoryBp3.cs" />
+    <Compile Include="Game\Breakpoints\WeatherBreakPoint.cs" />
+    <Compile Include="Tools\ByteConverter.cs" />
     <Compile Include="Controls\D2ToolstipMenuItem.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -73,84 +73,84 @@
     <Compile Include="Controls\KeybindButton.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="D2Enums\ItemActionType.cs" />
-    <Compile Include="D2Enums\ItemCategory.cs" />
-    <Compile Include="D2Enums\D2Color.cs" />
-    <Compile Include="D2Enums\EquipmentLocation.cs" />
-    <Compile Include="D2Enums\Inventory.cs" />
-    <Compile Include="D2Enums\ItemContainer.cs" />
-    <Compile Include="D2Enums\ItemFlag.cs" />
-    <Compile Include="D2Enums\ItemQuality.cs" />
-    <Compile Include="D2Enums\Map.cs" />
-    <Compile Include="D2Enums\Modes.cs" />
-    <Compile Include="D2Enums\Packets.cs" />
-    <Compile Include="D2Enums\SkillType.cs" />
-    <Compile Include="D2Enums\StatType.cs" />
-    <Compile Include="D2Enums\UIVars.cs" />
-    <Compile Include="D2Enums\UnitType.cs" />
-    <Compile Include="D2Pointers\D2Client.cs" />
-    <Compile Include="D2Pointers\D2Common.cs" />
-    <Compile Include="D2Pointers\D2Net.cs" />
-    <Compile Include="D2Pointers\Fog.cs" />
-    <Compile Include="D2Pointers\Game.cs" />
-    <Compile Include="D2Pointers\Storm.cs" />
-    <Compile Include="D2Structs\Collmap.cs" />
-    <Compile Include="D2Structs\SkillInfo.cs" />
+    <Compile Include="Game\D2Enums\ItemActionType.cs" />
+    <Compile Include="Game\D2Enums\ItemCategory.cs" />
+    <Compile Include="Game\D2Enums\D2Color.cs" />
+    <Compile Include="Game\D2Enums\EquipmentLocation.cs" />
+    <Compile Include="Game\D2Enums\Inventory.cs" />
+    <Compile Include="Game\D2Enums\ItemContainer.cs" />
+    <Compile Include="Game\D2Enums\ItemFlag.cs" />
+    <Compile Include="Game\D2Enums\ItemQuality.cs" />
+    <Compile Include="Game\D2Enums\Map.cs" />
+    <Compile Include="Game\D2Enums\Modes.cs" />
+    <Compile Include="Game\D2Enums\Packets.cs" />
+    <Compile Include="Game\D2Enums\SkillType.cs" />
+    <Compile Include="Game\D2Enums\StatType.cs" />
+    <Compile Include="Game\D2Enums\UIVars.cs" />
+    <Compile Include="Game\D2Enums\UnitType.cs" />
+    <Compile Include="Game\D2Pointers\D2Client.cs" />
+    <Compile Include="Game\D2Pointers\D2Common.cs" />
+    <Compile Include="Game\D2Pointers\D2Net.cs" />
+    <Compile Include="Game\D2Pointers\Fog.cs" />
+    <Compile Include="Game\D2Pointers\Game.cs" />
+    <Compile Include="Game\D2Pointers\Storm.cs" />
+    <Compile Include="Game\D2Structs\Collmap.cs" />
+    <Compile Include="Game\D2Structs\SkillInfo.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\DDExtensions.cs" />
     <Compile Include="Extensions\PointExtensions.cs" />
     <Compile Include="Extensions\RichTextBoxExtensions.cs" />
     <Compile Include="Extensions\ColorExtensions.cs" />
-    <Compile Include="MyTimer.cs" />
+    <Compile Include="Tools\MyTimer.cs" />
     <Compile Include="SettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="SettingsForm.Designer.cs">
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Settings\ChickenSettings.cs" />
-    <Compile Include="Settings\GameSettings.cs" />
-    <Compile Include="Settings\HackSettings.cs" />
-    <Compile Include="Settings\InfravisionSettings.cs" />
-    <Compile Include="Settings\ItemNameHackSettings.cs" />
-    <Compile Include="Settings\ItemProcessingSettings.cs" />
-    <Compile Include="Settings\ItemTrackerSettings.cs" />
-    <Compile Include="Settings\KeySettings.cs" />
-    <Compile Include="Settings\OverlaySettings.cs" />
-    <Compile Include="Settings\PacketReceivedHackSettings.cs" />
-    <Compile Include="Settings\ViewInventorySettings.cs" />
-    <Compile Include="GameSuspender.cs" />
-    <Compile Include="Ini\InitParser.cs" />
-    <Compile Include="ItemProcessingInfo.cs" />
-    <Compile Include="Log\Logger.cs" />
-    <Compile Include="PlayerInfo.cs" />
-    <Compile Include="D2Api\GameApi.cs" />
-    <Compile Include="D2Api\LowLevel.cs" />
-    <Compile Include="D2Game.cs" />
+    <Compile Include="Game\Settings\ChickenSettings.cs" />
+    <Compile Include="Game\Settings\GameSettings.cs" />
+    <Compile Include="Game\Settings\HackSettings.cs" />
+    <Compile Include="Game\Settings\InfravisionSettings.cs" />
+    <Compile Include="Game\Settings\ItemNameHackSettings.cs" />
+    <Compile Include="Game\Settings\ItemProcessingSettings.cs" />
+    <Compile Include="Game\Settings\ItemTrackerSettings.cs" />
+    <Compile Include="Game\Settings\KeySettings.cs" />
+    <Compile Include="Game\Settings\OverlaySettings.cs" />
+    <Compile Include="Game\Settings\PacketReceivedHackSettings.cs" />
+    <Compile Include="Game\Settings\ViewInventorySettings.cs" />
+    <Compile Include="Game\GameSuspender.cs" />
+    <Compile Include="Tools\IniParser.cs" />
+    <Compile Include="Game\ItemProcessingInfo.cs" />
+    <Compile Include="Game\Log\Logger.cs" />
+    <Compile Include="Game\PlayerInfo.cs" />
+    <Compile Include="Game\D2Api\GameApi.cs" />
+    <Compile Include="Game\D2Api\LowLevel.cs" />
+    <Compile Include="Game\D2Game.cs" />
     <Compile Include="Controls\ExpandButton.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="D2ItemActionHandler.cs" />
-    <Compile Include="D2Tasks.cs" />
-    <Compile Include="Hook.cs" />
+    <Compile Include="Game\D2ItemActionHandler.cs" />
+    <Compile Include="Game\D2Tasks.cs" />
+    <Compile Include="Tools\Hook.cs" />
     <Compile Include="DirtyDeeds.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="DirtyDeeds.Designer.cs">
       <DependentUpon>DirtyDeeds.cs</DependentUpon>
     </Compile>
-    <Compile Include="ItemStorage.cs" />
-    <Compile Include="MapHandler.cs" />
-    <Compile Include="Misc.cs" />
+    <Compile Include="Game\ItemStorage.cs" />
+    <Compile Include="Game\MapHandler.cs" />
+    <Compile Include="Tools\Misc.cs" />
     <Compile Include="OverlayWindow.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="OverlayWindow.Designer.cs">
       <DependentUpon>OverlayWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="Packets.cs" />
-    <Compile Include="Pickit.cs" />
+    <Compile Include="Game\Packets.cs" />
+    <Compile Include="Game\Pickit.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controls\TranslucentPanel.cs">
@@ -159,30 +159,30 @@
     <Compile Include="Controls\TransparentRichTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="AutoTeleport\TeleportInfo.cs" />
-    <Compile Include="D2Structs\Act.cs" />
-    <Compile Include="D2Structs\ActMisc.cs" />
-    <Compile Include="D2Structs\AutomapCell.cs" />
-    <Compile Include="D2Structs\AutomapLayer.cs" />
-    <Compile Include="D2Structs\AutomapLayer2.cs" />
-    <Compile Include="D2Structs\Info.cs" />
-    <Compile Include="D2Structs\Inventory.cs" />
-    <Compile Include="D2Structs\ItemData.cs" />
-    <Compile Include="D2Structs\ItemTxt.cs" />
-    <Compile Include="D2Structs\Level.cs" />
-    <Compile Include="D2Structs\LevelTxt.cs" />
-    <Compile Include="D2Structs\ObjectPath.cs" />
-    <Compile Include="D2Structs\ObjectTxt.cs" />
-    <Compile Include="D2Structs\Path.cs" />
-    <Compile Include="D2Structs\PlayerData.cs" />
-    <Compile Include="D2Structs\PresetUnit.cs" />
-    <Compile Include="D2Structs\Room1.cs" />
-    <Compile Include="D2Structs\Room2.cs" />
-    <Compile Include="D2Structs\RoomTile.cs" />
-    <Compile Include="D2Structs\RosterUnit.cs" />
-    <Compile Include="D2Structs\Skill.cs" />
-    <Compile Include="D2Structs\Type2Info.cs" />
-    <Compile Include="D2Structs\UnitAny.cs" />
+    <Compile Include="Game\AutoTeleport\TeleportInfo.cs" />
+    <Compile Include="Game\D2Structs\Act.cs" />
+    <Compile Include="Game\D2Structs\ActMisc.cs" />
+    <Compile Include="Game\D2Structs\AutomapCell.cs" />
+    <Compile Include="Game\D2Structs\AutomapLayer.cs" />
+    <Compile Include="Game\D2Structs\AutomapLayer2.cs" />
+    <Compile Include="Game\D2Structs\Info.cs" />
+    <Compile Include="Game\D2Structs\Inventory.cs" />
+    <Compile Include="Game\D2Structs\ItemData.cs" />
+    <Compile Include="Game\D2Structs\ItemTxt.cs" />
+    <Compile Include="Game\D2Structs\Level.cs" />
+    <Compile Include="Game\D2Structs\LevelTxt.cs" />
+    <Compile Include="Game\D2Structs\ObjectPath.cs" />
+    <Compile Include="Game\D2Structs\ObjectTxt.cs" />
+    <Compile Include="Game\D2Structs\Path.cs" />
+    <Compile Include="Game\D2Structs\PlayerData.cs" />
+    <Compile Include="Game\D2Structs\PresetUnit.cs" />
+    <Compile Include="Game\D2Structs\Room1.cs" />
+    <Compile Include="Game\D2Structs\Room2.cs" />
+    <Compile Include="Game\D2Structs\RoomTile.cs" />
+    <Compile Include="Game\D2Structs\RosterUnit.cs" />
+    <Compile Include="Game\D2Structs\Skill.cs" />
+    <Compile Include="Game\D2Structs\Type2Info.cs" />
+    <Compile Include="Game\D2Structs\UnitAny.cs" />
     <EmbeddedResource Include="DirtyDeeds.resx">
       <DependentUpon>DirtyDeeds.cs</DependentUpon>
       <SubType>Designer</SubType>

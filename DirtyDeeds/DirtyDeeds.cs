@@ -10,7 +10,9 @@ using System.Diagnostics;
 using System.Xml.Serialization;
 using DirtyDeedsControls;
 using WhiteMagic;
-using DD.Settings;
+using DD.Game.Settings;
+using DD.Tools;
+using DD.Game;
 
 namespace DD
 {
@@ -68,13 +70,11 @@ namespace DD
             needCloseToolstrip = true;
         }
 
-        public List<D2Game> Games { get { return games; } }
-
         public List<D2Game> games = new List<D2Game>();
 
         protected void UpdateGames()
         {
-            games.ForEach((g) =>
+            games.ForEach(g =>
             {
                 if (!g.Exists())
                     g.Dispose();
@@ -230,24 +230,6 @@ namespace DD
             d2font = new Font(ff, 15f, FontStyle.Bold);
         }
 
-        private void attachButton_Click(object sender, EventArgs e)
-        {
-            /*var g = SelectedGame;
-            if (g == null)
-                return;
-
-            if (g.Installed)
-                return;
-
-            if (!g.Install())
-                MessageBox.Show("Failed to install hack");
-            else
-            {
-                statusLabel.Text = "Attached to " + g.ToString();
-                games.ResetBindings();
-            }*/
-        }
-
         private void DirtyDeeds_FormClosing(object sender, FormClosingEventArgs e)
         {
             Hook.UnhookWindowsHookEx(keyHookId);
@@ -262,30 +244,6 @@ namespace DD
             }
 
             SaveSettings();
-        }
-
-        private void detachButton_Click(object sender, EventArgs e)
-        {
-            /*var g = SelectedGame;
-            if (g == null)
-                return;
-
-            if (g.Installed)
-                if (g.Detach())
-                    statusLabel.Text = "Detached from " + g.ToString();
-                else
-                    MessageBox.Show("Failed to detach");
-
-            games.ResetBindings();*/
-        }
- 
-        private void testButton_Click(object sender, EventArgs e)
-        {
-            /*var g = SelectedGame;
-            if (g == null)
-                return;
-
-            g.Test();*/
         }
 
         protected IntPtr SetKeyHook(HookProc proc)

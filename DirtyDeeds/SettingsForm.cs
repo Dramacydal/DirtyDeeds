@@ -1,4 +1,6 @@
-﻿using DD.Settings;
+﻿using DD.Game.Enums;
+using DD.Game.Settings;
+using DD.Tools;
 using DirtyDeedsControls;
 using System;
 using System.Collections.Generic;

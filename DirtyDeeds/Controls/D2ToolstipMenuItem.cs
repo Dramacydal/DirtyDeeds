@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using DD;
+using DD.Game;
 
 namespace DirtyDeedsControls
 {

@@ -2,10 +2,12 @@
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using DD.D2Enums;
 using DirtyDeedsControls;
-using DD.Settings;
+using DD.Game.Settings;
 using DD.Extensions;
+using DD.Tools;
+using DD.Game;
+using DD.Game.Enums;
 
 namespace DD
 {
