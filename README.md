@@ -4,7 +4,6 @@ Breakpoint-based Diablo 2 1.13d multihack
 Potentially undetectable
 
 *How to use:*
-* Compile with latest WhiteMagic https://github.com/Dramacydal/WhiteMagic
 * Copy files from ExampleConfig to binaries directory
 * Run as administrator, attach to D2 from tray.
 * Ctrl+click to interact with overlay buttons
