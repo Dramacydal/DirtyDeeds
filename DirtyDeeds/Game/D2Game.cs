@@ -53,6 +53,7 @@ namespace DD.Game
 
         MyTimer gameCheckTimer = new MyTimer();
         MyTimer syncTimer = new MyTimer();
+        MyTimer selectedUnitTimer = new MyTimer();
 
         public int MainThreadId { get { return mainThreadId; } }
         protected int mainThreadId = 0;
@@ -81,6 +82,67 @@ namespace DD.Game
             {
                 GameChecker(this);
             };
+
+            selectedUnitTimer.Interval = 300;
+            selectedUnitTimer.Tick += (object sender, EventArgs args) =>
+                {
+                    SelectedUnitChecker();
+                };
+        }
+
+        private void SelectedUnitChecker()
+        {
+            if (!InGame || !Installed)
+                return;
+
+            try
+            {
+                using (var s = pd.MakeSuspender())
+                {
+                    var pUnit = GetSelectedUnit();
+                    if (pUnit == IntPtr.Zero)
+                    {
+                        ToggleMobInfo(false);
+                        return;
+                    }
+
+                    ToggleMobInfo(true);
+
+                    var unit = pd.Read<UnitAny>(pUnit);
+                    Console.WriteLine("{0} {1}", unit.dwUnitId, unit.dwType);
+                    UpdateMobInfo(string.Format("{0} {1}", unit.dwUnitId, unit.dwType));
+                    //MessageBox.Show(string.Format("{0} {1}", unit.dwUnitId, unit.dwType));
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+
+        void UpdateMobInfo(string text)
+        {
+            Overlay.Invoke((MethodInvoker)delegate
+            {
+                overlay.mobInfoRichTextBox.Text = text;
+            });
+        }
+
+        void ToggleMobInfo(bool on)
+        {
+            Overlay.Invoke((MethodInvoker)delegate
+            {
+                if (on)
+                {
+                    if (!overlay.mobInfoTranslucentPanel.Visible)
+                        overlay.mobInfoTranslucentPanel.Show();
+                }
+                else
+                {
+                    if (overlay.mobInfoTranslucentPanel.Visible)
+                        overlay.mobInfoTranslucentPanel.Hide();
+                }
+            });
         }
 
         public override string ToString()
@@ -139,13 +201,14 @@ namespace DD.Game
             overlay.PostCreate();
             overlay.InGameStateChanged(InGame);
 
-            pickit = new Pickit(this);
+            AutoTeleport = new AutoTeleHandler(this);
+            Pickit = new Pickit(this);
             PlayerInfo = new PlayerInfo(this);
             MapHandler = new MapHandler(this);
-            AutoTeleport = new AutoTeleHandler(this);
 
             syncTimer.Start();
             gameCheckTimer.Start();
+            selectedUnitTimer.Start();
 
             return true;
         }
@@ -161,11 +224,12 @@ namespace DD.Game
 
             syncTimer.Stop();
             gameCheckTimer.Stop();
+            selectedUnitTimer.Stop();
 
-            if (pickit != null)
+            if (Pickit != null)
             {
-                pickit.Stop();
-                pickit = null;
+                Pickit.Stop();
+                Pickit = null;
             }
 
             if (MapHandler != null)
@@ -298,8 +362,13 @@ namespace DD.Game
 
             using (var suspender = new GameSuspender(this))
             {
-                Thread.Sleep(15000);
+                for (var i = 0; i < (int)UIVars.Max; ++i)
+                {
+                    Console.WriteLine("{0} - {1}", (UIVars)i, GetUIVar((UIVars)i));
+                }
             }
+
+            MessageBox.Show(Debugger.Read<uint>(new IntPtr(0x6FBA9910)).ToString());
         }
 
         private static uint ResumeThreadOffset = 0;
@@ -324,7 +393,7 @@ namespace DD.Game
 
                 var handle = pd.Read<uint>(Storm.pHandle);
 
-                pd.Call(pd.GetModuleAddress("kernel32.dll").Add(ResumeThreadOffset), CallingConventionEx.StdCall, handle);
+                pd.Call(pd.GetModuleAddress("kernel32.dll").Add(ResumeThreadOffset), MagicConvention.StdCall, handle);
             }
         }
 
@@ -351,8 +420,8 @@ namespace DD.Game
             socketsPerItem.Clear();
             viewingUnit = 0;
 
-            if (pickit != null)
-                pickit.Reset();
+            if (Pickit != null)
+                Pickit.Reset();
 
             if (PlayerInfo != null)
                 PlayerInfo.Reset();
@@ -401,9 +470,7 @@ namespace DD.Game
             if (!GameReady())
                 return;
 
-            var pSelected = pd.Call<IntPtr>(D2Client.GetSelectedUnit,
-                CallingConventionEx.StdCall);
-
+            var pSelected = GetSelectedUnit();
             if (pSelected == IntPtr.Zero)
                 return;
 
@@ -491,8 +558,8 @@ namespace DD.Game
                 if (key == Settings.ReceivePacketHack.ItemTracker.ReactivatePickit.Key &&
                     Settings.ReceivePacketHack.ItemTracker.EnablePickit.IsEnabled())
                 {
-                    if (pickit != null)
-                        pickit.ToggleEnabled();
+                    if (Pickit != null)
+                        Pickit.ToggleEnabled();
                 }
 
                 if (key == Settings.AutoteleNext.Key)
@@ -540,7 +607,7 @@ namespace DD.Game
 
         private void AddBreakPoint(D2BreakPoint bp)
         {
-            if (pd.GetFreeBreakpointSlots() >= Kernel32.MaxHardwareBreakpoints)
+            if (pd.Breakpoints.Count >= Kernel32.MaxHardwareBreakpoints)
                 return;
 
             try

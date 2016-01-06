@@ -8,14 +8,13 @@ using DD.Extensions;
 using DD.Game.Enums;
 
 namespace DD.Game
-
 {
     public partial class D2Game
     {
         public uint GetPlayerUnit()
         {
             /*return pd.Call(pd.GetModuleAddress("d2client.dll") + D2Client.GetPlayerUnit,
-                CallingConventionEx.StdCall);*/
+                MagicConvention.StdCall);*/
             return pd.Read<uint>(D2Client.pPlayerUnit);
         }
 
@@ -26,7 +25,7 @@ namespace DD.Game
 
         public uint GetUIVar(UIVars uiVar)
         {
-            if (uiVar > UIVars.Max)
+            if (uiVar >= UIVars.Max)
                 return 0;
 
             return pd.Read<uint>(D2Client.pUiVars + (uint)uiVar * 4);
@@ -34,11 +33,11 @@ namespace DD.Game
 
         public void SetUIVar(UIVars uiVar, uint value)
         {
-            if (uiVar > UIVars.Max)
+            if (uiVar >= UIVars.Max)
                 return;
 
             pd.Call(D2Client.SetUiVar,
-                CallingConventionEx.FastCall,
+                MagicConvention.FastCall,
                 (uint)uiVar,
                 value,
                 0);
@@ -81,7 +80,7 @@ namespace DD.Game
         {
             var addr = pd.AllocateBytes(packet);
             pd.Call(D2Net.ReceivePacket,
-                CallingConventionEx.StdCall,
+                MagicConvention.StdCall,
                 addr, packet.Length);
             pd.FreeMemory(addr);
         }
@@ -90,7 +89,7 @@ namespace DD.Game
         {
             var addr = pd.AllocateBytes(packet);
             pd.Call(D2Net.SendPacket,
-                CallingConventionEx.StdCall,
+                MagicConvention.StdCall,
                 packet.Length, 1, addr);
             pd.FreeMemory(addr);
         }
@@ -148,7 +147,7 @@ namespace DD.Game
             {
                 var addr = pd.AllocateUTF16String(str);
                 pd.Call(D2Client.PrintGameString,
-                    CallingConventionEx.StdCall,
+                    MagicConvention.StdCall,
                     addr, (uint)color);
 
                 pd.FreeMemory(addr);
@@ -182,7 +181,7 @@ namespace DD.Game
                 return;
 
             pd.Call(D2Client.ExitGame,
-                CallingConventionEx.FastCall);
+                MagicConvention.FastCall);
         }
 
         public bool HasSkill(SkillType skillId)
@@ -362,14 +361,14 @@ namespace DD.Game
         public uint GetUnitStat(uint pUnit, StatType stat)
         {
             return pd.Call<uint>(D2Common.GetUnitStat,
-                CallingConventionEx.StdCall,
+                MagicConvention.StdCall,
                 pUnit, (uint)stat, 0);
         }
 
         public uint GetBaseUnitStat(uint pUnit, StatType stat)
         {
             return pd.Call<uint>(D2Common.GetBaseUnitStat,
-                CallingConventionEx.StdCall,
+                MagicConvention.StdCall,
                 pUnit, (uint)stat, 0);
         }
         public bool TeleportTo(ushort x, ushort y)
@@ -389,14 +388,14 @@ namespace DD.Game
         public ushort GetUnitX(uint pUnit)
         {
             return pd.Call<ushort>(D2Client.GetUnitX,
-                CallingConventionEx.ThisCall,
+                MagicConvention.ThisCall,
                 pUnit);
         }
 
         public ushort GetUnitY(uint pUnit)
         {
             return pd.Call<ushort>(D2Client.GetUnitY,
-                CallingConventionEx.ThisCall,
+                MagicConvention.ThisCall,
                 pUnit);
         }
 
@@ -415,6 +414,12 @@ namespace DD.Game
 
             CurrentX = GetUnitX(pUnit);
             CurrentY = GetUnitY(pUnit);*/
+        }
+
+        public IntPtr GetSelectedUnit()
+        {
+            return pd.Call<IntPtr>(D2Client.GetSelectedUnit,
+                MagicConvention.StdCall);
         }
     }
 }

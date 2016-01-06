@@ -39,10 +39,14 @@
             this.logExpandButton = new DirtyDeedsControls.ExpandButton();
             this.logTranslucentPanel = new DirtyDeedsControls.TranslucentPanel();
             this.logTextBox = new DirtyDeedsControls.TransparentRichTextBox();
+            this.mobInfoTranslucentPanel = new DirtyDeedsControls.TranslucentPanel();
+            this.mobInfoRichTextBox = new DirtyDeedsControls.TransparentRichTextBox();
+            this.mobInfoButton = new System.Windows.Forms.Button();
             this.statsHolder.SuspendLayout();
             this.statsTranslucentPanel.SuspendLayout();
             this.logHolder.SuspendLayout();
             this.logTranslucentPanel.SuspendLayout();
+            this.mobInfoTranslucentPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // dirtyDeedsLabel
@@ -185,12 +189,41 @@
             this.logTextBox.Text = "";
             this.logTextBox.WordWrap = false;
             // 
+            // mobInfoTranslucentPanel
+            // 
+            this.mobInfoTranslucentPanel.BackColor = System.Drawing.Color.Transparent;
+            this.mobInfoTranslucentPanel.Controls.Add(this.mobInfoButton);
+            this.mobInfoTranslucentPanel.Controls.Add(this.mobInfoRichTextBox);
+            this.mobInfoTranslucentPanel.Location = new System.Drawing.Point(87, 30);
+            this.mobInfoTranslucentPanel.Name = "mobInfoTranslucentPanel";
+            this.mobInfoTranslucentPanel.Size = new System.Drawing.Size(431, 152);
+            this.mobInfoTranslucentPanel.TabIndex = 9;
+            // 
+            // mobInfoRichTextBox
+            // 
+            this.mobInfoRichTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.mobInfoRichTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.mobInfoRichTextBox.Location = new System.Drawing.Point(0, 0);
+            this.mobInfoRichTextBox.Name = "mobInfoRichTextBox";
+            this.mobInfoRichTextBox.Size = new System.Drawing.Size(431, 152);
+            this.mobInfoRichTextBox.TabIndex = 0;
+            this.mobInfoRichTextBox.Text = "";
+            // 
+            // mobInfoButton
+            // 
+            this.mobInfoButton.Location = new System.Drawing.Point(1, 4);
+            this.mobInfoButton.Name = "mobInfoButton";
+            this.mobInfoButton.Size = new System.Drawing.Size(24, 23);
+            this.mobInfoButton.TabIndex = 1;
+            this.mobInfoButton.UseVisualStyleBackColor = true;
+            // 
             // OverlayWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.MidnightBlue;
             this.ClientSize = new System.Drawing.Size(1400, 1212);
+            this.Controls.Add(this.mobInfoTranslucentPanel);
             this.Controls.Add(this.statsHolder);
             this.Controls.Add(this.logHolder);
             this.Controls.Add(this.dirtyDeedsLabel);
@@ -207,6 +240,7 @@
             this.statsTranslucentPanel.ResumeLayout(false);
             this.logHolder.ResumeLayout(false);
             this.logTranslucentPanel.ResumeLayout(false);
+            this.mobInfoTranslucentPanel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -225,5 +259,8 @@
         private System.Windows.Forms.Button statsRefreshButton;
         private DirtyDeedsControls.TransparentRichTextBox statsTextBox;
         private System.Windows.Forms.Button logClearButton;
+        public DirtyDeedsControls.TranslucentPanel mobInfoTranslucentPanel;
+        public System.Windows.Forms.Button mobInfoButton;
+        public DirtyDeedsControls.TransparentRichTextBox mobInfoRichTextBox;
     }
 }

@@ -43,8 +43,7 @@ namespace DD.Game
 
     public partial class D2Game
     {
-        public Pickit Pickit { get { return pickit; } }
-        protected Pickit pickit = null;
+        public Pickit Pickit { get; private set; }
 
         public ItemActionInfo ReadItemAction(byte[] data)
         {
@@ -322,7 +321,7 @@ namespace DD.Game
             if (!Settings.ReceivePacketHack.ItemTracker.Enabled)
                 return true;
 
-            if (pickit == null/* || pickit.fullInventory*/)
+            if (Pickit == null/* || pickit.fullInventory*/)
                 return true;
 
             var itemInfo = ItemStorage.GetInfo(i.code);
@@ -347,7 +346,7 @@ namespace DD.Game
 
             if (pick)
             {
-                Task.Factory.StartNew(() => pickit.AddPendingItem(i));
+                Task.Factory.StartNew(() => Pickit.AddPendingItem(i));
                 //Log("Added {0} {1} to pickit", i.code, i.uid);
             }
 
@@ -443,7 +442,7 @@ namespace DD.Game
 
         public void ItemGoneHandler(byte[] data)
         {
-            if (pickit == null/* || pickit.fullInventory*/)
+            if (Pickit == null/* || pickit.fullInventory*/)
                 return;
 
             var unitType = (UnitType)data[1];
@@ -451,7 +450,7 @@ namespace DD.Game
                 return;
 
             var uid = BitConverter.ToUInt32(data, 2);
-            Task.Factory.StartNew(() => pickit.OnItemRemovedFromGround(uid));
+            Task.Factory.StartNew(() => Pickit.OnItemRemovedFromGround(uid));
             //Log("Removing uid {0} from pickit", uid);
         }
 

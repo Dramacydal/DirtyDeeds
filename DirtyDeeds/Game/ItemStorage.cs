@@ -453,7 +453,7 @@ namespace DD.Game
             {
                 var pText = game.Debugger.Call(
                     game.Debugger.GetModuleAddress("d2common.dll") + D2Common.GetItemText,
-                    WhiteMagic.CallingConventionEx.StdCall,
+                    WhiteMagic.MagicConvention.StdCall,
                     i);
 
                 if (pText == 0)

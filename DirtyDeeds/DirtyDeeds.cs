@@ -309,7 +309,6 @@ namespace DD
             games[0].Test();
         }
 
-
         SettingsForm settingsForm = null;
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -325,6 +324,7 @@ namespace DD
                     this.Settings = settings;
 
                     ApplySettings();
+                    SaveSettings();
                 }
 
                 this.settingsForm = null;

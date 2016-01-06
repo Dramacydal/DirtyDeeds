@@ -45,10 +45,6 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="WhiteMagic, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\WhiteMagic\WhiteMagic\bin\Debug\WhiteMagic.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Game\AutoTeleport\AutoTeleHandler.cs" />
@@ -152,7 +148,6 @@
     <Compile Include="Game\Packets.cs" />
     <Compile Include="Game\Pickit.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controls\TranslucentPanel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -218,9 +213,11 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadata Include="Service References\" />
+    <ProjectReference Include="..\WhiteMagic\WhiteMagic\WhiteMagic.csproj">
+      <Project>{53c8bf13-5ca8-4a11-83ae-6a9e1a7d9cd4}</Project>
+      <Name>WhiteMagic</Name>
+    </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

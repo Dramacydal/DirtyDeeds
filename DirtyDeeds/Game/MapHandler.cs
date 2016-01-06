@@ -65,7 +65,7 @@ namespace DD.Game
             }
 
             pLevel = game.Debugger.Call<uint>(D2Common.GetLevel,
-                CallingConventionEx.FastCall,
+                MagicConvention.FastCall,
                 act.pMisc, dwLevel);
 
             return pLevel;
@@ -74,7 +74,7 @@ namespace DD.Game
         protected void InitLevel(uint pLevel)
         {
             game.Debugger.Call(D2Common.InitLevel,
-                CallingConventionEx.StdCall,
+                MagicConvention.StdCall,
                 pLevel);
         }
 
@@ -129,7 +129,7 @@ namespace DD.Game
                 {
                     roomData = true;
                     game.Debugger.Call(D2Common.AddRoomData,
-                        CallingConventionEx.ThisCall,
+                        MagicConvention.ThisCall,
                         0, actMisc2.pAct, lvl.dwLevelNo, room.dwPosX, room.dwPosY, room.pRoom1);
                 }
 
@@ -143,7 +143,7 @@ namespace DD.Game
                 var pAutomapLayer = game.Debugger.Read<uint>(D2Client.pAutoMapLayer);
 
                 game.Debugger.Call(D2Client.RevealAutomapRoom,
-                    CallingConventionEx.StdCall,
+                    MagicConvention.StdCall,
                     room.pRoom1,
                     1,
                     pAutomapLayer);
@@ -162,7 +162,7 @@ namespace DD.Game
 
                 if (roomData)
                     game.Debugger.Call(D2Common.RemoveRoomData,
-                        CallingConventionEx.StdCall,
+                        MagicConvention.StdCall,
                         actMisc2.pAct, lvl.dwLevelNo, room.dwPosX, room.dwPosY, room.pRoom1);
 
                 pRoom = room.pRoom2Next;
@@ -187,7 +187,7 @@ namespace DD.Game
             var diff = game.Debugger.Read<byte>(D2Client.pDifficulty);
 
             return game.Debugger.Call<uint>(D2Common.LoadAct,
-                CallingConventionEx.StdCall,
+                MagicConvention.StdCall,
                 player.dwAct,
                 act.dwMapSeed,
                 expCharFlag,
@@ -208,7 +208,7 @@ namespace DD.Game
 
             InitLayer(lev.dwLevelNo);
             game.Debugger.Call(D2Common.UnloadAct,
-                CallingConventionEx.StdCall,
+                MagicConvention.StdCall,
                 pAct);
         }
 
@@ -311,7 +311,7 @@ namespace DD.Game
                 if (cellNo == -1 && preset.dwTxtFileNo <= 572)
                 {
                     var pTxt = game.Debugger.Call<IntPtr>(D2Common.GetObjectTxt,
-                        CallingConventionEx.StdCall,
+                        MagicConvention.StdCall,
                         preset.dwTxtFileNo);
                     if (pTxt != IntPtr.Zero)
                     {
@@ -324,7 +324,7 @@ namespace DD.Game
             if (cellNo > 0/* && cellNo < 1258*/)
             {
                 var pCell = game.Debugger.Call<IntPtr>(D2Client.NewAutomapCell,
-                    CallingConventionEx.FastCall);
+                    MagicConvention.FastCall);
 
                 var cell = game.Debugger.Read<AutomapCell>(pCell);
 
@@ -339,7 +339,7 @@ namespace DD.Game
 
                 var pAutomapLayer = game.Debugger.Read<uint>(D2Client.pAutoMapLayer);
                 game.Debugger.Call(D2Client.AddAutomapCell,
-                    CallingConventionEx.FastCall,
+                    MagicConvention.FastCall,
                     pCell,
                     pAutomapLayer + 0x10);  // &((*p_D2CLIENT_AutomapLayer)->pObjects)
             }
@@ -428,7 +428,7 @@ namespace DD.Game
         protected void InitLayer(uint levelNo)
         {
             var pLayer = game.Debugger.Call<IntPtr>(D2Common.GetLayer,
-                CallingConventionEx.FastCall,
+                MagicConvention.FastCall,
                 levelNo);
             if (pLayer == IntPtr.Zero)
                 return;
@@ -436,7 +436,7 @@ namespace DD.Game
             var layer = game.Debugger.Read<AutomapLayer2>(pLayer);
 
             game.Debugger.Call(D2Client.InitAutomapLayer_I,
-                CallingConventionEx.Register,
+                MagicConvention.Register,
                 layer.nLayerNo);
         }
 

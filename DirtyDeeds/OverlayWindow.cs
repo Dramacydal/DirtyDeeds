@@ -135,6 +135,7 @@ namespace DD
             logExpandButton.SetDraggable(true);
             statsExpandButton.SetDraggable(true);
             statsRefreshButton.SetDraggable(true);
+            mobInfoButton.SetDraggable(true);
 
             if (!game.OverlaySettings.LogPosition.IsEmpty)
                 logHolder.Location = game.OverlaySettings.LogPosition;

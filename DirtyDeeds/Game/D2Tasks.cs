@@ -166,7 +166,7 @@ namespace DD.Game
                                 var pItemPriceList = pd.Read<uint>(D2Client.pItemPriceList);
 
                                 var price = pd.Call<uint>(D2Common.GetItemPrice,
-                                    CallingConventionEx.StdCall,
+                                    MagicConvention.StdCall,
                                     pUnit, pItem, diff, pItemPriceList, 0x9A, 1);
 
                                 pricePerItem[item.dwUnitId] = price;

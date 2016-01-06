@@ -41,6 +41,6 @@
         Pet = 0x24, // hotkey 'O'
         QuestScroll = 0x25, // for showing quest information when click quest item.
 
-        Max = QuestScroll,
+        Max = 0x26,
     }
 }

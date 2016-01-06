@@ -6,14 +6,14 @@ using System.Threading;
 using DD.Game.Log;
 using WhiteMagic;
 using DD.Extensions;
+using DD.Game.D2Pointers;
+using DD.Game.D2Structs;
+using DD.Game;
+using DD.Game.Enums;
 
 namespace DD.Game.AutoTeleport
 {
     using PointList = List<Point>;
-    using DD.Game.D2Pointers;
-    using DD.Game.D2Structs;
-    using DD.Game;
-    using DD.Game.Enums;
 
     public enum TeleType
     {
@@ -98,6 +98,12 @@ namespace DD.Game.AutoTeleport
             if (!game.GetPlayerLevel(out lvl))
                 return;
 
+            if (game.HasSkill(SkillType.Teleport))
+            {
+                Logger.AutoTele.Log(game, LogType.Warning, "You don't have teleport skill.");
+                return;
+            }
+
             var p = TeleportInfo.Vectors[lvl.dwLevelNo * 4 + (uint)type].Clone();
 
             var areas = new List<uint>();
@@ -158,7 +164,7 @@ namespace DD.Game.AutoTeleport
                     if (exit.dwTargetLevel == p.Id)
                     {
                         var pLevelTxt = game.Debugger.Call<IntPtr>(D2Common.GetLevelText,
-                            CallingConventionEx.StdCall,
+                            MagicConvention.StdCall,
                             p.Id);
                         var lvltext = game.Debugger.Read<LevelTxt>(pLevelTxt);
 
@@ -212,7 +218,7 @@ namespace DD.Game.AutoTeleport
                 {
                     if (p.Type == TeleportTargetType.Object)
                     {
-                        var pObjectTxt = game.Debugger.Call<IntPtr>(D2Common.GetObjectTxt, CallingConventionEx.StdCall, p.Id);
+                        var pObjectTxt = game.Debugger.Call<IntPtr>(D2Common.GetObjectTxt, MagicConvention.StdCall, p.Id);
                         var txt = game.Debugger.Read<ObjectTxt>(pObjectTxt);
                         Logger.AutoTele.Log(game, LogType.None, "Going to {0}, {1} nodes.", txt.szName, nodes);
                     }
@@ -255,7 +261,7 @@ namespace DD.Game.AutoTeleport
                 if (room.pPreset == 0 && room.pRoomTiles == 0 && room.pRoom1 == 0)
                 {
                     game.Debugger.Call<int>(D2Common.AddRoomData,
-                        CallingConventionEx.ThisCall,
+                        MagicConvention.ThisCall,
                         0, unit.pAct, lvl.dwLevelNo, room.dwPosX, room.dwPosY, path.pRoom1);
                     bAddedRoom = true;
                 }
@@ -302,7 +308,7 @@ namespace DD.Game.AutoTeleport
                 if (bAddedRoom)
                 {
                     game.Debugger.Call(D2Common.RemoveRoomData,
-                        CallingConventionEx.StdCall,
+                        MagicConvention.StdCall,
                         unit.pAct, lvl.dwLevelNo, room.dwPosX, room.dwPosY, path.pRoom1);
                 }
 
